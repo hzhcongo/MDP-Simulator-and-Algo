@@ -79,8 +79,6 @@ public class ExplorationAlgo {
             }
         }
         exploredMap.getCell(1,1).setIsWalked(true);
-        exploredMap.getCell(2,1).setIsWalked(true);
-        //exploredMap.getCell(3,1).setIsWalked(true);
         
         System.out.println("Starting exploration...");
         System.out.println();
@@ -109,11 +107,8 @@ public class ExplorationAlgo {
      * 3. System.currentTimeMillis() > endTime
      */
     private void explorationLoop(int r, int c) {
-    	//exploredMap.getCell(2, 1).setIsWalked(true);
-    	//exploredMap.getCell(3, 1).setIsWalked(true);
-    	//exploredMap.getCell(4, 1).setIsWalked(true);
+
         do {
-        	//Cell.setIsWalked(0,0);
             nextMove();
 
             areaExplored = calculateAreaExplored();
@@ -149,14 +144,16 @@ public class ExplorationAlgo {
     private void nextMove() {
     	x = bot.getRobotPosRow();
     	y = bot.getRobotPosCol();
-    	System.out.println(x);
-    	System.out.println(y);
+//    	System.out.println(x);
+//    	System.out.println(y);
     	
         if  (southFree() && !exploredMap.getCell(x-1,y).getIsWalked()) {
         	
-        	// check if South 3 grids ahead = obstacle
+        	if (bot.getRobotCurDir() == DIRECTION.WEST) {
+    			moveBot(MOVEMENT.LEFT);
+    		}
         	
-        	while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
+        	else while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
         		moveBot(MOVEMENT.RIGHT);
         	}
 
@@ -168,16 +165,24 @@ public class ExplorationAlgo {
         }
         
         else if (eastFree() && !exploredMap.getCell(x,y+1).getIsWalked()) {
-        	while (bot.getRobotCurDir() != DIRECTION.EAST) {
-        		moveBot(MOVEMENT.RIGHT);
-        	}
-        	moveBot(MOVEMENT.FORWARD);
-        	directionMoved.push("E");
-        	exploredMap.getCell(x, y+1).setIsWalked(true);
-        }
+        	if (bot.getRobotCurDir() == DIRECTION.SOUTH) {
+   			 moveBot(MOVEMENT.LEFT);
+   		 }
+   		  
+   		 else while (bot.getRobotCurDir() != DIRECTION.EAST) {
+         		moveBot(MOVEMENT.RIGHT);
+         	}
+         	moveBot(MOVEMENT.FORWARD);
+         	directionMoved.push("E");
+         	exploredMap.getCell(x, y+1).setIsWalked(true);
+         }
         
         else if (westFree() && !exploredMap.getCell(x,y-1).getIsWalked()) {
-        	while (bot.getRobotCurDir() != DIRECTION.WEST) {
+        	if (bot.getRobotCurDir() == DIRECTION.NORTH) {
+        		moveBot(MOVEMENT.LEFT);
+        	}
+        	
+        	else while (bot.getRobotCurDir() != DIRECTION.WEST) {
         		moveBot(MOVEMENT.RIGHT);
         	}
 
@@ -187,7 +192,10 @@ public class ExplorationAlgo {
         }
         
         else if (northFree() && !exploredMap.getCell(x+1,y).getIsWalked()) {
-        	while (bot.getRobotCurDir() != DIRECTION.NORTH) {
+        	if (bot.getRobotCurDir() == DIRECTION.EAST) {
+        		moveBot(MOVEMENT.LEFT);
+        	}
+        	else while (bot.getRobotCurDir() != DIRECTION.NORTH) {
         		moveBot(MOVEMENT.RIGHT);
         	}
         	
@@ -195,6 +203,7 @@ public class ExplorationAlgo {
         	directionMoved.push("N");
         	exploredMap.getCell(x+1, y).setIsWalked(true);
         }
+        
         
         else 
         {
