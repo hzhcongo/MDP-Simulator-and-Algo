@@ -52,6 +52,7 @@ public class ExplorationAlgo {
     public void runExploration() {
         if (bot.getRealBot()) {
             System.out.println("Starting calibration...");
+//            System.out.println("Starting calibration...");
 
             CommMgr.getCommMgr().recvMsg();
             if (bot.getRealBot()) {
