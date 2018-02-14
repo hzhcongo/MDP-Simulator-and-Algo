@@ -13,46 +13,35 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
-// @formatter:off
-/**
- * Fastest path algorithm for the robot. Uses a version of the A* algorithm.
- *
- * g(n) = Real Cost from START to n
- * h(n) = Heuristic Cost from n to GOAL
- *
- * @author Suyash Lakhotia
- */
-// @formatter:on
-
 public class FastestPathAlgo {
-    private ArrayList<Cell> toVisit;        // array of Cells to be visited
-    private ArrayList<Cell> visited;        // array of visited Cells
-    private HashMap<Cell, Cell> parents;    // HashMap of Child --> Parent
-    private Cell current;                   // current Cell
-    private Cell[] neighbors;               // array of neighbors of current Cell
-    private DIRECTION curDir;               // current direction of robot
-    private double[][] gCosts;              // array of real cost from START to [row][col] i.e. g(n)
     private Robot bot;
     private Map exploredMap;
     private final Map realMap;
+    private ArrayList<Cell> toVisit;        // cells to be visited
+    private ArrayList<Cell> visited;        // visited Cells
+    private Cell current;                   // current Cell
+    private DIRECTION curDir;               // current robot direction
+    private Cell[] neighbors;               // neighbors of current Cell
+    private HashMap<Cell, Cell> parents;    // Child --> Parent
+    private double[][] gCosts;              // real cost from START to [row][col] (g(n))
     private int loopCount;
     private boolean explorationMode;
 
     public FastestPathAlgo(Map exploredMap, Robot bot) {
         this.realMap = null;
-        initObject(exploredMap, bot);
+        init(exploredMap, bot);
     }
 
     public FastestPathAlgo(Map exploredMap, Robot bot, Map realMap) {
         this.realMap = realMap;
         this.explorationMode = true;
-        initObject(exploredMap, bot);
+        init(exploredMap, bot);
     }
 
     /**
-     * Initialise the FastestPathAlgo object.
+     * Initialise FastestPathAlgo
      */
-    private void initObject(Map map, Robot bot) {
+    private void init(Map map, Robot bot) {
         this.bot = bot;
         this.exploredMap = map;
         this.toVisit = new ArrayList<>();
@@ -67,7 +56,7 @@ public class FastestPathAlgo {
         for (int i = 0; i < MapConstants.MAP_ROWS; i++) {
             for (int j = 0; j < MapConstants.MAP_COLS; j++) {
                 Cell cell = map.getCell(i, j);
-                if (!canBeVisited(cell)) {
+                if (!canVisit(cell)) {
                     gCosts[i][j] = RobotConstants.INFINITE_COST;
                 } else {
                     gCosts[i][j] = 0;
@@ -76,26 +65,25 @@ public class FastestPathAlgo {
         }
         toVisit.add(current);
 
-        // Initialise starting point
-        gCosts[bot.getRobotPosRow()][bot.getRobotPosCol()] = 0;
         this.loopCount = 0;
     }
 
     /**
      * Returns true if the cell can be visited.
      */
-    private boolean canBeVisited(Cell c) {
+    private boolean canVisit(Cell c) {
         return c.getIsExplored() && !c.getIsObstacle() && !c.getIsVirtualWall();
     }
 
     /**
-     * Returns the Cell inside toVisit with the minimum g(n) + h(n).
+     * Returns Coordinate in toVisit with min(g(n) + h(n))
      */
-    private Cell minimumCostCell(int goalRow, int getCol) {
+    private Cell minCostCell(int goalRow, int getCol) {
         int size = toVisit.size();
         double minCost = RobotConstants.INFINITE_COST;
         Cell result = null;
 
+        // If gCost < minCost, set minCost as gCost and return the cell in toVisit
         for (int i = size - 1; i >= 0; i--) {
             double gCost = gCosts[(toVisit.get(i).getRow())][(toVisit.get(i).getCol())];
             double cost = gCost + costH(toVisit.get(i), goalRow, getCol);
@@ -109,21 +97,21 @@ public class FastestPathAlgo {
     }
 
     /**
-     * Returns the heuristic cost i.e. h(n) from a given Cell to a given [goalRow, goalCol] in the maze.
+     * Returns heuristic cost (h(n)) from a given Coordinate to a given [row, col] of maze
      */
-    private double costH(Cell b, int goalRow, int goalCol) {
-        // Heuristic: The no. of moves will be equal to the difference in the row and column values.
-        double movementCost = (Math.abs(goalCol - b.getCol()) + Math.abs(goalRow - b.getRow())) * RobotConstants.MOVE_COST;
+    private double costH(Cell b, int row, int col) {
+    	// No. of moves = sum of the difference of the rows and col absolute values.
+        double moveCost = (Math.abs(col - b.getCol()) + Math.abs(row - b.getRow())) * RobotConstants.MOVE_COST;
 
-        if (movementCost == 0) return 0;
+        if (moveCost == 0) return 0;
 
         // Heuristic: If b is not in the same row or column, one turn will be needed.
         double turnCost = 0;
-        if (goalCol - b.getCol() != 0 || goalRow - b.getRow() != 0) {
+        if (col - b.getCol() != 0 || row - b.getRow() != 0) {
             turnCost = RobotConstants.TURN_COST;
         }
 
-        return movementCost + turnCost;
+        return moveCost + turnCost;
     }
 
     /**
@@ -183,7 +171,7 @@ public class FastestPathAlgo {
             loopCount++;
 
             // Get cell with minimum cost from toVisit and assign it to current.
-            current = minimumCostCell(goalRow, goalCol);
+            current = minCostCell(goalRow, goalCol);
 
             // Point the robot in the direction of current from the previous cell.
             if (parents.containsKey(current)) {
@@ -203,25 +191,25 @@ public class FastestPathAlgo {
             // Setup neighbors of current cell. [Top, Bottom, Left, Right].
             if (exploredMap.checkValidCoordinates(current.getRow() + 1, current.getCol())) {
                 neighbors[0] = exploredMap.getCell(current.getRow() + 1, current.getCol());
-                if (!canBeVisited(neighbors[0])) {
+                if (!canVisit(neighbors[0])) {
                     neighbors[0] = null;
                 }
             }
             if (exploredMap.checkValidCoordinates(current.getRow() - 1, current.getCol())) {
                 neighbors[1] = exploredMap.getCell(current.getRow() - 1, current.getCol());
-                if (!canBeVisited(neighbors[1])) {
+                if (!canVisit(neighbors[1])) {
                     neighbors[1] = null;
                 }
             }
             if (exploredMap.checkValidCoordinates(current.getRow(), current.getCol() - 1)) {
                 neighbors[2] = exploredMap.getCell(current.getRow(), current.getCol() - 1);
-                if (!canBeVisited(neighbors[2])) {
+                if (!canVisit(neighbors[2])) {
                     neighbors[2] = null;
                 }
             }
             if (exploredMap.checkValidCoordinates(current.getRow(), current.getCol() + 1)) {
                 neighbors[3] = exploredMap.getCell(current.getRow(), current.getCol() + 1);
-                if (!canBeVisited(neighbors[3])) {
+                if (!canVisit(neighbors[3])) {
                     neighbors[3] = null;
                 }
             }
