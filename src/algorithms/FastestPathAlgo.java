@@ -173,6 +173,9 @@ public class FastestPathAlgo {
      * Find the fastest path from the robot's current position to [goalRow, goalCol].
      */
     public String runFastestPath(int goalRow, int goalCol) {
+    	bot.setSensors();
+        bot.sense(exploredMap, realMap);
+        exploredMap.repaint();
         System.out.println("Calculating fastest path from (" + current.getRow() + ", " + current.getCol() + ") to goal (" + goalRow + ", " + goalCol + ")...");
 
         Stack<Cell> path;

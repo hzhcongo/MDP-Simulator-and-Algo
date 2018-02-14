@@ -204,8 +204,12 @@ public class ExplorationAlgo {
         	exploredMap.getCell(x+1, y).setIsWalked(true);
         }
         
+        else{
+        	if (fastestPath()) {
+        		
+        	}
         
-        else 
+        	else 
         {
         	a = directionMoved.pop();
         	switch(a) {
@@ -235,27 +239,46 @@ public class ExplorationAlgo {
         	}
         }
         
-        /* else 
-         * turn backwards
-         * move one step, check if north is unwalked, if unwalked go up
-         * if unwalked 
-        
-        */
-        /*if (lookRight()) {
-            moveBot(MOVEMENT.RIGHT);
-            if (lookForward()) moveBot(MOVEMENT.FORWARD);
-        } else if (lookForward()) {
-            moveBot(MOVEMENT.FORWARD);
-        } else if (lookLeft()) {
-            moveBot(MOVEMENT.LEFT);
-            if (lookForward()) moveBot(MOVEMENT.FORWARD);
-        } else {
-            moveBot(MOVEMENT.RIGHT);
-            moveBot(MOVEMENT.RIGHT);
-        }
-        }*/
     }
 
+    
+    
+    private boolean fastestPath() {
+    	//System.out.println(bot.getRobotPosRow());
+    	//System.out.println(bot.getRobotPosCol());
+    	FastestPathAlgo goToCell = new FastestPathAlgo (exploredMap,bot,realMap);
+    	
+    	
+    	int z = 0; //z is to store the array counter
+    	int num = 999; //storing the minimum cost
+    	
+    	//iterating through the cells of all the map to get the cells that have been explored but not walked and not obstacle
+    	for (int i = 1; i < 15;i++) {
+    		for (int j = 1; j < 15;j++) {
+    			if (!(exploredMap.getCell(i, j).getIsWalked()) && (exploredMap.getCell(i, j).getIsExplored()) && !(exploredMap.getCell(i, j).getIsObstacle())) {  				
+    				array[0][z] = i; //storing the row values 
+    				array[1][z] = j; //storing the col values
+    				z++;
+    			}
+    		}
+    	}
+    		//iterate thru the above array
+    		for (int i = 0; i<z; i++) {
+    			int x = (bot.getRobotPosRow() - array[0][i] + bot.getRobotPosCol() - array[1][i]); //finding the nearest cell by comparing row and col
+    			int minCost = 999;
+    			if ((x < minCost)) {
+    				minCost = x;
+    				num = i;
+    			}
+    		}	   
+    		//if num == 999 means no cell in the array
+    	if (num == 999) {
+    		return false;
+    	}
+    	
+    	goToCell.runFastestPath(array[0][num], array[1][num]);
+    	return true;
+    }
     /**
      * Returns true if the right side of the robot is free to move into.
      */
