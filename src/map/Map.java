@@ -63,6 +63,18 @@ public class Map extends JPanel {
         return grid[row][col];
     }
 
+    public boolean checkIfWalkable(int row, int col) {
+    	if (grid[row][col].getIsObstacle() || grid[row+1][col].getIsObstacle() || grid[row-1][col].getIsObstacle()
+    			 || grid[row+1][col+1].getIsObstacle() || grid[row+1][col-1].getIsObstacle()||
+    			grid [row][col-1].getIsObstacle() || grid[row-1][col-1].getIsObstacle()  ||
+    			grid [row][col+1].getIsObstacle() || grid [row-1][col+1].getIsObstacle()) {
+    		return false;
+    	}
+    	
+    	else return true;
+    }
+    
+    
     /**
      * Returns true if a cell is an obstacle.
      */

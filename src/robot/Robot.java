@@ -243,7 +243,6 @@ public class Robot {
     public void setSensors() {
         switch (robotDir) {
             case NORTH:
-            	//SRBack.setSensor(this.posRow -1, this.posCol, this.robotDir);
                 SRFrontLeft.setSensor(this.posRow + 1, this.posCol - 1, this.robotDir);
                 SRFrontCenter.setSensor(this.posRow + 1, this.posCol, this.robotDir);
                 SRFrontRight.setSensor(this.posRow + 1, this.posCol + 1, this.robotDir);
@@ -252,7 +251,6 @@ public class Robot {
                 SRRight.setSensor(this.posRow + 1, this.posCol + 1, findNewDirection(MOVEMENT.RIGHT));
                 break;
             case EAST:
-            	//SRBack.setSensor(this.posRow -1, this.posCol, this.robotDir);
                 SRFrontLeft.setSensor(this.posRow + 1, this.posCol + 1, this.robotDir);
                 SRFrontCenter.setSensor(this.posRow, this.posCol + 1, this.robotDir);
                 SRFrontRight.setSensor(this.posRow - 1, this.posCol + 1, this.robotDir);
@@ -261,7 +259,6 @@ public class Robot {
                 SRRight.setSensor(this.posRow - 1, this.posCol + 1, findNewDirection(MOVEMENT.RIGHT));
                 break;
             case SOUTH:
-            	//SRBack.setSensor(this.posRow -1, this.posCol, this.robotDir);
                 SRFrontLeft.setSensor(this.posRow - 1, this.posCol + 1, this.robotDir);
                 SRFrontCenter.setSensor(this.posRow - 1, this.posCol, this.robotDir);
                 SRFrontRight.setSensor(this.posRow - 1, this.posCol - 1, this.robotDir);
@@ -270,7 +267,6 @@ public class Robot {
                 SRRight.setSensor(this.posRow - 1, this.posCol - 1, findNewDirection(MOVEMENT.RIGHT));
                 break;
             case WEST:
-            	//SRBack.setSensor(this.posRow -1, this.posCol, this.robotDir);
                 SRFrontLeft.setSensor(this.posRow - 1, this.posCol - 1, this.robotDir);
                 SRFrontCenter.setSensor(this.posRow, this.posCol - 1, this.robotDir);
                 SRFrontRight.setSensor(this.posRow + 1, this.posCol - 1, this.robotDir);
@@ -283,7 +279,7 @@ public class Robot {
     }
 
     /**
-     * Uses the current direction of the robot and the given movement to find the new direction of the robot.
+     * Find new direction of the robot via current direction of robot and the given movement
      */
     private DIRECTION findNewDirection(MOVEMENT m) {
         if (m == MOVEMENT.RIGHT) {
@@ -294,9 +290,7 @@ public class Robot {
     }
 
     /**
-     * Calls the .sense() method of all the attached sensors and stores the received values in an integer array.
-     *
-     * @return [SRFrontLeft, SRFrontCenter, SRFrontRight, SRLeft, SRRight, LRLeft]
+     * Sense surroundings and stores received values in integer array
      */
     public int[] sense(Map explorationMap, Map realMap) {
         int[] result = new int[6];

@@ -1,4 +1,4 @@
-package utils;
+
 
 import map.Map;
 import map.MapConstants;
@@ -6,12 +6,8 @@ import map.MapConstants;
 import java.io.*;
 
 /**
- * Helper methods for reading & generating map strings.
- *
  * Part 1: 1/0 represents explored state. All cells are represented.
  * Part 2: 1/0 represents obstacle state. Only explored cells are represented.
- *
- * @author Suyash Lakhotia
  */
 
 public class MapDescriptor {
@@ -19,7 +15,7 @@ public class MapDescriptor {
      * Reads filename.txt from disk and loads it into the passed Map object. Uses a simple binary indicator to
      * identify if a cell is an obstacle.
      */
-    public static void loadMapFromDisk(Map map, String filename) {
+    public static void loadMap(Map map, String filename) {
         try {
             InputStream inputStream = new FileInputStream("maps/" + filename + ".txt");
             BufferedReader buf = new BufferedReader(new InputStreamReader(inputStream));
@@ -41,13 +37,14 @@ public class MapDescriptor {
             }
 
             map.setAllExplored();
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Helper method to convert a binary string to a hex string.
+     * Convert binary to hex
      */
     private static String binToHex(String bin) {
         int dec = Integer.parseInt(bin, 2);

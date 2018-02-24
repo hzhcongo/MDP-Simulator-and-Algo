@@ -35,8 +35,8 @@ public class ExplorationAlgo {
     private int y;
     private Stack<String> directionMoved = new Stack();
     private String a;
+    private int array[][] = new int [99][99];
     
-    private int movableSteps;
 
     public ExplorationAlgo(Map exploredMap, Map realMap, Robot bot, int coverageLimit, int timeLimit) {
         this.exploredMap = exploredMap;
@@ -52,7 +52,6 @@ public class ExplorationAlgo {
     public void runExploration() {
         if (bot.getRealBot()) {
             System.out.println("Starting calibration...");
-//            System.out.println("Starting calibration...");
 
             CommMgr.getCommMgr().recvMsg();
             if (bot.getRealBot()) {
@@ -84,15 +83,12 @@ public class ExplorationAlgo {
         System.out.println();
 
         startTime = System.currentTimeMillis();
-        endTime = startTime + (timeLimit * 1000);
-        
-        //WORKING! Used to show checklist requirements: breaking when area explored / touched goal / exceed time
-//        endTime = startTime + (11 * 1000);
+        endTime = startTime + (timeLimit * 1000);;
 
         if (bot.getRealBot()) {
             CommMgr.getCommMgr().sendMsg(null, CommMgr.BOT_START);
         }
-        senseAndRepaint();
+        //senseAndRepaint();
 
         areaExplored = calculateAreaExplored();
         System.out.println("Explored Area: " + areaExplored);
@@ -107,36 +103,36 @@ public class ExplorationAlgo {
      * 3. System.currentTimeMillis() > endTime
      */
     private void explorationLoop(int r, int c) {
-
         do {
             nextMove();
 
             areaExplored = calculateAreaExplored();
             System.out.println("Area explored: " + areaExplored);
-
-            if (bot.getRobotPosRow() == r && bot.getRobotPosCol() == c) {
-                if (areaExplored >= 100) {
-                    break;
-                }
+            if (areaExplored >= 300) {
+            	break;
             }
-
-        //WORKING! Used to show checklist requirements: breaking when area explored / touched goal / exceed time
-//        } while (areaExplored <= 222);
-//        } while (!bot.getTouchedGoal(); 
-//        } while (System.currentTimeMillis() <= endTime);
-        } while ((!bot.getTouchedGoal() && System.currentTimeMillis() <= endTime) || (areaExplored < coverageLimit && System.currentTimeMillis() <= endTime));
-
-        goHome();
+        } while (areaExplored <= coverageLimit && System.currentTimeMillis() <= endTime);
+        FastestPathAlgo goToCell = new FastestPathAlgo (exploredMap,bot,realMap);
+        goToCell.runFastestPath(r, c);
     }
 
     
-    private int movableSteps(String m) {
-    	switch(m) {
-    	case "N": 
-    	}
-    	
-    	return movableSteps;
-    }
+    
+//      private void nextMove() {
+//            if (lookRight()) {
+//                moveBot(MOVEMENT.RIGHT);
+//                if (lookForward()) moveBot(MOVEMENT.FORWARD);
+//            } else if (lookForward()) {
+//                moveBot(MOVEMENT.FORWARD);
+//            } else if (lookLeft()) {
+//                moveBot(MOVEMENT.LEFT);
+//                if (lookForward()) moveBot(MOVEMENT.FORWARD);
+//            } else {
+//                moveBot(MOVEMENT.RIGHT);
+//                moveBot(MOVEMENT.RIGHT);
+//            }
+//        }
+    
     
     /**
      * Determines the next move for the robot and executes it accordingly.
@@ -144,16 +140,16 @@ public class ExplorationAlgo {
     private void nextMove() {
     	x = bot.getRobotPosRow();
     	y = bot.getRobotPosCol();
-//    	System.out.println(x);
-//    	System.out.println(y);
-    	
-        if  (southFree() && !exploredMap.getCell(x-1,y).getIsWalked()) {
-        	
-        	if (bot.getRobotCurDir() == DIRECTION.WEST) {
+    	System.out.println(x);
+    	System.out.println(y);
+    	   	
+    if  (southFree() && !exploredMap.getCell(x-1,y).getIsWalked()) {
+    		
+    		if (bot.getRobotCurDir() == DIRECTION.WEST) {
     			moveBot(MOVEMENT.LEFT);
     		}
-        	
-        	else while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
+    		
+    		else while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
         		moveBot(MOVEMENT.RIGHT);
         	}
 
@@ -163,21 +159,23 @@ public class ExplorationAlgo {
         	exploredMap.getCell(x-1, y).setIsWalked(true);
 
         }
-        
-        else if (eastFree() && !exploredMap.getCell(x,y+1).getIsWalked()) {
-        	if (bot.getRobotCurDir() == DIRECTION.SOUTH) {
-   			 moveBot(MOVEMENT.LEFT);
-   		 }
-   		  
-   		 else while (bot.getRobotCurDir() != DIRECTION.EAST) {
-         		moveBot(MOVEMENT.RIGHT);
-         	}
-         	moveBot(MOVEMENT.FORWARD);
-         	directionMoved.push("E");
-         	exploredMap.getCell(x, y+1).setIsWalked(true);
-         }
-        
+	
+    	  else if (eastFree() && !exploredMap.getCell(x,y+1).getIsWalked()) {
+    		 if (bot.getRobotCurDir() == DIRECTION.SOUTH) {
+    			 moveBot(MOVEMENT.LEFT);
+    		 }
+    		  
+    		 else while (bot.getRobotCurDir() != DIRECTION.EAST) {
+          		moveBot(MOVEMENT.RIGHT);
+          	}
+          	moveBot(MOVEMENT.FORWARD);
+          	directionMoved.push("E");
+          	exploredMap.getCell(x, y+1).setIsWalked(true);
+          }
+    	
+    	
         else if (westFree() && !exploredMap.getCell(x,y-1).getIsWalked()) {
+        	
         	if (bot.getRobotCurDir() == DIRECTION.NORTH) {
         		moveBot(MOVEMENT.LEFT);
         	}
@@ -190,7 +188,7 @@ public class ExplorationAlgo {
         	directionMoved.push("W");
         	exploredMap.getCell(x, y-1).setIsWalked(true);
         }
-        
+    	
         else if (northFree() && !exploredMap.getCell(x+1,y).getIsWalked()) {
         	if (bot.getRobotCurDir() == DIRECTION.EAST) {
         		moveBot(MOVEMENT.LEFT);
@@ -204,48 +202,51 @@ public class ExplorationAlgo {
         	exploredMap.getCell(x+1, y).setIsWalked(true);
         }
         
+        
         else{
-        	if (fastestPath()) {
+        	fastestPath();
         		
-        	}
-        
-        	else 
-        {
-        	a = directionMoved.pop();
-        	switch(a) {
-        	case "N": while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
-        			moveBot(MOVEMENT.RIGHT);
-        				}
-        			moveBot(MOVEMENT.FORWARD);
-        			break;
-        			
-        	case "S":  while (bot.getRobotCurDir() != DIRECTION.NORTH) {
-        		moveBot(MOVEMENT.RIGHT);
-        	}
-        	moveBot(MOVEMENT.FORWARD);
-        	break;
         	
-        	case "E": while (bot.getRobotCurDir() != DIRECTION.WEST) {
-        		moveBot(MOVEMENT.RIGHT);
-        	}
-        	moveBot(MOVEMENT.FORWARD);
-        	break;
         	
-        	case "W": while (bot.getRobotCurDir() != DIRECTION.EAST) {
-        		moveBot(MOVEMENT.RIGHT);
+    
+    
+//        else 
+//        {
+//        	
+//        	a = directionMoved.pop();
+//        	switch(a) {
+//        	case "N": while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
+//        			moveBot(MOVEMENT.RIGHT);
+//        				}
+//        			moveBot(MOVEMENT.FORWARD);
+//        			break;
+//        			
+//        	case "S":  while (bot.getRobotCurDir() != DIRECTION.NORTH) {
+//        		moveBot(MOVEMENT.RIGHT);
+//        	}
+//        	moveBot(MOVEMENT.FORWARD);
+//        	break;
+//        	
+//        	case "E": while (bot.getRobotCurDir() != DIRECTION.WEST) {
+//        		moveBot(MOVEMENT.RIGHT);
+//        	}
+//        	moveBot(MOVEMENT.FORWARD);
+//        	break;
+//        	
+//        	case "W": while (bot.getRobotCurDir() != DIRECTION.EAST) {
+//        		moveBot(MOVEMENT.RIGHT);
+//        	}
+//        	moveBot(MOVEMENT.FORWARD);
+//        	break;
+//        		}    
         	}
-        	moveBot(MOVEMENT.FORWARD);
-        	break;
-        	}
+        	
         }
-        
-    }
-
-    
-    
+//    }
     private boolean fastestPath() {
-    	//System.out.println(bot.getRobotPosRow());
-    	//System.out.println(bot.getRobotPosCol());
+    	int currentcellrow = bot.getRobotPosRow();
+    	int currentcellcol = bot.getRobotPosCol();
+    	exploredMap.getCell(currentcellrow,currentcellcol).setIsWalked(true);
     	FastestPathAlgo goToCell = new FastestPathAlgo (exploredMap,bot,realMap);
     	
     	
@@ -253,32 +254,56 @@ public class ExplorationAlgo {
     	int num = 999; //storing the minimum cost
     	
     	//iterating through the cells of all the map to get the cells that have been explored but not walked and not obstacle
-    	for (int i = 1; i < 15;i++) {
-    		for (int j = 1; j < 15;j++) {
-    			if (!(exploredMap.getCell(i, j).getIsWalked()) && (exploredMap.getCell(i, j).getIsExplored()) && !(exploredMap.getCell(i, j).getIsObstacle())) {  				
+    	for (int i = 1; i < 19;i++) {
+    		for (int j = 1; j < 14;j++) {
+   			if (!(exploredMap.getCell(i, j).getIsWalked()) && (exploredMap.getCell(i, j).getIsExplored()) && !(exploredMap.getCell(i, j).getIsObstacle())) {  				
+    				if (exploredMap.checkIfWalkable(i,j)) {
     				array[0][z] = i; //storing the row values 
     				array[1][z] = j; //storing the col values
     				z++;
-    			}
+    				}
+    			}	
     		}
     	}
+    	int minCost = 999;
     		//iterate thru the above array
     		for (int i = 0; i<z; i++) {
-    			int x = (bot.getRobotPosRow() - array[0][i] + bot.getRobotPosCol() - array[1][i]); //finding the nearest cell by comparing row and col
-    			int minCost = 999;
+    			int x = (Math.abs(bot.getRobotPosRow() - array[0][i]) + Math.abs(bot.getRobotPosCol() - array[1][i])); //finding the nearest cell by comparing row and col
+    			
     			if ((x < minCost)) {
     				minCost = x;
+    				System.out.println(minCost);
     				num = i;
     			}
     		}	   
-    		//if num == 999 means no cell in the array
-    	if (num == 999) {
-    		return false;
-    	}
-    	
-    	goToCell.runFastestPath(array[0][num], array[1][num]);
-    	return true;
+
+		int x = array[0][num];
+		int y = array[1][num];
+
+   	
+    	goToCell.runFastestPath(x, y);
+    	return false;
     }
+
+
+    /* 
+     * 
+     * 
+     * 
+     * 
+     * for each cell in the map
+     * 	for row
+     * 	for column, 
+     * 		get all the cells that isExploredbut not walked
+     * 			find the nearest one
+     * 
+     * 
+     * FastestPathAlgo goToGoal = new FastestPathAlgo(exploredMap, bot, realMap);
+            goToGoal.runFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
+     */
+    
+   
+
     /**
      * Returns true if the right side of the robot is free to move into.
      */
@@ -338,7 +363,6 @@ public class ExplorationAlgo {
         int botCol = bot.getRobotPosCol();
         return (isExploredNotObstacle(botRow + 1, botCol - 1) && isExploredAndFree(botRow + 1, botCol) && isExploredNotObstacle(botRow + 1, botCol + 1));
     }
-
     /**
      * Returns true if the robot can move to the east cell.
      */
@@ -347,6 +371,9 @@ public class ExplorationAlgo {
         int botCol = bot.getRobotPosCol();
         return (isExploredNotObstacle(botRow - 1, botCol + 1) && isExploredAndFree(botRow, botCol + 1) && isExploredNotObstacle(botRow + 1, botCol + 1));
     }
+   
+    
+    
 
     /**
      * Returns true if the robot can move to the south cell.
@@ -356,7 +383,7 @@ public class ExplorationAlgo {
         int botCol = bot.getRobotPosCol();
         return (isExploredNotObstacle(botRow - 1, botCol - 1) && isExploredAndFree(botRow - 1, botCol) && isExploredNotObstacle(botRow - 1, botCol + 1));
     }
-
+    
     /**
      * Returns true if the robot can move to the west cell.
      */
@@ -365,18 +392,18 @@ public class ExplorationAlgo {
         int botCol = bot.getRobotPosCol();
         return (isExploredNotObstacle(botRow - 1, botCol - 1) && isExploredAndFree(botRow, botCol - 1) && isExploredNotObstacle(botRow + 1, botCol - 1));
     }
-
+    
+    
+    
     /**
      * Returns the robot to START after exploration and points the bot northwards.
      */
     private void goHome() {
-    	//If haven't touched goal, rush to goal then return to start
         if (!bot.getTouchedGoal() && coverageLimit == 300 && timeLimit == 3600) {
             FastestPathAlgo goToGoal = new FastestPathAlgo(exploredMap, bot, realMap);
             goToGoal.runFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
         }
 
-        //Return to start
         FastestPathAlgo returnToStart = new FastestPathAlgo(exploredMap, bot, realMap);
         returnToStart.runFastestPath(RobotConstants.START_ROW, RobotConstants.START_COL);
 
@@ -471,7 +498,7 @@ public class ExplorationAlgo {
     /**
      * Sets the bot's sensors, processes the sensor data and repaints the map.
      */
-    private void senseAndRepaint() {
+    public void senseAndRepaint() {
         bot.setSensors();
         bot.sense(exploredMap, realMap);
         exploredMap.repaint();

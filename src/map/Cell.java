@@ -56,6 +56,8 @@ public class Cell {
     public boolean getIsWalked() {
     	return this.isWalked;
     }
+    
+
 
     public void setIsExplored(boolean val) {
         this.isExplored = val;
