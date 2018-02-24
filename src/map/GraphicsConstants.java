@@ -3,25 +3,23 @@ package map;
 import java.awt.*;
 
 /**
- * Constants used in the Map class for rendering the arena in the simulator.
- *
- * @author Suyash Lakhotia
+ * Color Constants for displaying objects and robots in simulator
  */
 
 class GraphicsConstants {
     public static final int CELL_LINE_WEIGHT = 2;
 
-    public static final Color C_START = Color.BLUE;
-    public static final Color C_GOAL = Color.GREEN;
-    public static final Color C_UNEXPLORED = Color.LIGHT_GRAY;
-    public static final Color C_FREE = Color.WHITE;
-    public static final Color C_OBSTACLE = Color.BLACK;
+    public static final Color COLOR_START = Color.GREEN;
+    public static final Color COLOR_GOAL = Color.RED;
+    public static final Color COLOR_UNEXPLORED = Color.LIGHT_GRAY;
+    public static final Color COLOR_FREE = Color.WHITE;
+    public static final Color COLOR_OBSTACLE = Color.BLACK;
 
-    public static final Color C_ROBOT = Color.RED;
-    public static final Color C_ROBOT_DIR = Color.WHITE;
+    public static final Color COLOR_ROBOT = Color.BLUE;
+    public static final Color COLOR_ROBOT_DIR = Color.GREEN;
 
-    public static final int ROBOT_W = 70;
-    public static final int ROBOT_H = 70;
+    public static final int ROBOT_WIDTH = 70;
+    public static final int ROBOT_HEIGHT = 70;
 
     public static final int ROBOT_X_OFFSET = 10;
     public static final int ROBOT_Y_OFFSET = 20;
