@@ -173,16 +173,16 @@ public class Map extends JPanel {
                 Color cellColor;
 
                 if (inStartZone(mapRow, mapCol))
-                    cellColor = GraphicsConstants.C_START;
+                    cellColor = GraphicsConstants.COLOR_START;
                 else if (inGoalZone(mapRow, mapCol))
-                    cellColor = GraphicsConstants.C_GOAL;
+                    cellColor = GraphicsConstants.COLOR_GOAL;
                 else {
                     if (!grid[mapRow][mapCol].getIsExplored())
-                        cellColor = GraphicsConstants.C_UNEXPLORED;
+                        cellColor = GraphicsConstants.COLOR_UNEXPLORED;
                     else if (grid[mapRow][mapCol].getIsObstacle())
-                        cellColor = GraphicsConstants.C_OBSTACLE;
+                        cellColor = GraphicsConstants.COLOR_OBSTACLE;
                     else
-                        cellColor = GraphicsConstants.C_FREE;
+                        cellColor = GraphicsConstants.COLOR_FREE;
                 }
 
                 g.setColor(cellColor);
@@ -192,13 +192,13 @@ public class Map extends JPanel {
         }
 
         // Paint the robot on-screen.
-        g.setColor(GraphicsConstants.C_ROBOT);
+        g.setColor(GraphicsConstants.COLOR_ROBOT);
         int r = bot.getRobotPosRow();
         int c = bot.getRobotPosCol();
-        g.fillOval((c - 1) * GraphicsConstants.CELL_SIZE + GraphicsConstants.ROBOT_X_OFFSET + GraphicsConstants.MAP_X_OFFSET, GraphicsConstants.MAP_H - (r * GraphicsConstants.CELL_SIZE + GraphicsConstants.ROBOT_Y_OFFSET), GraphicsConstants.ROBOT_W, GraphicsConstants.ROBOT_H);
+        g.fillOval((c - 1) * GraphicsConstants.CELL_SIZE + GraphicsConstants.ROBOT_X_OFFSET + GraphicsConstants.MAP_X_OFFSET, GraphicsConstants.MAP_H - (r * GraphicsConstants.CELL_SIZE + GraphicsConstants.ROBOT_Y_OFFSET), GraphicsConstants.ROBOT_WIDTH, GraphicsConstants.ROBOT_HEIGHT);
 
         // Paint the robot's direction indicator on-screen.
-        g.setColor(GraphicsConstants.C_ROBOT_DIR);
+        g.setColor(GraphicsConstants.COLOR_ROBOT_DIR);
         RobotConstants.DIRECTION d = bot.getRobotCurDir();
         switch (d) {
             case NORTH:
