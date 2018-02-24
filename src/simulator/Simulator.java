@@ -14,13 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import static utils.MapDescriptor.generateMapDescriptor;
-import static utils.MapDescriptor.loadMapFromDisk;
-
-/**
- * Simulator for robot navigation in virtual arena.
- *
- * @author Suyash Lakhotia
- */
+import static utils.MapDescriptor.loadMap;
 
 public class Simulator {
     private static JFrame _appFrame = null;         // application JFrame
@@ -33,14 +27,14 @@ public class Simulator {
     private static Map realMap = null;              // real map
     private static Map exploredMap = null;          // exploration map
 
-    private static int timeLimit = 3000;            // time limit
+    private static int timeLimit = 3600;            // time limit
     private static int coverageLimit = 300;         // coverage limit
 
     private static final CommMgr comm = CommMgr.getCommMgr();
     private static final boolean realRun = false;
 
     /**
-     * Initialises the different maps and displays the application.
+     * Initializes maps and displays application
      */
     public static void main(String[] args) {
         if (realRun) comm.openConnection();
@@ -59,16 +53,16 @@ public class Simulator {
     }
 
     /**
-     * Initialises the different parts of the application.
+     * Initializes main application
      */
     private static void displayEverything() {
-        // Initialise main frame for display
+        // Initialize main frame for display
         _appFrame = new JFrame();
-        _appFrame.setTitle("MDP Group 2 Simulator");
+        _appFrame.setTitle("MDP Algorithm Simulator");
         _appFrame.setSize(new Dimension(690, 700));
         _appFrame.setResizable(false);
 
-        // Center the main frame in the middle of the screen
+        // Center window
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         _appFrame.setLocation(dim.width / 2 - _appFrame.getSize().width / 2, dim.height / 2 - _appFrame.getSize().height / 2);
 
@@ -95,7 +89,7 @@ public class Simulator {
     }
 
     /**
-     * Initialises the main map view by adding the different maps as cards in the CardLayout. Displays realMap
+     * Initializes the main map view by adding the different maps using cards in CardLayout. Displays realMap
      * by default.
      */
     private static void initMainLayout() {
@@ -113,7 +107,7 @@ public class Simulator {
     }
 
     /**
-     * Initialises the JPanel for the buttons.
+     * Initializes JPanel to addButtons
      */
     private static void initButtonsLayout() {
         _buttons.setLayout(new GridLayout());
@@ -121,35 +115,40 @@ public class Simulator {
     }
 
     /**
-     * Helper method to set particular properties for all the JButtons.
+     * To format JButtons
      */
     private static void formatButton(JButton btn) {
-        btn.setFont(new Font("Arial", Font.BOLD, 13));
+        btn.setFont(new Font("Arial", Font.PLAIN, 14));
         btn.setFocusPainted(false);
     }
 
     /**
-     * Initialises and adds the five main buttons. Also creates the relevant classes (for multithreading) and JDialogs
-     * (for user input) for the different functions of the buttons.
+     * Initializes window and add JButtons. Also creates the relevant classes (for multithreading) and mousePressed invokers
+     * JDialogs (for user input) for the different functions of the buttons.
      */
     private static void addButtons() {
         if (!realRun) {
             // Load Map Button
-            JButton btn_LoadMap = new JButton("Load Map");
+            JButton btn_LoadMap = new JButton("Load map");
             formatButton(btn_LoadMap);
             btn_LoadMap.addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
-                    JDialog loadMapDialog = new JDialog(_appFrame, "Load Map", true);
-                    loadMapDialog.setSize(400, 60);
+                    JDialog loadMapDialog = new JDialog(_appFrame, "Select map from file", true);
+                    loadMapDialog.setSize(400, 100);
                     loadMapDialog.setLayout(new FlowLayout());
 
+                 // Center window
+                    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+                    loadMapDialog.setLocation(dim.width / 2 - loadMapDialog.getSize().width / 2, dim.height / 2 - loadMapDialog.getSize().height / 2);
+
                     final JTextField loadTF = new JTextField(15);
-                    JButton loadMapButton = new JButton("Load");
+                    JButton loadMapButton = new JButton("Select map");
+                    formatButton(loadMapButton);
 
                     loadMapButton.addMouseListener(new MouseAdapter() {
                         public void mousePressed(MouseEvent e) {
                             loadMapDialog.setVisible(false);
-                            loadMapFromDisk(realMap, loadTF.getText());
+                            loadMap(realMap, loadTF.getText());
                             CardLayout cl = ((CardLayout) _mapCards.getLayout());
                             cl.show(_mapCards, "REAL_MAP");
                             realMap.repaint();
@@ -173,7 +172,6 @@ public class Simulator {
 
                 if (realRun) {
                     while (true) {
-                        System.out.println("Waiting for FP_START...");
                         String msg = comm.recvMsg();
                         if (msg.equals(CommMgr.FP_START)) break;
                     }
@@ -218,7 +216,7 @@ public class Simulator {
         }
 
         // Exploration Button
-        JButton btn_Exploration = new JButton("Exploration");
+        JButton btn_Exploration = new JButton("Explore");
         formatButton(btn_Exploration);
         btn_Exploration.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -230,7 +228,7 @@ public class Simulator {
         _buttons.add(btn_Exploration);
 
         // Fastest Path Button
-        JButton btn_FastestPath = new JButton("Fastest Path");
+        JButton btn_FastestPath = new JButton("Find fastest path");
         formatButton(btn_FastestPath);
         btn_FastestPath.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -258,15 +256,19 @@ public class Simulator {
         }
 
         // Time-limited Exploration Button
-        JButton btn_TimeExploration = new JButton("Time-Limited");
+        JButton btn_TimeExploration = new JButton("Time-based exploration");
         formatButton(btn_TimeExploration);
         btn_TimeExploration.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                JDialog timeExploDialog = new JDialog(_appFrame, "Time-Limited Exploration", true);
-                timeExploDialog.setSize(400, 60);
+                JDialog timeExploDialog = new JDialog(_appFrame, "Time-based exploration", true);
+                timeExploDialog.setSize(400, 100);
                 timeExploDialog.setLayout(new FlowLayout());
                 final JTextField timeTF = new JTextField(5);
                 JButton timeSaveButton = new JButton("Run");
+
+                // Center window
+                   Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+                   timeExploDialog.setLocation(dim.width / 2 - timeExploDialog.getSize().width / 2, dim.height / 2 - timeExploDialog.getSize().height / 2);
 
                 timeSaveButton.addMouseListener(new MouseAdapter() {
                     public void mousePressed(MouseEvent e) {
@@ -305,15 +307,20 @@ public class Simulator {
         }
 
         // Coverage-limited Exploration Button
-        JButton btn_CoverageExploration = new JButton("Coverage-Limited");
+        JButton btn_CoverageExploration = new JButton("Coverage based exploration");
         formatButton(btn_CoverageExploration);
+       
         btn_CoverageExploration.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                JDialog coverageExploDialog = new JDialog(_appFrame, "Coverage-Limited Exploration", true);
-                coverageExploDialog.setSize(400, 60);
-                coverageExploDialog.setLayout(new FlowLayout());
+                JDialog coverageExploDialog = new JDialog(_appFrame, "Coverage based exploration", true);
+                coverageExploDialog.setSize(400, 100);
+                coverageExploDialog.setLayout(new FlowLayout()); 
                 final JTextField coverageTF = new JTextField(5);
                 JButton coverageSaveButton = new JButton("Run");
+
+                // Center window
+                   Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+                   coverageExploDialog.setLocation(dim.width / 2 - coverageExploDialog.getSize().width / 2, dim.height / 2 - coverageExploDialog.getSize().height / 2);
 
                 coverageSaveButton.addMouseListener(new MouseAdapter() {
                     public void mousePressed(MouseEvent e) {
@@ -325,7 +332,7 @@ public class Simulator {
                     }
                 });
 
-                coverageExploDialog.add(new JLabel("Coverage Limit (% of maze): "));
+                coverageExploDialog.add(new JLabel("Coverage limit (%): "));
                 coverageExploDialog.add(coverageTF);
                 coverageExploDialog.add(coverageSaveButton);
                 coverageExploDialog.setVisible(true);
