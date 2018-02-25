@@ -168,10 +168,16 @@ public class Robot {
     	switch(m) {
     	case FORWARD:  DirectionMoved.add("F");
     					break;
+    	case BACKWARD:  DirectionMoved.add("B");
+						break;
     	case LEFT:		DirectionMoved.add("L");
     					break;
     	case RIGHT: 	DirectionMoved.add("R");
     					break;
+    	case ERROR: 	System.out.println("MOVEMENT.ERROR provided to move()");
+						break;
+    	case CALIBRATE: System.out.println("MOVEMENT.CALIBRATE provided to move()");
+						break;
     	}
         this.move(m, true);
     }

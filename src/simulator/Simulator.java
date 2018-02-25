@@ -21,7 +21,7 @@ import static utils.MapDescriptor.loadMap;
  */
 public class Simulator {
     private static JFrame simJFrame = null;         // application JFrame
-    private static JPanel mapCardsJPanel = null;		// JPanel for map views
+    private static JPanel mapCardsJPanel = null;	// JPanel for map views
     private static JPanel buttonsJPanel = null;		// JPanel for buttons
 
     private static Map actualMap = null;            // actual map
@@ -173,7 +173,7 @@ public class Simulator {
                 FastestPathAlgo fastestPath;
                 fastestPath = new FastestPathAlgo(exploredMap, robot);
 
-                fastestPath.runFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
+                fastestPath.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
 
                 return 222;
             }
@@ -303,16 +303,16 @@ public class Simulator {
         formatButton(btn_CoverageExploration);
        
         btn_CoverageExploration.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                JDialog coverageExploDialog = new JDialog(simJFrame, "Explore with coverage limit", true);
+        	public void mousePressed(MouseEvent e) {
+    			JDialog coverageExploDialog = new JDialog(simJFrame, "Explore with coverage limit", true);
                 coverageExploDialog.setSize(400, 100);
                 coverageExploDialog.setLayout(new FlowLayout()); 
                 final JTextField coverageTF = new JTextField(5);
                 JButton coverageSaveButton = new JButton("Run");
 
                 // Center window
-                   Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-                   coverageExploDialog.setLocation(dim.width / 2 - coverageExploDialog.getSize().width / 2, dim.height / 2 - coverageExploDialog.getSize().height / 2);
+                Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+                coverageExploDialog.setLocation(dim.width / 2 - coverageExploDialog.getSize().width / 2, dim.height / 2 - coverageExploDialog.getSize().height / 2);
 
                 coverageSaveButton.addMouseListener(new MouseAdapter() {
                     public void mousePressed(MouseEvent e) {

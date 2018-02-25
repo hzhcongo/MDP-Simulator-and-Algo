@@ -4,7 +4,7 @@ import map.Map;
 import robot.RobotConstants.DIRECTION;
 
 /**
- * Represents a sensor mounted on the robot
+ * Represents a sensor
  */
 
 public class Sensor {
@@ -77,7 +77,6 @@ public class Sensor {
             }
         }
 
-        // Else, return -1.
         return -1;
     }
 
