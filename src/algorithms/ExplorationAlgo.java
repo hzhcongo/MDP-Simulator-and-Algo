@@ -7,17 +7,12 @@ import robot.Robot;
 import robot.RobotConstants;
 import robot.RobotConstants.DIRECTION;
 import robot.RobotConstants.MOVEMENT;
-import utils.CommMgr;
-import java.util.LinkedList;
+import utils.Communicator;
+
 import java.util.Stack;
 
-//Queue<String> qe= new LinkedList<String>();
-
 /**
- * Exploration algorithm for the robot.
- *
- * @author Priyanshu Singh
- * @author Suyash Lakhotia
+ * Exploration algorithm for robot
  */
 
 public class ExplorationAlgo {
@@ -33,7 +28,7 @@ public class ExplorationAlgo {
     private boolean calibrationMode;
     private int x;
     private int y;
-    private Stack<String> directionMoved = new Stack();
+    private Stack<String> directionMoved = new Stack<String>();
     private String a;
     private int array[][] = new int [99][99];
     
@@ -53,28 +48,28 @@ public class ExplorationAlgo {
         if (bot.getRealBot()) {
             System.out.println("Starting calibration...");
 
-            CommMgr.getCommMgr().recvMsg();
+            Communicator.getCommMgr().recvMsg();
             if (bot.getRealBot()) {
                 bot.move(MOVEMENT.LEFT, false);
-                CommMgr.getCommMgr().recvMsg();
+                Communicator.getCommMgr().recvMsg();
                 bot.move(MOVEMENT.CALIBRATE, false);
-                CommMgr.getCommMgr().recvMsg();
+                Communicator.getCommMgr().recvMsg();
                 bot.move(MOVEMENT.LEFT, false);
-                CommMgr.getCommMgr().recvMsg();
+                Communicator.getCommMgr().recvMsg();
                 bot.move(MOVEMENT.CALIBRATE, false);
-                CommMgr.getCommMgr().recvMsg();
+                Communicator.getCommMgr().recvMsg();
                 bot.move(MOVEMENT.RIGHT, false);
-                CommMgr.getCommMgr().recvMsg();
+                Communicator.getCommMgr().recvMsg();
                 bot.move(MOVEMENT.CALIBRATE, false);
-                CommMgr.getCommMgr().recvMsg();
+                Communicator.getCommMgr().recvMsg();
                 bot.move(MOVEMENT.RIGHT, false);
             }
 
             while (true) {
                 System.out.println("Waiting for EX_START...");
-                String msg = CommMgr.getCommMgr().recvMsg();
+                String msg = Communicator.getCommMgr().recvMsg();
                 String[] msgArr = msg.split(";");
-                if (msgArr[0].equals(CommMgr.EX_START)) break;
+                if (msgArr[0].equals(Communicator.EX_START)) break;
             }
         }
         exploredMap.getCell(1,1).setIsWalked(true);
@@ -86,7 +81,7 @@ public class ExplorationAlgo {
         endTime = startTime + (timeLimit * 1000);;
 
         if (bot.getRealBot()) {
-            CommMgr.getCommMgr().sendMsg(null, CommMgr.BOT_START);
+        	Communicator.getCommMgr().sendMsg(null, Communicator.BOT_START);
         }
         //senseAndRepaint();
 
@@ -116,8 +111,6 @@ public class ExplorationAlgo {
         goToCell.runFastestPath(r, c);
     }
 
-    
-    
 //      private void nextMove() {
 //            if (lookRight()) {
 //                moveBot(MOVEMENT.RIGHT);
@@ -135,7 +128,7 @@ public class ExplorationAlgo {
     
     
     /**
-     * Determines the next move for the robot and executes it accordingly.
+     * Determines the next move for the robot and executes it accordingly
      */
     private void nextMove() {
     	x = bot.getRobotPosRow();
@@ -143,38 +136,37 @@ public class ExplorationAlgo {
     	System.out.println(x);
     	System.out.println(y);
     	   	
-    if  (southFree() && !exploredMap.getCell(x-1,y).getIsWalked()) {
-    		
-    		if (bot.getRobotCurDir() == DIRECTION.WEST) {
-    			moveBot(MOVEMENT.LEFT);
-    		}
-    		
-    		else while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
-        		moveBot(MOVEMENT.RIGHT);
-        	}
-
-        	moveBot(MOVEMENT.FORWARD);
-        	directionMoved.push("S");
-        	
-        	exploredMap.getCell(x-1, y).setIsWalked(true);
-
-        }
+	    if(southFree() && !exploredMap.getCell(x-1,y).getIsWalked()) {
+	    		
+			if (bot.getRobotCurDir() == DIRECTION.WEST) {
+				moveBot(MOVEMENT.LEFT);
+			}
+	    		
+			else while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
+	    		moveBot(MOVEMENT.RIGHT);
+	    	}
 	
-    	  else if (eastFree() && !exploredMap.getCell(x,y+1).getIsWalked()) {
-    		 if (bot.getRobotCurDir() == DIRECTION.SOUTH) {
-    			 moveBot(MOVEMENT.LEFT);
-    		 }
-    		  
-    		 else while (bot.getRobotCurDir() != DIRECTION.EAST) {
-          		moveBot(MOVEMENT.RIGHT);
-          	}
-          	moveBot(MOVEMENT.FORWARD);
-          	directionMoved.push("E");
-          	exploredMap.getCell(x, y+1).setIsWalked(true);
-          }
-    	
-    	
-        else if (westFree() && !exploredMap.getCell(x,y-1).getIsWalked()) {
+	    	moveBot(MOVEMENT.FORWARD);
+	    	directionMoved.push("S");
+	        	
+	    	exploredMap.getCell(x-1, y).setIsWalked(true);
+	
+	    }
+	    else if (eastFree() && !exploredMap.getCell(x,y+1).getIsWalked()) {
+	    	
+	    	if (bot.getRobotCurDir() == DIRECTION.SOUTH) {
+	    		moveBot(MOVEMENT.LEFT);
+	    	}
+		  
+	    	else while (bot.getRobotCurDir() != DIRECTION.EAST) {
+	    		moveBot(MOVEMENT.RIGHT);
+	    	}
+	  	
+	    	moveBot(MOVEMENT.FORWARD);
+	    	directionMoved.push("E");
+		  	exploredMap.getCell(x, y+1).setIsWalked(true);
+		}
+	    else if (westFree() && !exploredMap.getCell(x,y-1).getIsWalked()) {
         	
         	if (bot.getRobotCurDir() == DIRECTION.NORTH) {
         		moveBot(MOVEMENT.LEFT);
@@ -188,8 +180,8 @@ public class ExplorationAlgo {
         	directionMoved.push("W");
         	exploredMap.getCell(x, y-1).setIsWalked(true);
         }
-    	
         else if (northFree() && !exploredMap.getCell(x+1,y).getIsWalked()) {
+        	
         	if (bot.getRobotCurDir() == DIRECTION.EAST) {
         		moveBot(MOVEMENT.LEFT);
         	}
@@ -201,15 +193,9 @@ public class ExplorationAlgo {
         	directionMoved.push("N");
         	exploredMap.getCell(x+1, y).setIsWalked(true);
         }
-        
-        
         else{
         	fastestPath();
         		
-        	
-        	
-    
-    
 //        else 
 //        {
 //        	
@@ -441,7 +427,7 @@ public class ExplorationAlgo {
     private boolean isExploredAndFree(int r, int c) {
         if (exploredMap.checkValidCoordinates(r, c)) {
             Cell b = exploredMap.getCell(r, c);
-            return (b.getIsExplored() && !b.getIsVirtualWall() && !b.getIsObstacle());
+            return (b.getIsExplored() && !b.getIsWall() && !b.getIsObstacle());
         }
         return false;
     }
@@ -470,8 +456,8 @@ public class ExplorationAlgo {
         if (m != MOVEMENT.CALIBRATE) {
             senseAndRepaint();
         } else {
-            CommMgr commMgr = CommMgr.getCommMgr();
-            commMgr.recvMsg();
+            Communicator communicator = Communicator.getCommMgr();
+            communicator.recvMsg();
         }
 
         if (bot.getRealBot() && !calibrationMode) {

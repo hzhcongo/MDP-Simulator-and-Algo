@@ -1,4 +1,4 @@
-
+package utils;
 
 import map.Map;
 import map.MapConstants;
@@ -31,12 +31,17 @@ public class MapDescriptor {
             int binPtr = 0;
             for (int row = MapConstants.MAP_ROWS - 1; row >= 0; row--) {
                 for (int col = 0; col < MapConstants.MAP_COLS; col++) {
-                    if (bin.charAt(binPtr) == '1') map.setObstacleCell(row, col, true);
+                    if (bin.charAt(binPtr) == '1') 
+                    	map.setObstacleCell(row, col, true);
+                    else
+                    	map.setObstacleCell(row, col, false);
+            		map.getCell(row, col).setIsWalked(false);
                     binPtr++;
                 }
             }
 
             map.setAllExplored();
+            buf.close();
             
         } catch (IOException e) {
             e.printStackTrace();
@@ -47,9 +52,7 @@ public class MapDescriptor {
      * Convert binary to hex
      */
     private static String binToHex(String bin) {
-        int dec = Integer.parseInt(bin, 2);
-
-        return Integer.toHexString(dec);
+        return Integer.toHexString(Integer.parseInt(bin, 2));
     }
 
     /**

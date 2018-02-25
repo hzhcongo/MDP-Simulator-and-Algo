@@ -7,7 +7,7 @@ import robot.Robot;
 import robot.RobotConstants;
 import robot.RobotConstants.DIRECTION;
 import robot.RobotConstants.MOVEMENT;
-import utils.CommMgr;
+import utils.Communicator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,7 +85,7 @@ public class FastestPathAlgo {
      * Returns true if the cell can be visited.
      */
     private boolean canBeVisited(Cell c) {
-        return c.getIsExplored() && !c.getIsObstacle() && !c.getIsVirtualWall();
+        return c.getIsExplored() && !c.getIsObstacle() && !c.getIsWall();
     }
 
     /**

@@ -1,16 +1,14 @@
 package map;
 
 /**
- * Represents each cell in the map grid.
- *
- * @author Suyash Lakhotia
+ * Represents each map grid
  */
 
 public class Cell {
     private final int row;
     private final int col;
     private boolean isObstacle;
-    private boolean isVirtualWall;
+    private boolean isWall;
     private boolean isExplored;
     private boolean isWalked = false;
 
@@ -35,30 +33,28 @@ public class Cell {
         return this.isObstacle;
     }
 
-    public void setVirtualWall(boolean val) {
+    public void setWall(boolean val) {
         if (val) {
-            this.isVirtualWall = true;
+            this.isWall = true;
         } else {
             if (row != 0 && row != MapConstants.MAP_ROWS - 1 && col != 0 && col != MapConstants.MAP_COLS - 1) {
-                this.isVirtualWall = false;
+                this.isWall = false;
             }
         }
+    }
+
+    public boolean getIsWall() {
+        return this.isWall;
     }
     
     public void setIsWalked(boolean val) {
     	this.isWalked = true;
-    }
-
-    public boolean getIsVirtualWall() {
-        return this.isVirtualWall;
     }
     
     public boolean getIsWalked() {
     	return this.isWalked;
     }
     
-
-
     public void setIsExplored(boolean val) {
         this.isExplored = val;
     }

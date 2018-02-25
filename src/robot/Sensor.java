@@ -4,9 +4,7 @@ import map.Map;
 import robot.RobotConstants.DIRECTION;
 
 /**
- * Represents a sensor mounted on the robot.
- *
- * @author Suyash Lakhotia
+ * Represents a sensor mounted on the robot
  */
 
 public class Sensor {
@@ -33,7 +31,7 @@ public class Sensor {
     }
 
     /**
-     * Returns the number of cells to the nearest detected obstacle or -1 if no obstacle is detected.
+     * Returns number of cells to the nearest detected obstacle or -1 if no obstacle is detected
      */
     public int sense(Map exploredMap, Map realMap) {
         switch (sensorDir) {
@@ -50,8 +48,7 @@ public class Sensor {
     }
 
     /**
-     * Sets the appropriate obstacle cell in the map and returns the row or column value of the obstacle cell. Returns
-     * -1 if no obstacle is detected.
+     * Sets specified obstacle cell in map and returns it's row / col. Returns -1 if no obstacle detected
      */
     private int getSensorVal(Map exploredMap, Map realMap, int rowInc, int colInc) {
         // Check if starting point is valid for sensors with lowerRange > 1.
@@ -65,7 +62,7 @@ public class Sensor {
             }
         }
 
-        // Check if anything is detected by the sensor and return that value.
+        // Check if anything is detected by the sensor and return that value
         for (int i = this.lowerRange; i <= this.upperRange; i++) {
             int row = this.sensorPosRow + (rowInc * i);
             int col = this.sensorPosCol + (colInc * i);
@@ -85,7 +82,7 @@ public class Sensor {
     }
 
     /**
-     * Uses the sensor direction and given value from the actual sensor to update the map.
+     * Uses the sensor direction and given value from the actual sensor to update map
      */
     public void senseReal(Map exploredMap, int sensorVal) {
         switch (sensorDir) {
@@ -105,7 +102,7 @@ public class Sensor {
     }
 
     /**
-     * Sets the correct cells to explored and/or obstacle according to the actual sensor value.
+     * Sets correct cells state according to actual sensor value
      */
     private void processSensorVal(Map exploredMap, int sensorVal, int rowInc, int colInc) {
         if (sensorVal == 0) return;  // return value for LR sensor if obstacle before lowerRange

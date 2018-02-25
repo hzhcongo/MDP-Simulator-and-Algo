@@ -6,7 +6,7 @@ import map.Map;
 import map.MapConstants;
 import robot.Robot;
 import robot.RobotConstants;
-import utils.CommMgr;
+import utils.Communicator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,124 +16,117 @@ import java.awt.event.MouseEvent;
 import static utils.MapDescriptor.generateMapDescriptor;
 import static utils.MapDescriptor.loadMap;
 
+/**
+ * Simulator of actual robot traversing through arena
+ */
 public class Simulator {
-    private static JFrame _appFrame = null;         // application JFrame
+    private static JFrame simJFrame = null;         // application JFrame
+    private static JPanel mapCardsJPanel = null;		// JPanel for map views
+    private static JPanel buttonsJPanel = null;		// JPanel for buttons
 
-    private static JPanel _mapCards = null;         // JPanel for map views
-    private static JPanel _buttons = null;          // JPanel for buttons
-
-    private static Robot bot;
-
-    private static Map realMap = null;              // real map
+    private static Map actualMap = null;            // actual map
     private static Map exploredMap = null;          // exploration map
 
+    private static Robot robot;
+    
     private static int timeLimit = 3600;            // time limit
     private static int coverageLimit = 300;         // coverage limit
 
-    private static final CommMgr comm = CommMgr.getCommMgr();
-    private static final boolean realRun = false;
+    private static final Communicator communicator = Communicator.getCommMgr();
+    private static final boolean actualRun = false;
 
     /**
-     * Initializes maps and displays application
+     * Initializes maps and displays simulator
      */
     public static void main(String[] args) {
-        if (realRun) comm.openConnection();
+        if (actualRun) communicator.openConnection();
 
-        bot = new Robot(RobotConstants.START_ROW, RobotConstants.START_COL, realRun);
+        robot = new Robot(RobotConstants.START_ROW, RobotConstants.START_COL, actualRun);
 
-        if (!realRun) {
-            realMap = new Map(bot);
-            realMap.setAllUnexplored();
+        if (!actualRun) {
+            actualMap = new Map(robot);
+            actualMap.setAllUnexplored();
         }
 
-        exploredMap = new Map(bot);
+        exploredMap = new Map(robot);
         exploredMap.setAllUnexplored();
 
-        displayEverything();
+        displaySimulator();
     }
 
     /**
-     * Initializes main application
+     * Initializes simulator
      */
-    private static void displayEverything() {
+    private static void displaySimulator() {
         // Initialize main frame for display
-        _appFrame = new JFrame();
-        _appFrame.setTitle("MDP Algorithm Simulator");
-        _appFrame.setSize(new Dimension(690, 700));
-        _appFrame.setResizable(false);
+        simJFrame = new JFrame();
+        simJFrame.setTitle("MDP Algorithm Simulator");
+        simJFrame.setSize(new Dimension(456, 745));
+        simJFrame.setResizable(false);
 
         // Center window
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        _appFrame.setLocation(dim.width / 2 - _appFrame.getSize().width / 2, dim.height / 2 - _appFrame.getSize().height / 2);
+        simJFrame.setLocation(dim.width / 2 - simJFrame.getSize().width / 2, dim.height / 2 - simJFrame.getSize().height / 2);
 
-        // Create the CardLayout for storing the different maps
-        _mapCards = new JPanel(new CardLayout());
+        // Create CardLayout for storing the different maps
+        mapCardsJPanel = new JPanel(new CardLayout());
 
         // Create the JPanel for the buttons
-        _buttons = new JPanel();
+        buttonsJPanel = new JPanel(new GridLayout(0,2));
 
-        // Add _mapCards & _buttons to the main frame's content pane
-        Container contentPane = _appFrame.getContentPane();
-        contentPane.add(_mapCards, BorderLayout.CENTER);
-        contentPane.add(_buttons, BorderLayout.PAGE_END);
+        // Add mapCards & buttons to the main frame's content pane
+        Container contentPane = simJFrame.getContentPane();
+        contentPane.add(mapCardsJPanel, BorderLayout.CENTER);
+        contentPane.add(buttonsJPanel, BorderLayout.PAGE_END);
 
         // Initialize the main map view
         initMainLayout();
 
-        // Initialize the buttons
-        initButtonsLayout();
+        // add buttons
+        addButtons();
 
         // Display the application
-        _appFrame.setVisible(true);
-        _appFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        simJFrame.setVisible(true);
+        simJFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
     /**
-     * Initializes the main map view by adding the different maps using cards in CardLayout. Displays realMap
-     * by default.
+     * Initializes main map view by adding the different maps using CardLayout cards
      */
     private static void initMainLayout() {
-        if (!realRun) {
-            _mapCards.add(realMap, "REAL_MAP");
+        if (!actualRun) {
+            mapCardsJPanel.add(actualMap, "REAL_MAP");
         }
-        _mapCards.add(exploredMap, "EXPLORATION");
+        mapCardsJPanel.add(exploredMap, "EXPLORATION");
 
-        CardLayout cl = ((CardLayout) _mapCards.getLayout());
-        if (!realRun) {
-            cl.show(_mapCards, "REAL_MAP");
+        CardLayout mapCardLayout = ((CardLayout) mapCardsJPanel.getLayout());
+        if (!actualRun) {
+            mapCardLayout.show(mapCardsJPanel, "REAL_MAP");
         } else {
-            cl.show(_mapCards, "EXPLORATION");
+            mapCardLayout.show(mapCardsJPanel, "EXPLORATION");
         }
     }
 
     /**
-     * Initializes JPanel to addButtons
-     */
-    private static void initButtonsLayout() {
-        _buttons.setLayout(new GridLayout());
-        addButtons();
-    }
-
-    /**
-     * To format JButtons
+     * Format JButtons
      */
     private static void formatButton(JButton btn) {
-        btn.setFont(new Font("Arial", Font.PLAIN, 14));
-        btn.setFocusPainted(false);
+        btn.setFont(new Font("Arial", Font.PLAIN, 16));
+        btn.setFocusPainted(true);
     }
 
     /**
-     * Initializes window and add JButtons. Also creates the relevant classes (for multithreading) and mousePressed invokers
-     * JDialogs (for user input) for the different functions of the buttons.
+     * Initializes window and add JButtons. Also creates classes for multithreading and mousePressed invokers JDialogs for buttons
      */
     private static void addButtons() {
-        if (!realRun) {
+        if (!actualRun) {
             // Load Map Button
-            JButton btn_LoadMap = new JButton("Load map");
-            formatButton(btn_LoadMap);
-            btn_LoadMap.addMouseListener(new MouseAdapter() {
+            JButton loadMapBtn = new JButton("Load map");
+            formatButton(loadMapBtn);
+            
+            loadMapBtn.addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
-                    JDialog loadMapDialog = new JDialog(_appFrame, "Select map from file", true);
+                    JDialog loadMapDialog = new JDialog(simJFrame, "Select map from file", true);
                     loadMapDialog.setSize(400, 100);
                     loadMapDialog.setLayout(new FlowLayout());
 
@@ -148,10 +141,10 @@ public class Simulator {
                     loadMapButton.addMouseListener(new MouseAdapter() {
                         public void mousePressed(MouseEvent e) {
                             loadMapDialog.setVisible(false);
-                            loadMap(realMap, loadTF.getText());
-                            CardLayout cl = ((CardLayout) _mapCards.getLayout());
-                            cl.show(_mapCards, "REAL_MAP");
-                            realMap.repaint();
+                            loadMap(actualMap, loadTF.getText());
+                            CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
+                            cl.show(mapCardsJPanel, "REAL_MAP");
+                            actualMap.repaint();
                         }
                     });
 
@@ -161,24 +154,24 @@ public class Simulator {
                     loadMapDialog.setVisible(true);
                 }
             });
-            _buttons.add(btn_LoadMap);
+            buttonsJPanel.add(loadMapBtn);
         }
 
         // FastestPath Class for Multithreading
         class FastestPath extends SwingWorker<Integer, String> {
             protected Integer doInBackground() throws Exception {
-                bot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
+                robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
                 exploredMap.repaint();
 
-                if (realRun) {
+                if (actualRun) {
                     while (true) {
-                        String msg = comm.recvMsg();
-                        if (msg.equals(CommMgr.FP_START)) break;
+                        String msg = communicator.recvMsg();
+                        if (msg.equals(Communicator.FP_START)) break;
                     }
                 }
 
                 FastestPathAlgo fastestPath;
-                fastestPath = new FastestPathAlgo(exploredMap, bot);
+                fastestPath = new FastestPathAlgo(exploredMap, robot);
 
                 fastestPath.runFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
 
@@ -194,20 +187,20 @@ public class Simulator {
                 row = RobotConstants.START_ROW;
                 col = RobotConstants.START_COL;
 
-                bot.setRobotPos(row, col);
+                robot.setRobotPos(row, col);
                 exploredMap.repaint();
 
                 ExplorationAlgo exploration;
-                exploration = new ExplorationAlgo(exploredMap, realMap, bot, coverageLimit, timeLimit);
+                exploration = new ExplorationAlgo(exploredMap, actualMap, robot, coverageLimit, timeLimit);
 
-                if (realRun) {
-                    CommMgr.getCommMgr().sendMsg(null, CommMgr.BOT_START);
+                if (actualRun) {
+                    Communicator.getCommMgr().sendMsg(null, Communicator.BOT_START);
                 }
 
                 exploration.runExploration();
                 generateMapDescriptor(exploredMap);
 
-                if (realRun) {
+                if (actualRun) {
                     new FastestPath().execute();
                 }
 
@@ -216,37 +209,37 @@ public class Simulator {
         }
 
         // Exploration Button
-        JButton btn_Exploration = new JButton("Explore");
+        JButton btn_Exploration = new JButton("Explore map");
         formatButton(btn_Exploration);
         btn_Exploration.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                CardLayout cl = ((CardLayout) _mapCards.getLayout());
-                cl.show(_mapCards, "EXPLORATION");
+                CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
+                cl.show(mapCardsJPanel, "EXPLORATION");
                 new Exploration().execute();
             }
         });
-        _buttons.add(btn_Exploration);
+        buttonsJPanel.add(btn_Exploration);
 
         // Fastest Path Button
         JButton btn_FastestPath = new JButton("Find fastest path");
         formatButton(btn_FastestPath);
         btn_FastestPath.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                CardLayout cl = ((CardLayout) _mapCards.getLayout());
-                cl.show(_mapCards, "EXPLORATION");
+                CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
+                cl.show(mapCardsJPanel, "EXPLORATION");
                 new FastestPath().execute();
             }
         });
-        _buttons.add(btn_FastestPath);
+        buttonsJPanel.add(btn_FastestPath);
 
 
         // TimeExploration Class for Multithreading
         class TimeExploration extends SwingWorker<Integer, String> {
             protected Integer doInBackground() throws Exception {
-                bot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
+                robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
                 exploredMap.repaint();
 
-                ExplorationAlgo timeExplo = new ExplorationAlgo(exploredMap, realMap, bot, coverageLimit, timeLimit);
+                ExplorationAlgo timeExplo = new ExplorationAlgo(exploredMap, actualMap, robot, coverageLimit, timeLimit);
                 timeExplo.runExploration();
 
                 generateMapDescriptor(exploredMap);
@@ -256,11 +249,11 @@ public class Simulator {
         }
 
         // Time-limited Exploration Button
-        JButton btn_TimeExploration = new JButton("Time-based exploration");
+        JButton btn_TimeExploration = new JButton("Explore with time limit");
         formatButton(btn_TimeExploration);
         btn_TimeExploration.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                JDialog timeExploDialog = new JDialog(_appFrame, "Time-based exploration", true);
+                JDialog timeExploDialog = new JDialog(simJFrame, "Explore with time limit", true);
                 timeExploDialog.setSize(400, 100);
                 timeExploDialog.setLayout(new FlowLayout());
                 final JTextField timeTF = new JTextField(5);
@@ -276,8 +269,8 @@ public class Simulator {
                         String time = timeTF.getText();
                         String[] timeArr = time.split(":");
                         timeLimit = (Integer.parseInt(timeArr[0]) * 60) + Integer.parseInt(timeArr[1]);
-                        CardLayout cl = ((CardLayout) _mapCards.getLayout());
-                        cl.show(_mapCards, "EXPLORATION");
+                        CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
+                        cl.show(mapCardsJPanel, "EXPLORATION");
                         new TimeExploration().execute();
                     }
                 });
@@ -288,16 +281,15 @@ public class Simulator {
                 timeExploDialog.setVisible(true);
             }
         });
-        _buttons.add(btn_TimeExploration);
-
+        buttonsJPanel.add(btn_TimeExploration);
 
         // CoverageExploration Class for Multithreading
         class CoverageExploration extends SwingWorker<Integer, String> {
             protected Integer doInBackground() throws Exception {
-                bot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
+                robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
                 exploredMap.repaint();
 
-                ExplorationAlgo coverageExplo = new ExplorationAlgo(exploredMap, realMap, bot, coverageLimit, timeLimit);
+                ExplorationAlgo coverageExplo = new ExplorationAlgo(exploredMap, actualMap, robot, coverageLimit, timeLimit);
                 coverageExplo.runExploration();
 
                 generateMapDescriptor(exploredMap);
@@ -307,12 +299,12 @@ public class Simulator {
         }
 
         // Coverage-limited Exploration Button
-        JButton btn_CoverageExploration = new JButton("Coverage based exploration");
+        JButton btn_CoverageExploration = new JButton("Explore with coverage limit");
         formatButton(btn_CoverageExploration);
        
         btn_CoverageExploration.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                JDialog coverageExploDialog = new JDialog(_appFrame, "Coverage based exploration", true);
+                JDialog coverageExploDialog = new JDialog(simJFrame, "Explore with coverage limit", true);
                 coverageExploDialog.setSize(400, 100);
                 coverageExploDialog.setLayout(new FlowLayout()); 
                 final JTextField coverageTF = new JTextField(5);
@@ -327,8 +319,8 @@ public class Simulator {
                         coverageExploDialog.setVisible(false);
                         coverageLimit = (int) ((Integer.parseInt(coverageTF.getText())) * MapConstants.MAP_SIZE / 100.0);
                         new CoverageExploration().execute();
-                        CardLayout cl = ((CardLayout) _mapCards.getLayout());
-                        cl.show(_mapCards, "EXPLORATION");
+                        CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
+                        cl.show(mapCardsJPanel, "EXPLORATION");
                     }
                 });
 
@@ -338,6 +330,6 @@ public class Simulator {
                 coverageExploDialog.setVisible(true);
             }
         });
-        _buttons.add(btn_CoverageExploration);
+        buttonsJPanel.add(btn_CoverageExploration);
     }
 }
