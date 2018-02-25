@@ -107,8 +107,7 @@ public class ExplorationAlgo {
             	break;
             }
         } while (areaExplored <= coverageLimit && System.currentTimeMillis() <= endTime);
-        FastestPathAlgo goToCell = new FastestPathAlgo (exploredMap,bot,realMap);
-        goToCell.runFastestPath(r, c);
+        goHome();
     }
 
 //      private void nextMove() {
@@ -125,7 +124,6 @@ public class ExplorationAlgo {
 //                moveBot(MOVEMENT.RIGHT);
 //            }
 //        }
-    
     
     /**
      * Determines the next move for the robot and executes it accordingly
@@ -235,7 +233,6 @@ public class ExplorationAlgo {
     	exploredMap.getCell(currentcellrow,currentcellcol).setIsWalked(true);
     	FastestPathAlgo goToCell = new FastestPathAlgo (exploredMap,bot,realMap);
     	
-    	
     	int z = 0; //z is to store the array counter
     	int num = 999; //storing the minimum cost
     	
@@ -251,26 +248,26 @@ public class ExplorationAlgo {
     			}	
     		}
     	}
+    	
     	int minCost = 999;
-    		//iterate thru the above array
-    		for (int i = 0; i<z; i++) {
-    			int x = (Math.abs(bot.getRobotPosRow() - array[0][i]) + Math.abs(bot.getRobotPosCol() - array[1][i])); //finding the nearest cell by comparing row and col
-    			
-    			if ((x < minCost)) {
-    				minCost = x;
-    				System.out.println(minCost);
-    				num = i;
-    			}
-    		}	   
+    	
+		//iterate thru the above array
+		for (int i = 0; i<z; i++) {
+			int x = (Math.abs(bot.getRobotPosRow() - array[0][i]) + Math.abs(bot.getRobotPosCol() - array[1][i])); //finding the nearest cell by comparing row and col
+			
+			if ((x < minCost)) {
+				minCost = x;
+				System.out.println(minCost);
+				num = i;
+			}
+		}	   
 
 		int x = array[0][num];
 		int y = array[1][num];
 
-   	
     	goToCell.runFastestPath(x, y);
     	return false;
     }
-
 
     /* 
      * 
@@ -288,8 +285,6 @@ public class ExplorationAlgo {
             goToGoal.runFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
      */
     
-   
-
     /**
      * Returns true if the right side of the robot is free to move into.
      */
@@ -358,9 +353,6 @@ public class ExplorationAlgo {
         return (isExploredNotObstacle(botRow - 1, botCol + 1) && isExploredAndFree(botRow, botCol + 1) && isExploredNotObstacle(botRow + 1, botCol + 1));
     }
    
-    
-    
-
     /**
      * Returns true if the robot can move to the south cell.
      */
@@ -378,8 +370,6 @@ public class ExplorationAlgo {
         int botCol = bot.getRobotPosCol();
         return (isExploredNotObstacle(botRow - 1, botCol - 1) && isExploredAndFree(botRow, botCol - 1) && isExploredNotObstacle(botRow + 1, botCol - 1));
     }
-    
-    
     
     /**
      * Returns the robot to START after exploration and points the bot northwards.
