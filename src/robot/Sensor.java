@@ -51,7 +51,7 @@ public class Sensor {
      * Sets specified obstacle cell in map and returns it's row / col. Returns -1 if no obstacle detected
      */
     private int getSensorVal(Map exploredMap, Map realMap, int rowInc, int colInc) {
-        // Check if starting point is valid for sensors with lowerRange > 1.
+        // Check if starting point is valid for sensors with lowerRange > 1
         if (lowerRange > 1) {
             for (int i = 1; i < this.lowerRange; i++) {
                 int row = this.sensorPosRow + (rowInc * i);
@@ -62,7 +62,7 @@ public class Sensor {
             }
         }
 
-        // Check if anything is detected by the sensor and return that value
+        // Check if sensor detects anything and return that value
         for (int i = this.lowerRange; i <= this.upperRange; i++) {
             int row = this.sensorPosRow + (rowInc * i);
             int col = this.sensorPosCol + (colInc * i);
@@ -106,7 +106,7 @@ public class Sensor {
     private void processSensorVal(Map exploredMap, int sensorVal, int rowInc, int colInc) {
         if (sensorVal == 0) return;  // return value for LR sensor if obstacle before lowerRange
 
-        // If above fails, check if starting point is valid for sensors with lowerRange > 1.
+        // Check if starting point is valid for sensors with lowerRange > 1.
         for (int i = 1; i < this.lowerRange; i++) {
             int row = this.sensorPosRow + (rowInc * i);
             int col = this.sensorPosCol + (colInc * i);
@@ -115,7 +115,7 @@ public class Sensor {
             if (exploredMap.getCell(row, col).getIsObstacle()) return;
         }
 
-        // Update map according to sensor's value.
+        // Update map according to sensor's value
         for (int i = this.lowerRange; i <= this.upperRange; i++) {
             int row = this.sensorPosRow + (rowInc * i);
             int col = this.sensorPosCol + (colInc * i);
@@ -129,7 +129,7 @@ public class Sensor {
                 break;
             }
 
-            // Override previous obstacle value if front sensors detect no obstacle.
+            // Override previous obstacle value if front sensors detect no obstacle
             if (exploredMap.getCell(row, col).getIsObstacle()) {
                 if (id.equals("SRFL") || id.equals("SRFC") || id.equals("SRFR")) {
                     exploredMap.setObstacleCell(row, col, false);

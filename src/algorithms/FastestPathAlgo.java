@@ -295,10 +295,6 @@ public class FastestPathAlgo {
             	
 	            while (bot.getRobotCurDir() != targetDir) {
 	                bot.move(getTargetMove(bot.getRobotCurDir(), targetDir));
-					//ASK: WHAT IS THIS FOR             
-//	                int x = bot.getRobotPosRow();
-//	                int y = bot.getRobotPosCol();
-//	                exploredMap.getCell(x, y).setIsWalked(true);
 	            }
 	
 	            bot.move(MOVEMENT.FORWARD);
@@ -389,39 +385,6 @@ public class FastestPathAlgo {
         System.out.println("\nMovements: " + outputString.toString());
         return outputString.toString();
     }
-
-//    /**
-//     * Returns true if the robot can move forward one cell with the current heading.
-//     */
-//    private boolean canMoveForward() {
-//        int row = bot.getRobotPosRow();
-//        int col = bot.getRobotPosCol();
-//
-//        switch (bot.getRobotCurDir()) {
-//            case NORTH:
-//                if (!exploredMap.isObstacleCell(row + 2, col - 1) && !exploredMap.isObstacleCell(row + 2, col) && !exploredMap.isObstacleCell(row + 2, col + 1)) {
-//                    return true;
-//                }
-//                break;
-//            case EAST:
-//                if (!exploredMap.isObstacleCell(row + 1, col + 2) && !exploredMap.isObstacleCell(row, col + 2) && !exploredMap.isObstacleCell(row - 1, col + 2)) {
-//                    return true;
-//                }
-//                break;
-//            case SOUTH:
-//                if (!exploredMap.isObstacleCell(row - 2, col - 1) && !exploredMap.isObstacleCell(row - 2, col) && !exploredMap.isObstacleCell(row - 2, col + 1)) {
-//                    return true;
-//                }
-//                break;
-//            case WEST:
-//                if (!exploredMap.isObstacleCell(row + 1, col - 2) && !exploredMap.isObstacleCell(row, col - 2) && !exploredMap.isObstacleCell(row - 1, col - 2)) {
-//                    return true;
-//                }
-//                break;
-//        }
-//
-//        return false;
-//    }
 
     /**
      * Returns movement to execute to get from 1 direction to another

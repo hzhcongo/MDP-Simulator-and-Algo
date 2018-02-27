@@ -27,7 +27,7 @@ public class Simulator {
     private static Map actualMap = null;            // actual map
     private static Map exploredMap = null;          // exploration map
 
-    private static Robot robot;
+    private static Robot robot;						// robot for simulation
     
     private static int timeLimit = 3600;            // time limit
     private static int coverageLimit = 300;         // coverage limit
@@ -79,6 +79,9 @@ public class Simulator {
         contentPane.add(mapCardsJPanel, BorderLayout.CENTER);
         contentPane.add(buttonsJPanel, BorderLayout.PAGE_END);
 
+        contentPane.setBackground(Color.black);
+        buttonsJPanel.setBackground(Color.black);
+        
         // Initialize the main map view
         initMainLayout();
 
@@ -111,8 +114,10 @@ public class Simulator {
      * Format JButtons
      */
     private static void formatButton(JButton btn) {
-        btn.setFont(new Font("Arial", Font.PLAIN, 16));
+        btn.setFont(new Font("Arial", Font.BOLD, 16));
         btn.setFocusPainted(true);
+        btn.setBackground(Color.pink);
+        btn.setForeground(Color.black);
     }
 
     /**

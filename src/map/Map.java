@@ -34,10 +34,10 @@ public class Map extends JPanel {
     }
 
     /**
-     * Returns true if row and col values are valid
+     * Returns specified cell
      */
-    public boolean checkValidCoordinates(int row, int col) {
-        return row >= 0 && col >= 0 && row < MapConstants.MAP_ROWS && col < MapConstants.MAP_COLS;
+    public Cell getCell(int row, int col) {
+        return grid[row][col];
     }
 
     /**
@@ -55,10 +55,10 @@ public class Map extends JPanel {
     }
 
     /**
-     * Returns specified cell
+     * Returns true if row and col values are valid
      */
-    public Cell getCell(int row, int col) {
-        return grid[row][col];
+    public boolean checkValidCoordinates(int row, int col) {
+        return row >= 0 && col >= 0 && row < MapConstants.MAP_ROWS && col < MapConstants.MAP_COLS;
     }
 
     /**
