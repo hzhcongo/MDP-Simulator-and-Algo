@@ -79,7 +79,7 @@ public class MapDescriptor {
         }
         Part1_bin.append("11");
         Part1.append(binToHex(Part1_bin.toString()));
-        System.out.println("P1: " + Part1.toString());
+        System.out.println("P1 MDF: " + Part1.toString());
         ret[0] = Part1.toString();
 
         StringBuilder Part2 = new StringBuilder();
@@ -100,7 +100,7 @@ public class MapDescriptor {
             }
         }
         if (Part2_bin.length() > 0) Part2.append(binToHex(Part2_bin.toString()));
-        System.out.println("P2: " + Part2.toString());
+        System.out.println("P2 MDF: " + Part2.toString());
         ret[1] = Part2.toString();
 
         return ret;

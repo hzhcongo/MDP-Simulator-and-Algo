@@ -29,5 +29,5 @@ class GFXConstants {
 
     public static final int CELL_SIZE = 30;
 
-    public static final int MAP_H = 580;
+    public static final int MAP_H = 610;
 }

@@ -61,7 +61,7 @@ public class Simulator {
         // Initialize main frame for display
         simJFrame = new JFrame();
         simJFrame.setTitle("MDP Algorithm Simulator");
-        simJFrame.setSize(new Dimension(456, 745));
+        simJFrame.setSize(new Dimension(468, 785));
         simJFrame.setResizable(false);
 
         // Center window
@@ -79,9 +79,6 @@ public class Simulator {
         contentPane.add(mapCardsJPanel, BorderLayout.CENTER);
         contentPane.add(buttonsJPanel, BorderLayout.PAGE_END);
 
-        contentPane.setBackground(Color.black);
-        buttonsJPanel.setBackground(Color.black);
-        
         // Initialize the main map view
         initMainLayout();
 
@@ -90,6 +87,7 @@ public class Simulator {
 
         // Display the application
         simJFrame.setVisible(true);
+        simJFrame.setResizable(true);
         simJFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
@@ -150,6 +148,13 @@ public class Simulator {
                             CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
                             cl.show(mapCardsJPanel, "REAL_MAP");
                             actualMap.repaint();
+                            
+//                            loadMapDialog.setVisible(false);
+//                            loadMapDialog.setSize(0, 0);
+//                            loadMapDialog.setOpacity(0);
+//                            loadMapDialog.dispose();
+//                            loadTF.setVisible(false);
+//                            loadMapButton.setVisible(false);
                         }
                     });
 
@@ -157,6 +162,13 @@ public class Simulator {
                     loadMapDialog.add(loadTF);
                     loadMapDialog.add(loadMapButton);
                     loadMapDialog.setVisible(true);
+                    
+//                    loadMapDialog.setVisible(false);
+//                    loadMapDialog.setSize(0, 0);
+//                    loadMapDialog.setOpacity(0);
+//                    loadMapDialog.dispose();
+//                    loadTF.setVisible(false);
+//                    loadMapButton.setVisible(false);
                 }
             });
             buttonsJPanel.add(loadMapBtn);
@@ -277,6 +289,7 @@ public class Simulator {
                         CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
                         cl.show(mapCardsJPanel, "EXPLORATION");
                         new TimeExploration().execute();
+//                        timeExploDialog.setVisible(false);
                     }
                 });
 
@@ -284,6 +297,7 @@ public class Simulator {
                 timeExploDialog.add(timeTF);
                 timeExploDialog.add(timeSaveButton);
                 timeExploDialog.setVisible(true);
+//                timeExploDialog.setVisible(false);
             }
         });
         buttonsJPanel.add(btn_TimeExploration);
@@ -326,6 +340,7 @@ public class Simulator {
                         new CoverageExploration().execute();
                         CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
                         cl.show(mapCardsJPanel, "EXPLORATION");
+//                        coverageExploDialog.setVisible(false);
                     }
                 });
 
@@ -333,6 +348,7 @@ public class Simulator {
                 coverageExploDialog.add(coverageTF);
                 coverageExploDialog.add(coverageSaveButton);
                 coverageExploDialog.setVisible(true);
+//                coverageExploDialog.setVisible(false);
             }
         });
         buttonsJPanel.add(btn_CoverageExploration);

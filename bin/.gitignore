@@ -1,6 +1,9 @@
 /bin/
-/utils/
+/.classpath
+/.gitignore
+/.project
 /algorithms/
-/simulator/
-/robot/
 /map/
+/robot/
+/simulator/
+/utils/
