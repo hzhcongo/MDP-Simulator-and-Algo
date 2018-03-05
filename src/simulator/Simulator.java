@@ -33,7 +33,7 @@ public class Simulator {
     private static int coverageLimit = 300;         // coverage limit
 
     private static final Communicator communicator = Communicator.getCommMgr();
-    private static final boolean actualRun = false;
+    private static final boolean actualRun = true;
 
     /**
      * Initializes maps and displays simulator
@@ -183,7 +183,7 @@ public class Simulator {
                 if (actualRun) {
                     while (true) {
                         String msg = communicator.recvMsg();
-                        if (msg.equals(Communicator.FP_START)) break;
+                        if (msg.equals("0&ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff&0030006000c00000800380000380000001000200878100040008000008011000020004000c0")) break;
                     }
                 }
 
@@ -211,7 +211,7 @@ public class Simulator {
                 exploration = new ExplorationAlgo(exploredMap, actualMap, robot, coverageLimit, timeLimit);
 
                 if (actualRun) {
-                    Communicator.getCommMgr().sendMsg(null, Communicator.BOT_START);
+                    Communicator.getCommMgr().sendMsg(null, "0$fffffffffffffffffffffffffffffffffffffff$0030006000c0000080038008000008011000020004000c0");
                 }
 
                 exploration.runExploration();
@@ -352,5 +352,39 @@ public class Simulator {
             }
         });
         buttonsJPanel.add(btn_CoverageExploration);
+        
+     // Coverage-limited Exploration Button
+        JButton btn_changeBotSpeed = new JButton("Change robot speed");
+        formatButton(btn_changeBotSpeed);
+       
+        btn_changeBotSpeed.addMouseListener(new MouseAdapter() {
+        	public void mousePressed(MouseEvent e) {
+                System.out.println("Initial steps per second: " + 1000 / RobotConstants.SPEED + ". Initial speed in ms: " + RobotConstants.SPEED);
+    			JDialog botSpeedDialog = new JDialog(simJFrame, "Change robot speed", true);
+                botSpeedDialog.setSize(400, 100);
+                botSpeedDialog.setLayout(new FlowLayout()); 
+                final JTextField botSpeedTF = new JTextField(5);
+                JButton botSpeedSaveButton = new JButton("Change");
+
+                // Center window
+                Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+                botSpeedDialog.setLocation(dim.width / 2 - botSpeedDialog.getSize().width / 2, dim.height / 2 - botSpeedDialog.getSize().height / 2);
+
+                botSpeedSaveButton.addMouseListener(new MouseAdapter() {
+                    public void mousePressed(MouseEvent e) {
+                        botSpeedDialog.setVisible(false);
+                        RobotConstants.SPEED = 1000 / Integer.parseInt(botSpeedTF.getText());
+                        robot.setSpeed(RobotConstants.SPEED);
+                        System.out.println("Updated steps per second: " + botSpeedTF.getText() + ". Updated speed in ms: " + RobotConstants.SPEED);
+                    }
+                });
+
+                botSpeedDialog.add(new JLabel("Robot Speed (steps per second): "));
+                botSpeedDialog.add(botSpeedTF);
+                botSpeedDialog.add(botSpeedSaveButton);
+                botSpeedDialog.setVisible(true);
+            }
+        });
+        buttonsJPanel.add(btn_changeBotSpeed);
     }
 }

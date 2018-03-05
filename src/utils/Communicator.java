@@ -38,8 +38,8 @@ public class Communicator {
         System.out.println("Opening connection...");
 
         try {
-            String HOST = "192.168.2.1";
-            int PORT = 8008;
+            String HOST = "192.168.4.2";
+            int PORT = 2323;
             connectionSocket = new Socket(HOST, PORT);
 
             writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(connectionSocket.getOutputStream())));
@@ -91,11 +91,11 @@ public class Communicator {
         try {
             String outputMsg;
             if (msg == null) {
-                outputMsg = msgType + "\n";
+                outputMsg = msgType;
             } else if (msgType.equals(MAP_STRINGS) || msgType.equals(BOT_POS)) {
-                outputMsg = msgType + " " + msg + "\n";
+                outputMsg = msgType + " " + msg;
             } else {
-                outputMsg = msgType + "\n" + msg + "\n";
+                outputMsg = msgType + " " + msg;
             }
 
             System.out.println("Sending out message:\n" + outputMsg);

@@ -1,0 +1,22 @@
+*server_sim.py
+	* No way to kill the program
+
+* comm_rpi.py
+
+	* Front End have to synchronize with the back end (map explored, robot movement)
+
+	* Send x and y coordinates of obstacles to RPi (for plotting the map on Android)
+
+* Exploration.py
+	* Test and fix bugs (if any)
+	* Think of any edge cases
+
+* FastestPath.py
+	* Test and fix bugs (if any)
+	* Think of any edge cases
+
+* Simulator.py
+	* Test and fix bugs (if any)
+
+* custom.js
+	* does not print exploration started or fastest path started

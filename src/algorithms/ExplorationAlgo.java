@@ -75,7 +75,7 @@ public class ExplorationAlgo {
         System.out.println();
 
         startTime = System.currentTimeMillis();
-        endTime = startTime + (timeLimit * 1000);;
+        endTime = startTime + (timeLimit * 1000);
 
         if (bot.getRealBot()) {
             Communicator.getCommMgr().sendMsg(null, Communicator.BOT_START);
@@ -108,11 +108,6 @@ public class ExplorationAlgo {
 //        goToCell.findFastestPath(r, c);
         goHome();
     }
-    
-    //TTD: 
-    //samplearena4 top no detect
-	//samplearena5 top no detect
-	//week8 cebnter top
     
 //      private void nextMove() {
 //            if (lookRight()) {

@@ -6,8 +6,8 @@ import map.MapConstants;
 import java.io.*;
 
 /**
- * Part 1: 1/0 represents explored state. All cells are represented
- * Part 2: 1/0 represents obstacle state. Only explored cells are represented
+ * Part 1: 1/0 represents explored/unexplored. All cells are represented
+ * Part 2: 1/0 represents obstacle/no obstacle. Only explored cells are represented
  */
 
 public class MapDescriptor {
