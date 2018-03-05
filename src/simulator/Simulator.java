@@ -33,7 +33,7 @@ public class Simulator {
     private static int coverageLimit = 300;         // coverage limit
 
     private static final Communicator communicator = Communicator.getCommMgr();
-    private static final boolean actualRun = true;
+    private static final boolean actualRun = false;
 
     /**
      * Initializes maps and displays simulator
@@ -148,13 +148,6 @@ public class Simulator {
                             CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
                             cl.show(mapCardsJPanel, "REAL_MAP");
                             actualMap.repaint();
-                            
-//                            loadMapDialog.setVisible(false);
-//                            loadMapDialog.setSize(0, 0);
-//                            loadMapDialog.setOpacity(0);
-//                            loadMapDialog.dispose();
-//                            loadTF.setVisible(false);
-//                            loadMapButton.setVisible(false);
                         }
                     });
 
@@ -162,13 +155,6 @@ public class Simulator {
                     loadMapDialog.add(loadTF);
                     loadMapDialog.add(loadMapButton);
                     loadMapDialog.setVisible(true);
-                    
-//                    loadMapDialog.setVisible(false);
-//                    loadMapDialog.setSize(0, 0);
-//                    loadMapDialog.setOpacity(0);
-//                    loadMapDialog.dispose();
-//                    loadTF.setVisible(false);
-//                    loadMapButton.setVisible(false);
                 }
             });
             buttonsJPanel.add(loadMapBtn);
@@ -180,15 +166,15 @@ public class Simulator {
                 robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
                 exploredMap.repaint();
 
-                if (actualRun) {
-                    while (true) {
-                        String msg = communicator.recvMsg();
-                        if (msg.equals("0&ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff&0030006000c00000800380000380000001000200878100040008000008011000020004000c0")) break;
-                    }
-                }
+//                if (actualRun) {
+//                    while (true) {
+//                        String msg = communicator.recvMsg();
+//                        if (msg.equals("0&ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff&0030006000c00000800380000380000001000200878100040008000008011000020004000c0")) break;
+//                    }
+//                }
 
                 FastestPathAlgo fastestPath;
-                fastestPath = new FastestPathAlgo(exploredMap, robot);
+                fastestPath = new FastestPathAlgo(exploredMap, robot, actualMap, false);
 
                 fastestPath.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
 

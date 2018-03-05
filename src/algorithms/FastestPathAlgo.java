@@ -29,20 +29,20 @@ public class FastestPathAlgo {
     private double[][] gCosts;              // array of real cost from START to [row][col] i.e. g(n)
     private Robot bot;
     private Map exploredMap;
-//    private final Map realMap;
+    private final Map realMap;
     private int loopCount;
-//    private boolean explorationMode;
-
-    public FastestPathAlgo(Map exploredMap, Robot bot) {
-//        this.realMap = null;
-        initAlgo(exploredMap, bot);
-    }
+    private boolean explorationMode;
 
 //    public FastestPathAlgo(Map exploredMap, Robot bot, Map realMap) {
 //        this.realMap = realMap;
-//        this.explorationMode = true;
-//        initObject(exploredMap, bot);
+//        initAlgo(exploredMap, bot);
 //    }
+
+    public FastestPathAlgo(Map exploredMap, Robot bot, Map realMap, boolean exploreMode) {
+        this.realMap = realMap;
+        this.explorationMode = exploreMode;
+        initAlgo(exploredMap, bot);
+    }
 
     /**
      * Initialize FastestPathAlgo
@@ -272,9 +272,6 @@ public class FastestPathAlgo {
         DIRECTION targetDir;
 
         ArrayList<MOVEMENT> movements = new ArrayList<>();
-
-//        Robot bot = new Robot(1, 1, false);
-//        tempBot.setSpeed(0);
         
         while ((bot.getRobotPosRow() != goalRow) || (bot.getRobotPosCol() != goalCol)) {
             if (bot.getRobotPosRow() == temp.getRow() && bot.getRobotPosCol() == temp.getCol()) {
@@ -299,88 +296,15 @@ public class FastestPathAlgo {
 	
 	            bot.move(MOVEMENT.FORWARD);
             }
-            
-            exploredMap.repaint();
+            if(explorationMode) {
+	            ExplorationAlgo explalgo = new ExplorationAlgo(exploredMap, realMap, bot, 300, 3600);
+	            explalgo.senseAndRepaint();
+            }
             System.out.println("Movement " + targetDir + " from (" + bot.getRobotPosRow() + ", " + bot.getRobotPosCol() + ") to (" + temp.getRow() + ", " + temp.getCol() + ")");
-
-            //TTD: I THINK NEED THIS FOR CALIBRATION. MAKE REQUIRED FUNCTIONS PUBLIC AT EXPLRATIONALGO.JAVA 
-//            if (m != MOVEMENT.CALIBRATE) {
-//                senseAndRepaint();
-//            } else {
-//                CommMgr commMgr = CommMgr.getCommMgr();
-//                commMgr.recvMsg();
-//            }
-//
-//            if (bot.getRealBot() && !calibrationMode) {
-//                calibrationMode = true;
-//
-//                if (canCalibrateOnTheSpot(bot.getRobotCurDir())) {
-//                    lastCalibrate = 0;
-//                    moveBot(MOVEMENT.CALIBRATE);
-//                } else {
-//                    lastCalibrate++;
-//                    if (lastCalibrate >= 5) {
-//                        DIRECTION targetDir = getCalibrationDirection();
-//                        if (targetDir != null) {
-//                            lastCalibrate = 0;
-//                            calibrateBot(targetDir);
-//                        }
-//                    }
-//                }
-//
-//                calibrationMode = false;
-//            }
             
             movements.add(MOVEMENT.FORWARD);
             outputString.append(MOVEMENT.print(MOVEMENT.FORWARD));
         }
-
-//        if (!bot.getRealBot() || explorationMode) {
-//            for (MOVEMENT x : movements) {
-//                if (x == MOVEMENT.FORWARD) {
-//                    if (!canMoveForward()) {
-//                        System.out.println("Early termination of fastest path execution.");
-//                        return "T";
-//                    }
-//                }
-//
-//                //bot.move(x);
-//                this.exploredMap.repaint();
-//
-//                // During exploration, use sensor data to update exploredMap.
-//                if (explorationMode) {
-//                    bot.setSensors();
-//                    bot.sense(this.exploredMap, this.realMap);
-//                    this.exploredMap.repaint();
-//                }
-//            }
-//        } else {
-//            int fCount = 0;
-//            for (MOVEMENT x : movements) {
-//                if (x == MOVEMENT.FORWARD) {
-//                    fCount++;
-//                    if (fCount == 10) {
-//                        //bot.moveForwardMultiple(fCount);
-//                        fCount = 0;
-//                        exploredMap.repaint();
-//                    }
-//                } else if (x == MOVEMENT.RIGHT || x == MOVEMENT.LEFT) {
-//                    if (fCount > 0) {
-//                        //bot.moveForwardMultiple(fCount);
-//                        fCount = 0;
-//                        exploredMap.repaint();
-//                    }
-//
-//                    //bot.move(x);
-//                    exploredMap.repaint();
-//                }
-//            }
-//
-//            if (fCount > 0) {
-//                //bot.moveForwardMultiple(fCount);
-//                exploredMap.repaint();
-//            }
-//        }
 
         System.out.println("\nMovements: " + outputString.toString());
         return outputString.toString();

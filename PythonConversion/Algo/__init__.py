@@ -1,1 +1,0 @@
-#Run python server_sim.py and navigate to localhost:8888 in a browser
