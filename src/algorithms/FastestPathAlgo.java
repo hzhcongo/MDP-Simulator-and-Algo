@@ -169,6 +169,8 @@ public class FastestPathAlgo {
      */
     public String findFastestPath(int goalRow, int goalCol) {
     	
+    	initAlgo(exploredMap, bot);
+    	
     	System.out.println("Calculating fastest path from (" + current.getRow() + ", " + current.getCol() + ") to goal (" + goalRow + ", " + goalCol + ")...");
         Stack<Cell> path;
         do {
@@ -297,10 +299,10 @@ public class FastestPathAlgo {
 	
 	            bot.move(MOVEMENT.FORWARD);
             }
-            if(explorationMode) {
-	            ExplorationAlgo explalgo = new ExplorationAlgo(exploredMap, realMap, bot, 300, 3600);
-	            explalgo.senseAndRepaint();
-            }
+            
+            ExplorationAlgo explalgo = new ExplorationAlgo(exploredMap, realMap, bot, 300, 3600);
+            explalgo.senseAndRepaint();
+            
             System.out.println("Movement " + targetDir + " from (" + bot.getRobotPosRow() + ", " + bot.getRobotPosCol() + ") to (" + temp.getRow() + ", " + temp.getCol() + ")");
             
             movements.add(MOVEMENT.FORWARD);

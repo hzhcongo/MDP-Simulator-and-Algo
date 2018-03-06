@@ -14,6 +14,7 @@ class GFXConstants {
     public static final Color COLOR_UNEXPLORED = Color.LIGHT_GRAY;
     public static final Color COLOR_FREE = Color.WHITE;
     public static final Color COLOR_OBSTACLE = Color.BLACK;
+    public static final Color COLOR_WAYPOINT = Color.PINK;
 
     public static final Color COLOR_ROBOT = Color.BLUE;
     public static final Color COLOR_ROBOT_DIR = Color.GREEN;

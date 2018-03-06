@@ -36,6 +36,9 @@ public class Simulator {
     private static final boolean actualRun = false;
 
     private static String msg = "";   
+
+    public static int wrow = -1;   
+    public static int wcol = -1;   
     
     /**
      * Initializes maps and displays simulator
@@ -82,8 +85,8 @@ public class Simulator {
 
     			break;
     		case "1":
-    			System.out.println("Start Fastest Path");
     			//Fastest Path
+    			System.out.println("Start Fastest Path");
     			robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
                 exploredMap.repaint();
 
@@ -91,15 +94,31 @@ public class Simulator {
 
                 FastestPathAlgo fastestPath;
                 fastestPath = new FastestPathAlgo(exploredMap, robot, actualMap, false);
-
+                
+                if(wrow != -1 || wcol != -1)
+                    fastestPath.findFastestPath(wrow, wcol);
                 fastestPath.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
 
     			break;
     		default:
+    			//Set Waypoint by splitting 2-9-9
     			System.out.println("Start waypoint mark");
-    			//Set Waypoint by splitting 2.9.9
-                Communicator.getCommMgr().sendMsg(null, "PC recieved set waypoint request");
-    			break;
+    			try {
+	                String[] waypoints = msg.split("-");
+	                wrow = Integer.parseInt(waypoints[1]);
+	                wcol = Integer.parseInt(waypoints[2]);
+	    			System.out.println(wrow + wcol);
+	    			break;
+    			}
+    			catch(NullPointerException e) {
+        			System.out.println("NullPointerException");
+    			}
+    			catch(IndexOutOfBoundsException e) {
+        			System.out.println("IndexOutOfBoundsException");
+    			}
+    			catch(Exception e) {
+        			System.out.println(e.toString());
+    			}
     		}
         }
     }
@@ -239,7 +258,9 @@ public class Simulator {
 
                 FastestPathAlgo fastestPath;
                 fastestPath = new FastestPathAlgo(exploredMap, robot, actualMap, false);
-
+                wrow = 10;
+                wcol = 10;
+                fastestPath.findFastestPath(wrow, wcol);
                 fastestPath.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
 
                 return 222;
