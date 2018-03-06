@@ -32,14 +32,15 @@ public class Simulator {
     private static int timeLimit = 3600;            // time limit
     private static int coverageLimit = 300;         // coverage limit
 
-    private static final Communicator communicator = Communicator.getCommMgr();
+    public static final Communicator communicator = Communicator.getCommMgr();
     private static final boolean actualRun = false;
 
+    private static String msg = "";   
+    
     /**
      * Initializes maps and displays simulator
      */
     public static void main(String[] args) {
-        if (actualRun) communicator.openConnection();
 
         robot = new Robot(RobotConstants.START_ROW, RobotConstants.START_COL, actualRun);
 
@@ -52,6 +53,55 @@ public class Simulator {
         exploredMap.setAllUnexplored();
 
         displaySimulator();
+
+        if (actualRun) {
+        	communicator.openConnection();
+
+        	while (msg == null || msg == "") {
+                msg = communicator.recvMsg();
+            }
+            
+            switch (msg) {
+    		case "0":
+    			//Explore. Codes from mousePressed in Listener
+    			System.out.println("Android started exploration");
+    			CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
+                cl.show(mapCardsJPanel, "EXPLORATION");
+
+                int row = RobotConstants.START_ROW;
+                int col = RobotConstants.START_COL;
+
+                robot.setRobotPos(row, col);
+
+                ExplorationAlgo exploration;
+                exploration = new ExplorationAlgo(exploredMap, actualMap, robot, coverageLimit, timeLimit);
+
+//                Communicator.getCommMgr().sendMsg(null, Communicator.EX_START);
+
+                exploration.runExploration();
+
+    			break;
+    		case "1":
+    			System.out.println("Start Fastest Path");
+    			//Fastest Path
+    			robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
+                exploredMap.repaint();
+
+                Communicator.getCommMgr().sendMsg(null, Communicator.FP_START);
+
+                FastestPathAlgo fastestPath;
+                fastestPath = new FastestPathAlgo(exploredMap, robot, actualMap, false);
+
+                fastestPath.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
+
+    			break;
+    		default:
+    			System.out.println("Start waypoint mark");
+    			//Set Waypoint by splitting 2.9.9
+                Communicator.getCommMgr().sendMsg(null, "PC recieved set waypoint request");
+    			break;
+    		}
+        }
     }
 
     /**
@@ -148,6 +198,13 @@ public class Simulator {
                             CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
                             cl.show(mapCardsJPanel, "REAL_MAP");
                             actualMap.repaint();
+                            
+//                            loadMapDialog.setVisible(false);
+//                            loadMapDialog.setSize(0, 0);
+//                            loadMapDialog.setOpacity(0);
+//                            loadMapDialog.dispose();
+//                            loadTF.setVisible(false);
+//                            loadMapButton.setVisible(false);
                         }
                     });
 
@@ -155,6 +212,13 @@ public class Simulator {
                     loadMapDialog.add(loadTF);
                     loadMapDialog.add(loadMapButton);
                     loadMapDialog.setVisible(true);
+                    
+//                    loadMapDialog.setVisible(false);
+//                    loadMapDialog.setSize(0, 0);
+//                    loadMapDialog.setOpacity(0);
+//                    loadMapDialog.dispose();
+//                    loadTF.setVisible(false);
+//                    loadMapButton.setVisible(false);
                 }
             });
             buttonsJPanel.add(loadMapBtn);
@@ -166,12 +230,12 @@ public class Simulator {
                 robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
                 exploredMap.repaint();
 
-//                if (actualRun) {
-//                    while (true) {
-//                        String msg = communicator.recvMsg();
-//                        if (msg.equals("0&ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff&0030006000c00000800380000380000001000200878100040008000008011000020004000c0")) break;
-//                    }
-//                }
+                if (actualRun) {
+                    while (true) {
+                        String msg = communicator.recvMsg();
+                        if (msg.equals(Communicator.FP_START)) break;
+                    }
+                }
 
                 FastestPathAlgo fastestPath;
                 fastestPath = new FastestPathAlgo(exploredMap, robot, actualMap, false);
@@ -197,7 +261,7 @@ public class Simulator {
                 exploration = new ExplorationAlgo(exploredMap, actualMap, robot, coverageLimit, timeLimit);
 
                 if (actualRun) {
-                    Communicator.getCommMgr().sendMsg(null, "0$fffffffffffffffffffffffffffffffffffffff$0030006000c0000080038008000008011000020004000c0");
+                    Communicator.getCommMgr().sendMsg(null, Communicator.EX_START);
                 }
 
                 exploration.runExploration();

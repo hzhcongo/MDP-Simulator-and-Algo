@@ -7,6 +7,7 @@ import robot.Robot;
 import robot.RobotConstants;
 import robot.RobotConstants.DIRECTION;
 import robot.RobotConstants.MOVEMENT;
+import simulator.Simulator;
 import utils.Communicator;
 import java.util.Stack;
 
@@ -45,7 +46,8 @@ public class ExplorationAlgo {
         if (bot.getRealBot()) {
             System.out.println("Starting calibration...");
 
-            Communicator.getCommMgr().recvMsg();
+            //wait arduino to give back sensor data
+            Simulator.communicator.recvMsg();
             if (bot.getRealBot()) {
                 bot.move(MOVEMENT.LEFT, false);
                 Communicator.getCommMgr().recvMsg();
@@ -374,11 +376,10 @@ public class ExplorationAlgo {
      */
     private void moveBot(MOVEMENT m) {
         bot.move(m);
-        if (m != MOVEMENT.CALIBRATE) {
+        if (!bot.getRealBot()) {
             senseAndRepaint();
         } else {
-            Communicator commMgr = Communicator.getCommMgr();
-            commMgr.recvMsg();
+            Simulator.communicator.recvMsg();
         }
 
         if (bot.getRealBot() && !calibrationMode) {

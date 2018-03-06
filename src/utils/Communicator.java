@@ -21,9 +21,11 @@ public class Communicator {
     private static Communicator communicator = null;
     private static Socket connectionSocket = null;
 
-    private BufferedWriter writer;
-    private BufferedReader reader;
-
+    public BufferedWriter writer;
+    public BufferedReader reader;
+    
+	private static final Object lock = new Object();
+	
     private Communicator() {
     }
 
@@ -116,18 +118,52 @@ public class Communicator {
             StringBuilder sb = new StringBuilder();
             String input = reader.readLine();
 
-            if (input != null && input.length() > 0) {
-                sb.append(input);
-                System.out.println(sb.toString());
-                return sb.toString();
-            }
+//            if(reader.readLine() != null || reader.readLine().length() > 0) {
+//                input = reader.readLine();
+//            }
+            
+            sb.append(input);
+            System.out.println("Message recieved: " + sb.toString());
+            return sb.toString();
         } catch (IOException e) {
             System.out.println("IOException at recvMsg()");
+        } catch (NullPointerException e) {
+            System.out.println("NullPointerException at recvMsg()");
         } catch (Exception e) {
-            System.out.println("Exception at recvMsg()");
-            System.out.println(e.toString());
+            System.out.println("Exception at recvMsg(): " + e.toString());
         }
 
         return null;
+        
+//        String message;
+//		Thread thread = new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				System.out.print("Reading Message From RPI........");
+//			}
+//		});
+//		try {
+//			Thread.sleep(200);
+//		} catch (InterruptedException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		while(true){
+//			if(Thread.holdsLock(lock)==false)
+//			{  
+//				message="";                 
+//				try {
+//					message = reader.readLine();
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				
+//					System.out.println("[MessageHandler]getString: " + message);
+//				thread.start();
+//				break;
+//			}
+//		}
+//		return message;
     }
 }
