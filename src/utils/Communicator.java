@@ -3,6 +3,7 @@ package utils;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * To communicate with the different parts of the system via RPi
@@ -47,7 +48,7 @@ public class Communicator {
             writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(connectionSocket.getOutputStream())));
             reader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
-            System.out.println("openConnection() --> " + "Connection established successfully!");
+            System.out.println("openConnection(): " + "Connection established successfully!");
 
             return;
         } catch (UnknownHostException e) {
@@ -88,21 +89,26 @@ public class Communicator {
     }
 
     public void sendMsg(String msg, String msgType) {
-        System.out.println("Sending message");
-
+        System.out.println("Sending messge..");
         try {
-            String outputMsg;
-            if (msg == null) {
-                outputMsg = msgType;
-            } else if (msgType.equals(MAP_STRINGS) || msgType.equals(BOT_POS)) {
-                outputMsg = msgType + " " + msg;
-            } else {
-                outputMsg = msgType + " " + msg;
-            }
+//            String outputMsg;
+//            if (msg == null) {
+//                outputMsg = msgType;
+//            } else if (msgType.equals(MAP_STRINGS) || msgType.equals(BOT_POS)) {
+//                outputMsg = msgType + " " + msg;
+//            } else {
+//                outputMsg = msgType + " " + msg;
+//            }
 
-            System.out.println("Sending out message:\n" + outputMsg);
-            writer.write(outputMsg);
+            writer.write(msg);
             writer.flush();
+            // Simulate actual movement sleeping
+            try {
+                TimeUnit.MILLISECONDS.sleep(3200);
+            } catch (InterruptedException e) {
+                System.out.println("Error in Robot.move()");
+            }
+            System.out.println("Message sent: " + msg);
         } catch (IOException e) {
             System.out.println("IOException at sendMsg()");
         } catch (Exception e) {
@@ -112,15 +118,10 @@ public class Communicator {
     }
 
     public String recvMsg() {
-        System.out.println("Receiving message");
-
+        System.out.println("Recieving messge..");
         try {
             StringBuilder sb = new StringBuilder();
             String input = reader.readLine();
-
-//            if(reader.readLine() != null || reader.readLine().length() > 0) {
-//                input = reader.readLine();
-//            }
             
             sb.append(input);
             System.out.println("Message recieved: " + sb.toString());
@@ -134,36 +135,5 @@ public class Communicator {
         }
 
         return null;
-        
-//        String message;
-//		Thread thread = new Thread(new Runnable() {
-//			@Override
-//			public void run() {
-//				System.out.print("Reading Message From RPI........");
-//			}
-//		});
-//		try {
-//			Thread.sleep(200);
-//		} catch (InterruptedException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-//		while(true){
-//			if(Thread.holdsLock(lock)==false)
-//			{  
-//				message="";                 
-//				try {
-//					message = reader.readLine();
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				
-//					System.out.println("[MessageHandler]getString: " + message);
-//				thread.start();
-//				break;
-//			}
-//		}
-//		return message;
     }
 }

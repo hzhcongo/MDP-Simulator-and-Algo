@@ -33,7 +33,7 @@ public class Simulator {
     private static int coverageLimit = 300;         // coverage limit
 
     public static final Communicator communicator = Communicator.getCommMgr();
-    private static final boolean actualRun = false;
+    private static final boolean actualRun = true;
 
     private static String msg = "";   
 
@@ -47,10 +47,10 @@ public class Simulator {
 
         robot = new Robot(RobotConstants.START_ROW, RobotConstants.START_COL, actualRun);
 
-        if (!actualRun) {
+//        if (!actualRun) {
             actualMap = new Map(robot);
             actualMap.setAllUnexplored();
-        }
+//        }
 
         exploredMap = new Map(robot);
         exploredMap.setAllUnexplored();
@@ -60,66 +60,62 @@ public class Simulator {
         if (actualRun) {
         	communicator.openConnection();
 
-        	while (msg == null || msg == "") {
+        	while (true) {
                 msg = communicator.recvMsg();
-            }
             
-            switch (msg) {
-    		case "0":
-    			//Explore. Codes from mousePressed in Listener
-    			System.out.println("Android started exploration");
-    			CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
-                cl.show(mapCardsJPanel, "EXPLORATION");
-
-                int row = RobotConstants.START_ROW;
-                int col = RobotConstants.START_COL;
-
-                robot.setRobotPos(row, col);
-
-                ExplorationAlgo exploration;
-                exploration = new ExplorationAlgo(exploredMap, actualMap, robot, coverageLimit, timeLimit);
-
-//                Communicator.getCommMgr().sendMsg(null, Communicator.EX_START);
-
-                exploration.runExploration();
-
-    			break;
-    		case "1":
-    			//Fastest Path
-    			System.out.println("Start Fastest Path");
-    			robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
-                exploredMap.repaint();
-
-                Communicator.getCommMgr().sendMsg(null, Communicator.FP_START);
-
-                FastestPathAlgo fastestPath;
-                fastestPath = new FastestPathAlgo(exploredMap, robot, actualMap, false);
-                
-                if(wrow != -1 || wcol != -1)
-                    fastestPath.findFastestPath(wrow, wcol);
-                fastestPath.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
-
-    			break;
-    		default:
-    			//Set Waypoint by splitting 2-9-9
-    			System.out.println("Start waypoint mark");
-    			try {
-	                String[] waypoints = msg.split("-");
-	                wrow = Integer.parseInt(waypoints[1]);
-	                wcol = Integer.parseInt(waypoints[2]);
-	    			System.out.println(wrow + wcol);
+	            switch (msg) {
+	    		case "0":
+	    			//Explore. Codes from mousePressed in Listener
+	    			System.out.println("Android started exploration");
+	    			CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
+	                cl.show(mapCardsJPanel, "EXPLORATION");
+	
+	                int row = RobotConstants.START_ROW;
+	                int col = RobotConstants.START_COL;
+	
+	                robot.setRobotPos(row, col);
+	
+	                ExplorationAlgo exploration;
+	                exploration = new ExplorationAlgo(exploredMap, actualMap, robot, coverageLimit, timeLimit);
+	
+	                exploration.runExploration();
+	
 	    			break;
-    			}
-    			catch(NullPointerException e) {
-        			System.out.println("NullPointerException");
-    			}
-    			catch(IndexOutOfBoundsException e) {
-        			System.out.println("IndexOutOfBoundsException");
-    			}
-    			catch(Exception e) {
-        			System.out.println(e.toString());
-    			}
-    		}
+	    		case "1":
+	    			//Fastest Path
+	    			System.out.println("Start Fastest Path");
+	    			robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
+	                exploredMap.repaint();
+	
+	                FastestPathAlgo fastestPath;
+	                fastestPath = new FastestPathAlgo(exploredMap, robot, actualMap, false);
+	                
+	                if(wrow != -1 || wcol != -1)
+	                    fastestPath.findFastestPath(wrow, wcol);
+	                fastestPath.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
+	
+	    			break;
+	    		default:
+	    			//Set Waypoint by splitting 2-9-9
+	    			System.out.println("Start waypoint mark");
+	    			try {
+		                String[] waypoints = msg.split("-");
+		                wrow = Integer.parseInt(waypoints[1]);
+		                wcol = Integer.parseInt(waypoints[2]);
+		    			System.out.println(wrow + " " + wcol);
+		    			break;
+	    			}
+	    			catch(NullPointerException e) {
+	        			System.out.println("NullPointerException");
+	    			}
+	    			catch(IndexOutOfBoundsException e) {
+	        			System.out.println("IndexOutOfBoundsException");
+	    			}
+	    			catch(Exception e) {
+	        			System.out.println(e.toString());
+	    			}
+	    		}
+        	}
         }
     }
 
@@ -282,7 +278,7 @@ public class Simulator {
                 exploration = new ExplorationAlgo(exploredMap, actualMap, robot, coverageLimit, timeLimit);
 
                 if (actualRun) {
-                    Communicator.getCommMgr().sendMsg(null, Communicator.EX_START);
+//                    Communicator.getCommMgr().sendMsg(null, Communicator.EX_START);
                 }
 
                 exploration.runExploration();

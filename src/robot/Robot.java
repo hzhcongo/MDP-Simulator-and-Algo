@@ -4,6 +4,7 @@ import map.Map;
 import map.MapConstants;
 import robot.RobotConstants.DIRECTION;
 import robot.RobotConstants.MOVEMENT;
+import simulator.Simulator;
 import utils.Communicator;
 import utils.MapDescriptor;
 
@@ -191,9 +192,9 @@ public class Robot {
         } else {
             Communicator comm = Communicator.getCommMgr();
             if (count == 10) {
-                comm.sendMsg("0", Communicator.INSTRUCTIONS);
+//                comm.sendMsg("0", Communicator.INSTRUCTIONS);
             } else if (count < 10) {
-                comm.sendMsg(Integer.toString(count), Communicator.INSTRUCTIONS);
+//                comm.sendMsg(Integer.toString(count), Communicator.INSTRUCTIONS);
             }
 
             switch (robotDir) {
@@ -211,7 +212,7 @@ public class Robot {
                     break;
             }
 
-            comm.sendMsg(this.getRobotPosRow() + "," + this.getRobotPosCol() + "," + DIRECTION.print(this.getRobotCurDir()), Communicator.BOT_POS);
+//            comm.sendMsg(this.getRobotPosRow() + "," + this.getRobotPosCol() + "," + DIRECTION.print(this.getRobotCurDir()), Communicator.BOT_POS);
         }
     }
 
@@ -220,9 +221,9 @@ public class Robot {
      */
     private void sendMovement(MOVEMENT m, boolean sendMoveToAndroid) {
         Communicator comm = Communicator.getCommMgr();
-        comm.sendMsg(MOVEMENT.print(m) + "", Communicator.INSTRUCTIONS);
+//        comm.sendMsg(MOVEMENT.print(m) + "", Communicator.INSTRUCTIONS);
         if (m != MOVEMENT.CALIBRATE && sendMoveToAndroid) {
-            comm.sendMsg(this.getRobotPosRow() + "," + this.getRobotPosCol() + "," + DIRECTION.print(this.getRobotCurDir()), Communicator.BOT_POS);
+//            comm.sendMsg(this.getRobotPosRow() + "," + this.getRobotPosCol() + "," + DIRECTION.print(this.getRobotCurDir()), Communicator.BOT_POS);
         }
     }
 
@@ -283,38 +284,15 @@ public class Robot {
     public int[] sense(Map explorationMap, Map realMap) {
         int[] result = new int[6];
 
-        if (!realBot) {
-            result[0] = SRFrontLeft.sense(explorationMap, realMap);
-            result[1] = SRFrontCenter.sense(explorationMap, realMap);
-            result[2] = SRFrontRight.sense(explorationMap, realMap);
-            result[3] = SRLeft.sense(explorationMap, realMap);
-            result[4] = SRRight.sense(explorationMap, realMap);
+        
+        result[0] = SRFrontLeft.sense(explorationMap, realMap);
+        result[1] = SRFrontCenter.sense(explorationMap, realMap);
+        result[2] = SRFrontRight.sense(explorationMap, realMap);
+        result[3] = SRLeft.sense(explorationMap, realMap);
+        result[4] = SRRight.sense(explorationMap, realMap);
 //            result[5] = LRLeft.sense(explorationMap, realMap);
-        } else {
-            Communicator comm = Communicator.getCommMgr();
-            String msg = comm.recvMsg();
-            String[] msgArr = msg.split(";");
-
-            if (msgArr[0].equals(Communicator.SENSOR_DATA)) {
-                result[0] = Integer.parseInt(msgArr[1].split("_")[1]);
-                result[1] = Integer.parseInt(msgArr[2].split("_")[1]);
-                result[2] = Integer.parseInt(msgArr[3].split("_")[1]);
-                result[3] = Integer.parseInt(msgArr[4].split("_")[1]);
-                result[4] = Integer.parseInt(msgArr[5].split("_")[1]);
-//                result[5] = Integer.parseInt(msgArr[6].split("_")[1]);
-            }
-
-            SRFrontLeft.senseReal(explorationMap, result[0]);
-            SRFrontCenter.senseReal(explorationMap, result[1]);
-            SRFrontRight.senseReal(explorationMap, result[2]);
-            SRLeft.senseReal(explorationMap, result[3]);
-            SRRight.senseReal(explorationMap, result[4]);
-//            LRLeft.senseReal(explorationMap, result[5]);
-
-            String[] mapStrings = MapDescriptor.generateMapDescriptor(explorationMap);
-            comm.sendMsg(mapStrings[0] + " " + mapStrings[1], Communicator.MAP_STRINGS);
-        }
-
+        
+        
         return result;
     }
 }

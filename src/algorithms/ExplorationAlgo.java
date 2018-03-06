@@ -9,6 +9,8 @@ import robot.RobotConstants.DIRECTION;
 import robot.RobotConstants.MOVEMENT;
 import simulator.Simulator;
 import utils.Communicator;
+import utils.MapDescriptor;
+
 import java.util.Stack;
 
 /**
@@ -44,47 +46,43 @@ public class ExplorationAlgo {
      */
     public void runExploration() {
         if (bot.getRealBot()) {
-            System.out.println("Starting calibration...");
+//            System.out.println("Starting calibration...");
 
-            //wait arduino to give back sensor data
-            Simulator.communicator.recvMsg();
-            if (bot.getRealBot()) {
-                bot.move(MOVEMENT.LEFT, false);
-                Communicator.getCommMgr().recvMsg();
-                bot.move(MOVEMENT.CALIBRATE, false);
-                Communicator.getCommMgr().recvMsg();
-                bot.move(MOVEMENT.LEFT, false);
-                Communicator.getCommMgr().recvMsg();
-                bot.move(MOVEMENT.CALIBRATE, false);
-                Communicator.getCommMgr().recvMsg();
-                bot.move(MOVEMENT.RIGHT, false);
-                Communicator.getCommMgr().recvMsg();
-                bot.move(MOVEMENT.CALIBRATE, false);
-                Communicator.getCommMgr().recvMsg();
-                bot.move(MOVEMENT.RIGHT, false);
-            }
+//            Simulator.communicator.recvMsg();
+//            if (bot.getRealBot()) {
+//                bot.move(MOVEMENT.LEFT, false);
+//                Communicator.getCommMgr().recvMsg();
+//                bot.move(MOVEMENT.CALIBRATE, false);
+//                Communicator.getCommMgr().recvMsg();
+//                bot.move(MOVEMENT.LEFT, false);
+//                Communicator.getCommMgr().recvMsg();
+//                bot.move(MOVEMENT.CALIBRATE, false);
+//                Communicator.getCommMgr().recvMsg();
+//                bot.move(MOVEMENT.RIGHT, false);
+//                Communicator.getCommMgr().recvMsg();
+//                bot.move(MOVEMENT.CALIBRATE, false);
+//                Communicator.getCommMgr().recvMsg();
+//                bot.move(MOVEMENT.RIGHT, false);
+//            }
 
-            while (true) {
-                System.out.println("Waiting for EX_START...");
-                String msg = Communicator.getCommMgr().recvMsg();
-                String[] msgArr = msg.split(";");
-                if (msgArr[0].equals(Communicator.EX_START)) break;
-            }
+//            while (true) {
+//                System.out.println("Waiting for Arduino to send data...");
+//                String msg = Simulator.communicator.recvMsg();
+//                String[] msgArr = msg.split(";");
+//                if (msgArr[0].equals(Communicator.EX_START)) break;
+//            }
         }
         exploredMap.getCell(1,1).setIsWalked(true);
-        
-        System.out.println("Starting exploration...");
-        System.out.println();
 
         startTime = System.currentTimeMillis();
         endTime = startTime + (timeLimit * 1000);
 
         if (bot.getRealBot()) {
-            Communicator.getCommMgr().sendMsg(null, Communicator.BOT_START);
+//        	Simulator.communicator.sendMsg(null, Communicator.BOT_START);
         }
 
-        areaExplored = calculateAreaExplored();
-        System.out.println("Explored Area: " + areaExplored);
+//        areaExplored = calculateAreaExplored();
+//        System.out.println("Explored Area: " + areaExplored);
 
         explorationLoop(bot.getRobotPosRow(), bot.getRobotPosCol());
     }
@@ -116,68 +114,67 @@ public class ExplorationAlgo {
     private void nextMove() {
     	x = bot.getRobotPosRow();
     	y = bot.getRobotPosCol();
-    	System.out.println(x);
-    	System.out.println(y);
+    	System.out.println(x + " " + y);
     	   	
-    if(southFree() && !exploredMap.getCell(x-1,y).getIsWalked()) {
-    		
-    	if(bot.getRobotCurDir() == DIRECTION.WEST) {
-    		moveBot(MOVEMENT.LEFT);
-    	}
-    	else while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
-    		moveBot(MOVEMENT.RIGHT);
-    	}
-    	moveBot(MOVEMENT.FORWARD);
-    	directionMoved.push("S");
-        	
-    	exploredMap.getCell(x-1, y).setIsWalked(true);
-
-	}
-    else if (eastFree() && !exploredMap.getCell(x,y+1).getIsWalked()) {
-    	//Map2 eastfree returns true as it never detect obstacle at top right side. 
-    	//SOLVE BY PUTTING 1 MORE SENSOR, 
-    	//OR REMOVE BACKWARDS, 
-    	//OR IF DIRECTION NOT ALL 3 CELLS EXPLORED, TURN TO FACE THERE TO EXPLORE BEFORE. xFree() need check
-    	if (bot.getRobotCurDir() == DIRECTION.SOUTH) {
-    		moveBot(MOVEMENT.LEFT);
-    	}
-    	else while (bot.getRobotCurDir() != DIRECTION.EAST) {
-    		moveBot(MOVEMENT.RIGHT);
+	    if(southFree() && !exploredMap.getCell(x-1,y).getIsWalked()) {
+	    		
+	    	if(bot.getRobotCurDir() == DIRECTION.WEST) {
+	    		moveBot(MOVEMENT.LEFT);
+	    	}
+	    	else while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
+	    		moveBot(MOVEMENT.RIGHT);
+	    	}
+	    	moveBot(MOVEMENT.FORWARD);
+	    	directionMoved.push("S");
+	        	
+	    	exploredMap.getCell(x-1, y).setIsWalked(true);
+	
 		}
-		moveBot(MOVEMENT.FORWARD);
-		directionMoved.push("E");
-		
-	  	exploredMap.getCell(x, y+1).setIsWalked(true);
-	}
-    else if (westFree() && !exploredMap.getCell(x,y-1).getIsWalked()) {
-        	
-    	if (bot.getRobotCurDir() == DIRECTION.NORTH) {
-    		moveBot(MOVEMENT.LEFT);
-    	}
-		else while (bot.getRobotCurDir() != DIRECTION.WEST) {
-			moveBot(MOVEMENT.RIGHT);
+	    else if (eastFree() && !exploredMap.getCell(x,y+1).getIsWalked()) {
+	    	//Map2 eastfree returns true as it never detect obstacle at top right side. 
+	    	//SOLVE BY PUTTING 1 MORE SENSOR, 
+	    	//OR REMOVE BACKWARDS, 
+	    	//OR IF DIRECTION NOT ALL 3 CELLS EXPLORED, TURN TO FACE THERE TO EXPLORE BEFORE. xFree() need check
+	    	if (bot.getRobotCurDir() == DIRECTION.SOUTH) {
+	    		moveBot(MOVEMENT.LEFT);
+	    	}
+	    	else while (bot.getRobotCurDir() != DIRECTION.EAST) {
+	    		moveBot(MOVEMENT.RIGHT);
+			}
+			moveBot(MOVEMENT.FORWARD);
+			directionMoved.push("E");
+			
+		  	exploredMap.getCell(x, y+1).setIsWalked(true);
 		}
-
-    	moveBot(MOVEMENT.FORWARD);
-    	directionMoved.push("W");
-    	exploredMap.getCell(x, y-1).setIsWalked(true);
-    }
-    else if (northFree() && !exploredMap.getCell(x+1,y).getIsWalked()) {
-
-    	if (bot.getRobotCurDir() == DIRECTION.EAST) {
-    		moveBot(MOVEMENT.LEFT);
-    	}
-    	else while (bot.getRobotCurDir() != DIRECTION.NORTH) {
-    		moveBot(MOVEMENT.RIGHT);
-    	}
-    	
-    	moveBot(MOVEMENT.FORWARD);
-    	directionMoved.push("N");
-    	exploredMap.getCell(x+1, y).setIsWalked(true);
-    }  
-    else{
-    	fastestPath();
-    	senseAndRepaint();
+	    else if (westFree() && !exploredMap.getCell(x,y-1).getIsWalked()) {
+	        	
+	    	if (bot.getRobotCurDir() == DIRECTION.NORTH) {
+	    		moveBot(MOVEMENT.LEFT);
+	    	}
+			else while (bot.getRobotCurDir() != DIRECTION.WEST) {
+				moveBot(MOVEMENT.RIGHT);
+			}
+	
+	    	moveBot(MOVEMENT.FORWARD);
+	    	directionMoved.push("W");
+	    	exploredMap.getCell(x, y-1).setIsWalked(true);
+	    }
+	    else if (northFree() && !exploredMap.getCell(x+1,y).getIsWalked()) {
+	
+	    	if (bot.getRobotCurDir() == DIRECTION.EAST) {
+	    		moveBot(MOVEMENT.LEFT);
+	    	}
+	    	else while (bot.getRobotCurDir() != DIRECTION.NORTH) {
+	    		moveBot(MOVEMENT.RIGHT);
+	    	}
+	    	
+	    	moveBot(MOVEMENT.FORWARD);
+	    	directionMoved.push("N");
+	    	exploredMap.getCell(x+1, y).setIsWalked(true);
+	    }  
+	    else{
+	    	fastestPath();
+	    	senseAndRepaint();
     	}
     }
     
@@ -376,32 +373,39 @@ public class ExplorationAlgo {
      */
     private void moveBot(MOVEMENT m) {
         bot.move(m);
-        if (!bot.getRealBot()) {
-            senseAndRepaint();
-        } else {
-            Simulator.communicator.recvMsg();
-        }
+//        if (!bot.getRealBot()) {
+//            senseAndRepaint();
+//        } else {
+//            Simulator.communicator.recvMsg();
+//        }
 
-        if (bot.getRealBot() && !calibrationMode) {
-            calibrationMode = true;
-
-            if (canCalibrateOnTheSpot(bot.getRobotCurDir())) {
-                lastCalibrate = 0;
-                moveBot(MOVEMENT.CALIBRATE);
-            } else {
-                lastCalibrate++;
-                if (lastCalibrate >= 5) {
-                    DIRECTION targetDir = getCalibrationDirection();
-                    if (targetDir != null) {
-                        lastCalibrate = 0;
-                        calibrateBot(targetDir);
-                    }
-                }
-            }
-
-            calibrationMode = false;
-        }
+//        if (bot.getRealBot() && !calibrationMode) {
+//            calibrationMode = true;
+//
+//            if (canCalibrateOnTheSpot(bot.getRobotCurDir())) {
+//                lastCalibrate = 0;
+//                moveBot(MOVEMENT.CALIBRATE);
+//            } else {
+//                lastCalibrate++;
+//                if (lastCalibrate >= 5) {
+//                    DIRECTION targetDir = getCalibrationDirection();
+//                    if (targetDir != null) {
+//                        lastCalibrate = 0;
+//                        calibrateBot(targetDir);
+//                    }
+//                }
+//            }
+//
+//            calibrationMode = false;
+//        }
     	senseAndRepaint();
+    	
+//        String[] mapStrings = MapDescriptor.generateMapDescriptor(explorationMap);
+//        Simulator.communicator.sendMsg(mapStrings[0] + " " + mapStrings[1], Communicator.MAP_STRINGS);
+
+        String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
+        String output = MOVEMENT.print(m) + "-" + mapStrings[0] + "-" + mapStrings[1];
+    	Simulator.communicator.sendMsg(output, null);
     }
 
     /**
