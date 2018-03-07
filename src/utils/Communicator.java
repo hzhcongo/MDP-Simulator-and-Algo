@@ -44,6 +44,7 @@ public class Communicator {
             String HOST = "192.168.4.2";
             int PORT = 2323;
             connectionSocket = new Socket(HOST, PORT);
+            connectionSocket.setTcpNoDelay(true);
 
             writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(connectionSocket.getOutputStream())));
             reader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
@@ -103,11 +104,11 @@ public class Communicator {
             writer.write(msg);
             writer.flush();
             // Simulate actual movement sleeping
-            try {
-                TimeUnit.MILLISECONDS.sleep(3200);
-            } catch (InterruptedException e) {
-                System.out.println("Error in Robot.move()");
-            }
+//            try {
+//                TimeUnit.MILLISECONDS.sleep(1000);
+//            } catch (InterruptedException e) {
+//                System.out.println("Error in Robot.move()");
+//            }
             System.out.println("Message sent: " + msg);
         } catch (IOException e) {
             System.out.println("IOException at sendMsg()");

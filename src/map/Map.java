@@ -163,16 +163,16 @@ public class Map extends JPanel {
     }
     
     /**
-     * Overrides JComponent's paintComponent(). 
-     * Creates a 2D array of _DisplayCells to store current map state. 
+     * Overrides JComponent's paintComponent() 
+     * Creates a 2D array of DisplayCell to store current map state
      * Then paints cells and robot with their designated colors
      */
     public void paintComponent(Graphics g) {
         // Create 2D array of _DisplayCells for rendering
-        _DisplayCell[][] _mapCells = new _DisplayCell[MapConstants.MAP_ROWS][MapConstants.MAP_COLS];
+        DisplayCell[][] mapCells = new DisplayCell[MapConstants.MAP_ROWS][MapConstants.MAP_COLS];
         for (int mapRow = 0; mapRow < MapConstants.MAP_ROWS; mapRow++) {
             for (int mapCol = 0; mapCol < MapConstants.MAP_COLS; mapCol++) {
-                _mapCells[mapRow][mapCol] = new _DisplayCell(mapCol * GFXConstants.CELL_SIZE, mapRow * GFXConstants.CELL_SIZE, GFXConstants.CELL_SIZE);
+                mapCells[mapRow][mapCol] = new DisplayCell(mapCol * GFXConstants.CELL_SIZE, mapRow * GFXConstants.CELL_SIZE, GFXConstants.CELL_SIZE);
             }
         }
 
@@ -195,7 +195,7 @@ public class Map extends JPanel {
                 }
 
                 g.setColor(cellColor);
-                g.fillRect(_mapCells[mapRow][mapCol].cellX, _mapCells[mapRow][mapCol].cellY, _mapCells[mapRow][mapCol].cellSize, _mapCells[mapRow][mapCol].cellSize);
+                g.fillRect(mapCells[mapRow][mapCol].cellX, mapCells[mapRow][mapCol].cellY, mapCells[mapRow][mapCol].cellSize, mapCells[mapRow][mapCol].cellSize);
 
             }
         }
@@ -225,12 +225,12 @@ public class Map extends JPanel {
         }
     }
 
-    private class _DisplayCell {
+    private class DisplayCell {
         public final int cellX;
         public final int cellY;
         public final int cellSize;
 
-        public _DisplayCell(int borderX, int borderY, int borderSize) {
+        public DisplayCell(int borderX, int borderY, int borderSize) {
             this.cellX = borderX + GFXConstants.CELL_LINE_WEIGHT;
             this.cellY = GFXConstants.MAP_H - (borderY - GFXConstants.CELL_LINE_WEIGHT);
             this.cellSize = borderSize - (GFXConstants.CELL_LINE_WEIGHT * 2);

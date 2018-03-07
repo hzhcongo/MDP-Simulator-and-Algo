@@ -77,10 +77,6 @@ public class ExplorationAlgo {
         startTime = System.currentTimeMillis();
         endTime = startTime + (timeLimit * 1000);
 
-        if (bot.getRealBot()) {
-//        	Simulator.communicator.sendMsg(null, Communicator.BOT_START);
-        }
-
 //        areaExplored = calculateAreaExplored();
 //        System.out.println("Explored Area: " + areaExplored);
 
@@ -94,6 +90,11 @@ public class ExplorationAlgo {
      * 3. System.currentTimeMillis() > endTime
      */
     private void explorationLoop(int r, int c) {
+
+        if (bot.getRealBot()) {
+        	Simulator.communicator.sendMsg("E", null);
+        }
+        
         do {
         	senseAndRepaint();
             nextMove();
@@ -404,7 +405,8 @@ public class ExplorationAlgo {
 //        Simulator.communicator.sendMsg(mapStrings[0] + " " + mapStrings[1], Communicator.MAP_STRINGS);
 
         String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
-        String output = MOVEMENT.print(m) + "-" + mapStrings[0] + "-" + mapStrings[1];
+        String output = "$-" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
+        		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" + mapStrings[0] + "-" + mapStrings[1] + "-" ;
     	Simulator.communicator.sendMsg(output, null);
     }
 
@@ -413,7 +415,7 @@ public class ExplorationAlgo {
      */
     public void senseAndRepaint() {
         bot.setSensors();
-        bot.sense(exploredMap, realMap);
+        bot.sense(exploredMap, realMap, bot);
         exploredMap.repaint();
     }
 

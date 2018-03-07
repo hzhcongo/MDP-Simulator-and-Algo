@@ -100,7 +100,7 @@ public class MapDescriptor {
             }
         }
         if (Part2_bin.length() > 0) Part2.append(binToHex(Part2_bin.toString()));
-        while (Part2.length() < 76) Part2.append(0); // Padded till same length as MDF[1]
+        while (Part2.length() % 8 != 0) Part2.append(0); // Padded till same length as MDF[1]
         System.out.println("P2 MDF: " + Part2.toString());
         ret[1] = Part2.toString();
 

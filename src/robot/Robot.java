@@ -281,17 +281,46 @@ public class Robot {
     /**
      * Sense surroundings and stores received values in integer array
      */
-    public int[] sense(Map explorationMap, Map realMap) {
+    public int[] sense(Map explorationMap, Map realMap, Robot bot) {
         int[] result = new int[6];
 
-        
+        if (!realBot) {
         result[0] = SRFrontLeft.sense(explorationMap, realMap);
         result[1] = SRFrontCenter.sense(explorationMap, realMap);
         result[2] = SRFrontRight.sense(explorationMap, realMap);
         result[3] = SRLeft.sense(explorationMap, realMap);
         result[4] = SRRight.sense(explorationMap, realMap);
 //            result[5] = LRLeft.sense(explorationMap, realMap);
-        
+        } else {
+
+        	String msg1 = Simulator.communicator.recvMsg();
+	            System.out.println("SENSED" + msg1);
+//        	String msg2 = Simulator.communicator.recvMsg();
+//	            System.out.println("SENSED" + msg2);
+//        	String msg3 = Simulator.communicator.recvMsg();
+//	            System.out.println("SENSED" + msg3);
+//        	String msg4 = Simulator.communicator.recvMsg();S
+//	            System.out.println("SENSED" + msg4);
+//        	String msg5 = Simulator.communicator.recvMsg();
+//	            System.out.println("SENSED" + msg5);
+//            String[] msgArr = msg.split(";");
+            
+//            if (msgArr[0].equals(Communicator.SENSOR_DATA)) {
+//                result[0] = Integer.parseInt(msgArr[1].split("_")[1]);
+//                result[1] = Integer.parseInt(msgArr[2].split("_")[1]);
+//                result[2] = Integer.parseInt(msgArr[3].split("_")[1]);
+//                result[3] = Integer.parseInt(msgArr[4].split("_")[1]);
+//                result[4] = Integer.parseInt(msgArr[5].split("_")[1]);
+////                result[5] = Integer.parseInt(msgArr[6].split("_")[1]);
+//            }
+
+            SRLeft.senseReal(explorationMap, msg1.charAt(0));
+//            SRFrontLeft.senseReal(explorationMap, msg2.charAt(0));
+//            SRFrontCenter.senseReal(explorationMap, msg3.charAt(0));
+//            SRFrontRight.senseReal(explorationMap, msg4.charAt(0));
+//            SRRight.senseReal(explorationMap, msg5.charAt(0));
+//            LRLeft.senseReal(explorationMap, result[5]);
+        }
         
         return result;
     }
