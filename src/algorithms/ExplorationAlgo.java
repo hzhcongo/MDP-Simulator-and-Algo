@@ -372,18 +372,10 @@ public class ExplorationAlgo {
     /**
      * Moves the bot, repaints the map and calls senseAndRepaint().
      */
-    private void moveBot(MOVEMENT m) {
+    public void moveBot(MOVEMENT m) {
 		System.out.println("moveBot(): " + MOVEMENT.print(m));
         
-		bot.move(m);
-        String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
-        String output = "@" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
-        		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
-        		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
-
-    	if(bot.getRealBot()) {
-	    	Simulator.communicator.sendMsg(output, null);
-    	}
+		bot.move(m, bot, exploredMap);
 //        if (!bot.getRealBot()) {
 //            senseAndRepaint();
 //        } else {

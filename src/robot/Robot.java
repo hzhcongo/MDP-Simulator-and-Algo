@@ -163,7 +163,37 @@ public class Robot {
 
     /**
      * Overloaded method
-     * Calls this.move(MOVEMENT m, boolean sendMoveToAndroid = true)
+     */
+    public void move(MOVEMENT m, Robot bot, Map exploredMap) {
+    	switch(m) {
+    	case FORWARD:  DirectionMoved.add("F");
+    					break;
+    	case BACKWARD:  DirectionMoved.add("B");
+						break;
+    	case LEFT:		DirectionMoved.add("L");
+    					break;
+    	case RIGHT: 	DirectionMoved.add("R");
+    					break;
+    	case ERROR: 	System.out.println("MOVEMENT.ERROR provided to move()");
+						break;
+    	case CALIBRATE: System.out.println("MOVEMENT.CALIBRATE provided to move()");
+						break;
+    	}
+        this.move(m, true);
+        
+        String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
+        String output = "@" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
+        		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
+        		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
+//        System.out.println("Instruction: " + output);
+        System.out.println(output);
+    	if(bot.getRealBot()) {
+	    	Simulator.communicator.sendMsg(output, null);
+    	}
+    }
+    
+    /**
+     * Overloaded method
      */
     public void move(MOVEMENT m) {
     	switch(m) {
@@ -182,13 +212,13 @@ public class Robot {
     	}
         this.move(m, true);
     }
-
+    
     /**
      * Sends a number instead of 'F' for multiple continuous forward movements
      */
-    public void moveForwardMultiple(int count) {
+    public void moveForwardMultiple(int count, Robot bot, Map exploredMap) {
         if (count == 1) {
-            move(MOVEMENT.FORWARD);
+            move(MOVEMENT.FORWARD, bot, exploredMap);
         } else {
             Communicator comm = Communicator.getCommMgr();
             if (count == 10) {

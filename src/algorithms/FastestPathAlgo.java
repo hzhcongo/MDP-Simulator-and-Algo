@@ -7,7 +7,9 @@ import robot.Robot;
 import robot.RobotConstants;
 import robot.RobotConstants.DIRECTION;
 import robot.RobotConstants.MOVEMENT;
+import simulator.Simulator;
 import utils.Communicator;
+import utils.MapDescriptor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -168,7 +170,7 @@ public class FastestPathAlgo {
      * Find fastest path from the robot's current pos to [goalRow, goalCol]
      */
     public String findFastestPath(int goalRow, int goalCol) {
-    	
+    	//TTD: FIND A WAY TO GIVE ANDROID DIRECTION, ALONG WITH CELL TO TELEPORT TO
     	initAlgo(exploredMap, bot);
     	
     	System.out.print("\nCalculating fastest path from (" + current.getRow() + ", " + current.getCol() + ") to goal (" + goalRow + ", " + goalCol + ") ");
@@ -268,12 +270,50 @@ public class FastestPathAlgo {
      */
     private String executePath(Stack<Cell> path, int goalRow, int goalCol) {
         StringBuilder outputString = new StringBuilder();
+        outputString.append("@");
 
         Cell temp = path.pop();
         DIRECTION targetDir;
 
-        ArrayList<MOVEMENT> movements = new ArrayList<>();
+        ArrayList<Character> movements = new ArrayList<>();
         
+//        while ((bot.getRobotPosRow() != goalRow) || (bot.getRobotPosCol() != goalCol)) {
+//            if (bot.getRobotPosRow() == temp.getRow() && bot.getRobotPosCol() == temp.getCol()) {
+//                temp = path.pop();
+//            }
+//
+//            targetDir = getTargetDir(bot.getRobotPosRow(), bot.getRobotPosCol(), bot.getRobotCurDir(), temp);
+//
+//            //If bot has to move backwards (To save 1 rotation)
+//            if(targetDir == DIRECTION.SOUTH && bot.getRobotCurDir() == DIRECTION.NORTH ||
+//            		targetDir == DIRECTION.NORTH && bot.getRobotCurDir() == DIRECTION.SOUTH ||
+//            		targetDir == DIRECTION.WEST && bot.getRobotCurDir() == DIRECTION.EAST ||
+//            		targetDir == DIRECTION.EAST && bot.getRobotCurDir() == DIRECTION.WEST) {
+////                bot.move(MOVEMENT.BACKWARD);
+//        		bot.move(MOVEMENT.BACKWARD, bot, exploredMap);
+//            }
+//            //Else rotate to the right direction before moving forward
+//            else {
+//            	
+//	            while (bot.getRobotCurDir() != targetDir) {
+////	                bot.move(getTargetMove(bot.getRobotCurDir(), targetDir));
+//	        		bot.move(getTargetMove(bot.getRobotCurDir(), targetDir), bot, exploredMap);
+//	            }
+////	            bot.move(MOVEMENT.FORWARD);
+//        		bot.move(MOVEMENT.FORWARD, bot, exploredMap);
+//            }
+//            
+//            ExplorationAlgo explalgo = new ExplorationAlgo(exploredMap, realMap, bot, 300, 3600);
+//            explalgo.senseAndRepaint();
+//            
+//            System.out.println("Direction " + DIRECTION.print(targetDir)+ " to (" + bot.getRobotPosRow() + ", " + bot.getRobotPosCol() + ")");
+//            
+//            movements.add(MOVEMENT.FORWARD);
+//            outputString.append(MOVEMENT.print(MOVEMENT.FORWARD));
+//        }
+        
+        //SEND MOVEMENTS AS STRING THEN 'SIMULATE' SAME SPEED AS ACTUAL BOT MOVEMENT. NEED FIND ACTUAL BOT SPEED
+        //TTD: SEND AS SUBSETS: F4-R1-F2-L3-B1
         while ((bot.getRobotPosRow() != goalRow) || (bot.getRobotPosCol() != goalCol)) {
             if (bot.getRobotPosRow() == temp.getRow() && bot.getRobotPosCol() == temp.getCol()) {
                 temp = path.pop();
@@ -286,28 +326,44 @@ public class FastestPathAlgo {
             		targetDir == DIRECTION.NORTH && bot.getRobotCurDir() == DIRECTION.SOUTH ||
             		targetDir == DIRECTION.WEST && bot.getRobotCurDir() == DIRECTION.EAST ||
             		targetDir == DIRECTION.EAST && bot.getRobotCurDir() == DIRECTION.WEST) {
+                movements.add(MOVEMENT.print(MOVEMENT.BACKWARD));
+                outputString.append(MOVEMENT.print(MOVEMENT.BACKWARD));
                 bot.move(MOVEMENT.BACKWARD);
+//        		bot.move(MOVEMENT.BACKWARD, bot, exploredMap);
             }
             //Else rotate to the right direction before moving forward
             else {
             	
 	            while (bot.getRobotCurDir() != targetDir) {
+	                movements.add(MOVEMENT.print(getTargetMove(bot.getRobotCurDir(), targetDir)));
+	                outputString.append(MOVEMENT.print(getTargetMove(bot.getRobotCurDir(), targetDir)));
 	                bot.move(getTargetMove(bot.getRobotCurDir(), targetDir));
+//	        		bot.move(getTargetMove(bot.getRobotCurDir(), targetDir), bot, exploredMap);
 	            }
+                movements.add(MOVEMENT.print(MOVEMENT.FORWARD));
+                outputString.append(MOVEMENT.print(MOVEMENT.FORWARD));
 	            bot.move(MOVEMENT.FORWARD);
+//        		bot.move(MOVEMENT.FORWARD, bot, exploredMap);
             }
             
-            ExplorationAlgo explalgo = new ExplorationAlgo(exploredMap, realMap, bot, 300, 3600);
+            ExplorationAlgo explalgo = new ExplorationAlgo(exploredMap, realMap, bot, 300, 3000);
             explalgo.senseAndRepaint();
             
             System.out.println("Direction " + DIRECTION.print(targetDir)+ " to (" + bot.getRobotPosRow() + ", " + bot.getRobotPosCol() + ")");
             
-            movements.add(MOVEMENT.FORWARD);
-            outputString.append(MOVEMENT.print(MOVEMENT.FORWARD));
+//            movements.add(MOVEMENT.FORWARD);
+//            outputString.append(MOVEMENT.print(MOVEMENT.FORWARD));
         }
-
+//        System.out.println("Instruction char array to send Arduino:\n" + movements.toString());
+        System.out.println("\nInstruction string:" + outputString.toString());
 //        System.out.println("\nMovements: " + outputString.toString());
+        
+    	if(bot.getRealBot()) {
+	    	Simulator.communicator.sendMsg(outputString.toString(), null);
+    	}
+    	
         return outputString.toString();
+//        return movements.toString();
     }
 
     /**
