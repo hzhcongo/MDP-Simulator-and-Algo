@@ -49,7 +49,7 @@ public class Communicator {
             writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(connectionSocket.getOutputStream())));
             reader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
-            System.out.println("openConnection(): " + "Connection established successfully!");
+            System.out.println("openConnection(): " + " success");
 
             return;
         } catch (UnknownHostException e) {
@@ -90,7 +90,7 @@ public class Communicator {
     }
 
     public void sendMsg(String msg, String msgType) {
-        System.out.println("Sending messge..");
+        System.out.print("Sending message: ");
         try {
 //            String outputMsg;
 //            if (msg == null) {
@@ -103,13 +103,14 @@ public class Communicator {
 
             writer.write(msg);
             writer.flush();
-            // Simulate actual movement sleeping
+            
+//			Simulate actual movement by sleeping app
 //            try {
 //                TimeUnit.MILLISECONDS.sleep(1000);
 //            } catch (InterruptedException e) {
 //                System.out.println("Error in Robot.move()");
 //            }
-            System.out.println("Message sent: " + msg);
+            System.out.println(msg);
         } catch (IOException e) {
             System.out.println("IOException at sendMsg()");
         } catch (Exception e) {
@@ -119,13 +120,13 @@ public class Communicator {
     }
 
     public String recvMsg() {
-        System.out.println("Recieving messge..");
+        System.out.print("Recieving message: ");
         try {
             StringBuilder sb = new StringBuilder();
             String input = reader.readLine();
             
             sb.append(input);
-            System.out.println("Message recieved: " + sb.toString());
+            System.out.println(sb.toString());
             return sb.toString();
         } catch (IOException e) {
             System.out.println("IOException at recvMsg()");

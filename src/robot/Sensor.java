@@ -105,6 +105,7 @@ public class Sensor {
      */
     private void processSensorVal(Map exploredMap, int sensorVal, int rowInc, int colInc) {
     	
+//		WHY NEED THIS
 //    	if (sensorVal == 0) return;  // return value for LR sensor if obstacle before lowerRange
 
         // Check if starting point is valid for sensors with lowerRange > 1.

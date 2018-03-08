@@ -29,7 +29,7 @@ public class Simulator {
 
     private static Robot robot;						// robot for simulation
     
-    private static int timeLimit = 3600;            // time limit
+    private static int timeLimit = 3000;            // time limit
     private static int coverageLimit = 300;         // coverage limit
 
     public static final Communicator communicator = Communicator.getCommMgr();
@@ -62,10 +62,12 @@ public class Simulator {
 
         	while (true) {
                 msg = communicator.recvMsg();
+                
+//              FOR NON-ANDROID DRY RUN
 //        		msg = "0";
 	            switch (msg) {
 	    		case "0":
-	    			//Explore. Codes from mousePressed in Listener
+	    			//Explore
 	    			System.out.println("Android started exploration");
 	    			CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
 	                cl.show(mapCardsJPanel, "EXPLORATION");
@@ -96,7 +98,7 @@ public class Simulator {
 	
 	    			break;
 	    		default:
-	    			//Set Waypoint by splitting 2-9-9
+	    			//Set Waypoint by splitting a-x-y
 	    			System.out.println("Start waypoint mark");
 	    			try {
 		                String[] waypoints = msg.split("-");
@@ -213,13 +215,6 @@ public class Simulator {
                             CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
                             cl.show(mapCardsJPanel, "REAL_MAP");
                             actualMap.repaint();
-                            
-//                            loadMapDialog.setVisible(false);
-//                            loadMapDialog.setSize(0, 0);
-//                            loadMapDialog.setOpacity(0);
-//                            loadMapDialog.dispose();
-//                            loadTF.setVisible(false);
-//                            loadMapButton.setVisible(false);
                         }
                     });
 
@@ -227,13 +222,6 @@ public class Simulator {
                     loadMapDialog.add(loadTF);
                     loadMapDialog.add(loadMapButton);
                     loadMapDialog.setVisible(true);
-                    
-//                    loadMapDialog.setVisible(false);
-//                    loadMapDialog.setSize(0, 0);
-//                    loadMapDialog.setOpacity(0);
-//                    loadMapDialog.dispose();
-//                    loadTF.setVisible(false);
-//                    loadMapButton.setVisible(false);
                 }
             });
             buttonsJPanel.add(loadMapBtn);
@@ -277,7 +265,8 @@ public class Simulator {
 
                 ExplorationAlgo exploration;
                 exploration = new ExplorationAlgo(exploredMap, actualMap, robot, coverageLimit, timeLimit);
-
+                
+//              MOVED SENDING TO SWITCH CASE
                 if (actualRun) {
 //                    Communicator.getCommMgr().sendMsg(null, Communicator.EX_START);
                 }
@@ -408,7 +397,6 @@ public class Simulator {
                         new CoverageExploration().execute();
                         CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
                         cl.show(mapCardsJPanel, "EXPLORATION");
-//                        coverageExploDialog.setVisible(false);
                     }
                 });
 
@@ -416,7 +404,6 @@ public class Simulator {
                 coverageExploDialog.add(coverageTF);
                 coverageExploDialog.add(coverageSaveButton);
                 coverageExploDialog.setVisible(true);
-//                coverageExploDialog.setVisible(false);
             }
         });
         buttonsJPanel.add(btn_CoverageExploration);

@@ -18,7 +18,7 @@ import java.util.Stack;
  */
 
 public class ExplorationAlgo {
-    private final Map exploredMap;
+    public final Map exploredMap;
     private final Map realMap;
     private final Robot bot;
     private final int coverageLimit;
@@ -46,6 +46,7 @@ public class ExplorationAlgo {
      */
     public void runExploration() {
         if (bot.getRealBot()) {
+//        	FOR CALIBRATION
 //            System.out.println("Starting calibration...");
 
 //            Simulator.communicator.recvMsg();
@@ -95,16 +96,19 @@ public class ExplorationAlgo {
     	senseAndRepaint();
 
         do {
-            System.out.println("looped");
+            System.out.println("");
+            System.out.println("Entered explore do-while");
+            
+            if (bot.getTouchedGoal() && areaExplored >= coverageLimit) {
+                System.out.println("Touched goal and full coverage achieved.");
+            	break;
+            }
 
             nextMove();
 
             areaExplored = calculateAreaExplored();
-            System.out.println("Area explored: " + areaExplored);
-            if (areaExplored >= 300) {
-            	break;
-            }
-        } while (areaExplored <= coverageLimit && System.currentTimeMillis() <= endTime);
+//            System.out.println("Area explored: " + areaExplored);
+        } while ((areaExplored <= coverageLimit && System.currentTimeMillis() <= endTime));
 
         goHome();
     }
@@ -115,7 +119,7 @@ public class ExplorationAlgo {
     private void nextMove() {
     	x = bot.getRobotPosRow();
     	y = bot.getRobotPosCol();
-    	System.out.println(x + " " + y);
+    	System.out.println("Bot current pos: " + x + ", " + y);
     	   	
 	    if(southFree() && !exploredMap.getCell(x-1,y).getIsWalked()) {
 	    		
@@ -180,6 +184,7 @@ public class ExplorationAlgo {
     }
     
     private boolean fastestPath() {
+		System.out.println("Doing fastest path for Exploration");
     	int currentcellrow = bot.getRobotPosRow();
     	int currentcellcol = bot.getRobotPosCol();
     	exploredMap.getCell(currentcellrow,currentcellcol).setIsWalked(true);
@@ -188,19 +193,6 @@ public class ExplorationAlgo {
     	int z = 0; //z is to store the array counter
     	int num = 999; //storing the minimum cost
     	
-    	//iterate through the cells of all the map to get the cells that have been explored but not walked and not obstacle
-    	//top-down faster than bottom-up loop as robot less chance of going to cells that's further from goal
-//    	for (int i = 1; i < 19;i++) {
-//    		for (int j = 1; j < 14;j++) {
-//   			if (!(exploredMap.getCell(i, j).getIsWalked()) && (exploredMap.getCell(i, j).getIsExplored()) && !(exploredMap.getCell(i, j).getIsObstacle())) {  				
-//    				if (exploredMap.checkIfWalkable(i,j)) {
-//    				array[0][z] = i; //storing the row values 
-//    				array[1][z] = j; //storing the col values
-//    				z++;
-//    				}
-//    			}	
-//    		}
-//    	}
     	for (int i = 18; i > 0;i--) {
     		for (int j = 13; j > 0;j--) {
    			if (!(exploredMap.getCell(i, j).getIsWalked()) && (exploredMap.getCell(i, j).getIsExplored()) && !(exploredMap.getCell(i, j).getIsObstacle())) {  				
@@ -214,20 +206,21 @@ public class ExplorationAlgo {
     	}
     	int minCost = 999;
     		//iterate thru the above array
-    		for (int i = 0; i<z; i++) {
-    			int x = (Math.abs(bot.getRobotPosRow() - array[0][i]) + Math.abs(bot.getRobotPosCol() - array[1][i])); //finding the nearest cell by comparing row and col
+		for (int i = 0; i<z; i++) {
+			int x = (Math.abs(bot.getRobotPosRow() - array[0][i]) + Math.abs(bot.getRobotPosCol() - array[1][i])); //finding the nearest cell by comparing row and col
 //    			int x = (Math.abs(MapConstants.GOAL_ROW - array[0][i]) + Math.abs(MapConstants.GOAL_COL - array[1][i])); //finding the nearest cell to goal by comparing row and col
 
-    			if ((x < minCost)) {
-    				minCost = x;
-    				System.out.println(minCost);
-    				num = i;
-    			}
-    		}	   
+			if ((x < minCost)) {
+				minCost = x;
+//    				System.out.println(minCost);
+				num = i;
+			}
+		}	   
 
 		int x = array[0][num];
 		int y = array[1][num];
 
+		System.out.println("Executing fastest path from Exploration");
     	goToCell.findFastestPath(x, y);
     	senseAndRepaint();
     	return false;
@@ -296,6 +289,9 @@ public class ExplorationAlgo {
      * Returns the robot to START after exploration and points the bot northwards.
      */
     private void goHome() {
+    	
+		System.out.println("Going home");
+		
         if (!bot.getTouchedGoal() && coverageLimit == 300 && timeLimit == 3600) {
             FastestPathAlgo goToGoal = new FastestPathAlgo(exploredMap, bot, realMap, true);
             goToGoal.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
@@ -304,20 +300,24 @@ public class ExplorationAlgo {
         FastestPathAlgo returnToStart = new FastestPathAlgo(exploredMap, bot, realMap, true);
         returnToStart.findFastestPath(RobotConstants.START_ROW, RobotConstants.START_COL);
 
-        System.out.println("Exploration complete!");
+        System.out.println("\nExploration complete!");
+        String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
+        System.out.println("Part 1 MDF: " + mapStrings[0]);
+        System.out.println("Part 2 MDF: " + mapStrings[1]);
         areaExplored = calculateAreaExplored();
         System.out.printf("%.2f%% Coverage", (areaExplored / 300.0) * 100.0);
-        System.out.println(", " + areaExplored + " Cells");
+        System.out.print(", " + areaExplored + " Cells, ");
         System.out.println((System.currentTimeMillis() - startTime) + " miliseconds");
 
-        if (bot.getRealBot()) {
-            turnBotDirection(DIRECTION.WEST);
-            moveBot(MOVEMENT.CALIBRATE);
-            turnBotDirection(DIRECTION.SOUTH);
-            moveBot(MOVEMENT.CALIBRATE);
-            turnBotDirection(DIRECTION.WEST);
-            moveBot(MOVEMENT.CALIBRATE);
-        }
+        System.out.println("\nResetting bot direction");
+//        if (bot.getRealBot()) {
+//            turnBotDirection(DIRECTION.WEST);
+//            moveBot(MOVEMENT.CALIBRATE);
+//            turnBotDirection(DIRECTION.SOUTH);
+//            moveBot(MOVEMENT.CALIBRATE);
+//            turnBotDirection(DIRECTION.WEST);
+//            moveBot(MOVEMENT.CALIBRATE);
+//        }
         turnBotDirection(DIRECTION.NORTH);
     }
 
@@ -373,13 +373,15 @@ public class ExplorationAlgo {
      * Moves the bot, repaints the map and calls senseAndRepaint().
      */
     private void moveBot(MOVEMENT m) {
-		System.out.println("Moving bot: " + m);
-        bot.move(m);
+		System.out.println("moveBot(): " + MOVEMENT.print(m));
+        
+		bot.move(m);
+        String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
+        String output = "@" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
+        		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
+        		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
+
     	if(bot.getRealBot()) {
-	        String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
-	        String output = "@" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
-	        		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
-	        		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
 	    	Simulator.communicator.sendMsg(output, null);
     	}
 //        if (!bot.getRealBot()) {
@@ -407,7 +409,7 @@ public class ExplorationAlgo {
 //
 //            calibrationMode = false;
 //        }
-		System.out.println("sent mdf");
+//		System.out.println("sent mdf");
     	senseAndRepaint();
     	
 //        String[] mapStrings = MapDescriptor.generateMapDescriptor(explorationMap);
@@ -479,6 +481,7 @@ public class ExplorationAlgo {
      * Turns the robot to the required direction.
      */
     private void turnBotDirection(DIRECTION targetDir) {
+    	System.out.println("turnBotDirection(): " + targetDir);
         int numOfTurn = Math.abs(bot.getRobotCurDir().ordinal() - targetDir.ordinal());
         if (numOfTurn > 2) numOfTurn = numOfTurn % 2;
 

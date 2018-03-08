@@ -156,7 +156,7 @@ public class Robot {
         }
 
         if (realBot) sendMovement(m, sendMoveToAndroid);
-        else System.out.println("Movement done: " + MOVEMENT.print(m));
+        else System.out.println(" move(): " + MOVEMENT.print(m));
 
         updateTouchedGoal();
     }
@@ -216,6 +216,7 @@ public class Robot {
         }
     }
 
+    //	NOT USED
     /**
      * Uses Communicator to send next movement to robot
      */
@@ -294,12 +295,15 @@ public class Robot {
 	        result[4] = SRRight.sense(explorationMap, realMap);
 //            result[5] = LRLeft.sense(explorationMap, realMap);
         } else {
-        	
+
+			System.out.println("Getting start flag of sensor data");
         	while(true) {
-    			System.out.println("SENSING");
         		msg1 = Simulator.communicator.recvMsg();
-//    			System.out.println("SENSED: " + msg1);
-        		if(msg1.equals("*")) break;
+        		if(msg1.equals("*")) 
+    			{
+        			System.out.println("Start flag recieved from Arduino");
+        			break;
+    			}
         	}
         	
 //        	result[0] = Simulator.communicator.recvMsg().charAt(0);
@@ -307,15 +311,11 @@ public class Robot {
 //            result[2] = Simulator.communicator.recvMsg().charAt(0);
 //            result[3] = Simulator.communicator.recvMsg().charAt(0);
 //            result[4] = Simulator.communicator.recvMsg().charAt(0);
-            
-        	String result3= Simulator.communicator.recvMsg();
-//        	result[1] = Simulator.communicator.recvMsg();
-//            result[2] = Simulator.communicator.recvMsg();
-//            result[3] = Simulator.communicator.recvMsg();
-//            result[4] = Simulator.communicator.recvMsg();
 
-			System.out.println(result3);
-//			System.out.println("passed 5 recv");
+			System.out.println("Recieving sensor data");
+        	String result3= Simulator.communicator.recvMsg();
+			System.out.println("Sensor data: " + result3);
+			
             for(int i = 0; i < 5; i++) {
                 if(result[i] == 'B') result[0] = 2;
                 else if(result[i] == 'A') result[0] = 1;
@@ -323,17 +323,8 @@ public class Robot {
             }
 
 //			System.out.println("converted to ints");
-//            String[] msgArr = msg.split(";");
-            
-//            if (msgArr[0].equals(Communicator.SENSOR_DATA)) {
-//                result[0] = Integer.parseInt(msgArr[1].split("_")[1]);
-//                result[1] = Integer.parseInt(msgArr[2].split("_")[1]);
-//                result[2] = Integer.parseInt(msgArr[3].split("_")[1]);
-//                result[3] = Integer.parseInt(msgArr[4].split("_")[1]);
-//                result[4] = Integer.parseInt(msgArr[5].split("_")[1]);
-////                result[5] = Integer.parseInt(msgArr[6].split("_")[1]);
-//            }
 
+//            FOR RECEIVING SENSOR DATA IN CHAR
 //            SRLeft.senseReal(explorationMap, msg1.charAt(0));
 //            SRFrontLeft.senseReal(explorationMap, msg2.charAt(0));
 //            SRFrontCenter.senseReal(explorationMap, msg3.charAt(0));
@@ -341,14 +332,25 @@ public class Robot {
 //            SRRight.senseReal(explorationMap, msg5.charAt(0));
 //            LRLeft.senseReal(explorationMap, result[5]);
 
+//          DUMMY SENSOR DATA FOR TESTING DRY RUN
 //			System.out.println("start sense real");
-	            SRLeft.senseReal(explorationMap, result[0]);
-	            SRFrontLeft.senseReal(explorationMap, result[1]);
-	            SRFrontCenter.senseReal(explorationMap, result[2]);
-	            SRFrontRight.senseReal(explorationMap, result[3]);
-	            SRRight.senseReal(explorationMap, result[4]);
-//	            LRLeft.senseReal(explorationMap, result[5]);
+            SRLeft.senseReal(explorationMap, 0);
+            SRFrontLeft.senseReal(explorationMap, 0);
+            SRFrontCenter.senseReal(explorationMap, 0);
+            SRFrontRight.senseReal(explorationMap, 0);
+            SRRight.senseReal(explorationMap, 0);
+//            LRLeft.senseReal(explorationMap, result[5]);
+
+//            ACTUAL SENSOR DATA FOR TESTING DRY RUN
+//	          SRLeft.senseReal(explorationMap, result[0]);
+//	          SRFrontLeft.senseReal(explorationMap, result[1]);
+//	          SRFrontCenter.senseReal(explorationMap, result[2]);
+//	          SRFrontRight.senseReal(explorationMap, result[3]);
+//	          SRRight.senseReal(explorationMap, result[4]);
+//	          LRLeft.senseReal(explorationMap, result[5]);
+
 //				System.out.println("end sensereal");
+
         }
         
         return result;
