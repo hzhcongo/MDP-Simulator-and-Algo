@@ -77,26 +77,26 @@ public class ExplorationAlgo {
         startTime = System.currentTimeMillis();
         endTime = startTime + (timeLimit * 1000);
 
-//        areaExplored = calculateAreaExplored();
-//        System.out.println("Explored Area: " + areaExplored);
-
         explorationLoop(bot.getRobotPosRow(), bot.getRobotPosCol());
     }
 
     /**
-     * Loops through robot movements until one (or more) of the following conditions is met:
-     * 1. Robot is back at (r, c)
-     * 2. areaExplored > coverageLimit
-     * 3. System.currentTimeMillis() > endTime
+     * Loops through exploration algorithm until:
+     * - bot reaches goal and returns back to start zone, 
+     * OR 
+     * - areaExplored > coverageLimit || System.currentTimeMillis() > endTime
      */
     private void explorationLoop(int r, int c) {
 
         if (bot.getRealBot()) {
+        	Simulator.communicator.sendMsg("@", null);
         	Simulator.communicator.sendMsg("E", null);
-        }
-        
+        }            
+    	senseAndRepaint();
+
         do {
-        	senseAndRepaint();
+            System.out.println("looped");
+
             nextMove();
 
             areaExplored = calculateAreaExplored();
@@ -242,7 +242,7 @@ public class ExplorationAlgo {
         if(isNotExploredandValid(botRow + 2, botCol - 1) || isNotExploredandValid(botRow + 2, botCol) || isNotExploredandValid(botRow + 2, botCol + 1)) {
         	while (bot.getRobotCurDir() != DIRECTION.NORTH) {
         		moveBot(MOVEMENT.RIGHT);
-        		senseAndRepaint();
+//        		senseAndRepaint();
         	}
         }
         return (isExploredNotObstacle(botRow + 1, botCol - 1) && isExploredAndFree(botRow + 1, botCol) && isExploredNotObstacle(botRow + 1, botCol + 1));
@@ -256,7 +256,7 @@ public class ExplorationAlgo {
         if(isNotExploredandValid(botRow - 1, botCol + 2) || isNotExploredandValid(botRow, botCol + 2) || isNotExploredandValid(botRow + 1, botCol + 2)) {
         	while (bot.getRobotCurDir() != DIRECTION.EAST) {
         		moveBot(MOVEMENT.RIGHT);
-        		senseAndRepaint();
+//        		senseAndRepaint();
         	}
         }
         return (isExploredNotObstacle(botRow - 1, botCol + 1) && isExploredAndFree(botRow, botCol + 1) && isExploredNotObstacle(botRow + 1, botCol + 1));
@@ -271,7 +271,7 @@ public class ExplorationAlgo {
         if(isNotExploredandValid(botRow - 2, botCol - 1) || isNotExploredandValid(botRow - 2, botCol) || isNotExploredandValid(botRow - 2, botCol + 1)) {
         	while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
         		moveBot(MOVEMENT.RIGHT);
-        		senseAndRepaint();
+//        		senseAndRepaint();
         	}
         }
         return (isExploredNotObstacle(botRow - 1, botCol - 1) && isExploredAndFree(botRow - 1, botCol) && isExploredNotObstacle(botRow - 1, botCol + 1));
@@ -286,7 +286,7 @@ public class ExplorationAlgo {
         if(isNotExploredandValid(botRow - 1, botCol - 2) || isNotExploredandValid(botRow, botCol - 2) || isNotExploredandValid(botRow + 1, botCol - 2)) {
         	while (bot.getRobotCurDir() != DIRECTION.WEST) {
         		moveBot(MOVEMENT.RIGHT);
-        		senseAndRepaint();
+//        		senseAndRepaint();
         	}
         }
         return (isExploredNotObstacle(botRow - 1, botCol - 1) && isExploredAndFree(botRow, botCol - 1) && isExploredNotObstacle(botRow + 1, botCol - 1));
@@ -373,7 +373,15 @@ public class ExplorationAlgo {
      * Moves the bot, repaints the map and calls senseAndRepaint().
      */
     private void moveBot(MOVEMENT m) {
+		System.out.println("Moving bot: " + m);
         bot.move(m);
+    	if(bot.getRealBot()) {
+	        String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
+	        String output = "@" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
+	        		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
+	        		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
+	    	Simulator.communicator.sendMsg(output, null);
+    	}
 //        if (!bot.getRealBot()) {
 //            senseAndRepaint();
 //        } else {
@@ -399,15 +407,11 @@ public class ExplorationAlgo {
 //
 //            calibrationMode = false;
 //        }
+		System.out.println("sent mdf");
     	senseAndRepaint();
     	
 //        String[] mapStrings = MapDescriptor.generateMapDescriptor(explorationMap);
 //        Simulator.communicator.sendMsg(mapStrings[0] + " " + mapStrings[1], Communicator.MAP_STRINGS);
-
-        String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
-        String output = "$-" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
-        		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" + mapStrings[0] + "-" + mapStrings[1] + "-" ;
-    	Simulator.communicator.sendMsg(output, null);
     }
 
     /**

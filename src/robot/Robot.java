@@ -282,27 +282,47 @@ public class Robot {
      * Sense surroundings and stores received values in integer array
      */
     public int[] sense(Map explorationMap, Map realMap, Robot bot) {
-        int[] result = new int[6];
-
+        int[] result = new int[5];
+        char[] result2 = new char[5];
+    	String msg1 = "";
+    	
         if (!realBot) {
-        result[0] = SRFrontLeft.sense(explorationMap, realMap);
-        result[1] = SRFrontCenter.sense(explorationMap, realMap);
-        result[2] = SRFrontRight.sense(explorationMap, realMap);
-        result[3] = SRLeft.sense(explorationMap, realMap);
-        result[4] = SRRight.sense(explorationMap, realMap);
+	        result[0] = SRFrontLeft.sense(explorationMap, realMap);
+	        result[1] = SRFrontCenter.sense(explorationMap, realMap);
+	        result[2] = SRFrontRight.sense(explorationMap, realMap);
+	        result[3] = SRLeft.sense(explorationMap, realMap);
+	        result[4] = SRRight.sense(explorationMap, realMap);
 //            result[5] = LRLeft.sense(explorationMap, realMap);
         } else {
+        	
+        	while(true) {
+    			System.out.println("SENSING");
+        		msg1 = Simulator.communicator.recvMsg();
+//    			System.out.println("SENSED: " + msg1);
+        		if(msg1.equals("*")) break;
+        	}
+        	
+//        	result[0] = Simulator.communicator.recvMsg().charAt(0);
+//        	result[1] = Simulator.communicator.recvMsg().charAt(0);
+//            result[2] = Simulator.communicator.recvMsg().charAt(0);
+//            result[3] = Simulator.communicator.recvMsg().charAt(0);
+//            result[4] = Simulator.communicator.recvMsg().charAt(0);
+            
+        	String result3= Simulator.communicator.recvMsg();
+//        	result[1] = Simulator.communicator.recvMsg();
+//            result[2] = Simulator.communicator.recvMsg();
+//            result[3] = Simulator.communicator.recvMsg();
+//            result[4] = Simulator.communicator.recvMsg();
 
-        	String msg1 = Simulator.communicator.recvMsg();
-	            System.out.println("SENSED" + msg1);
-//        	String msg2 = Simulator.communicator.recvMsg();
-//	            System.out.println("SENSED" + msg2);
-//        	String msg3 = Simulator.communicator.recvMsg();
-//	            System.out.println("SENSED" + msg3);
-//        	String msg4 = Simulator.communicator.recvMsg();S
-//	            System.out.println("SENSED" + msg4);
-//        	String msg5 = Simulator.communicator.recvMsg();
-//	            System.out.println("SENSED" + msg5);
+			System.out.println(result3);
+//			System.out.println("passed 5 recv");
+            for(int i = 0; i < 5; i++) {
+                if(result[i] == 'B') result[0] = 2;
+                else if(result[i] == 'A') result[0] = 1;
+                else result[i] = 0;
+            }
+
+//			System.out.println("converted to ints");
 //            String[] msgArr = msg.split(";");
             
 //            if (msgArr[0].equals(Communicator.SENSOR_DATA)) {
@@ -314,12 +334,21 @@ public class Robot {
 ////                result[5] = Integer.parseInt(msgArr[6].split("_")[1]);
 //            }
 
-            SRLeft.senseReal(explorationMap, msg1.charAt(0));
+//            SRLeft.senseReal(explorationMap, msg1.charAt(0));
 //            SRFrontLeft.senseReal(explorationMap, msg2.charAt(0));
 //            SRFrontCenter.senseReal(explorationMap, msg3.charAt(0));
 //            SRFrontRight.senseReal(explorationMap, msg4.charAt(0));
 //            SRRight.senseReal(explorationMap, msg5.charAt(0));
 //            LRLeft.senseReal(explorationMap, result[5]);
+
+//			System.out.println("start sense real");
+	            SRLeft.senseReal(explorationMap, result[0]);
+	            SRFrontLeft.senseReal(explorationMap, result[1]);
+	            SRFrontCenter.senseReal(explorationMap, result[2]);
+	            SRFrontRight.senseReal(explorationMap, result[3]);
+	            SRRight.senseReal(explorationMap, result[4]);
+//	            LRLeft.senseReal(explorationMap, result[5]);
+//				System.out.println("end sensereal");
         }
         
         return result;

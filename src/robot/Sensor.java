@@ -104,7 +104,8 @@ public class Sensor {
      * Sets correct cells state according to actual sensor value
      */
     private void processSensorVal(Map exploredMap, int sensorVal, int rowInc, int colInc) {
-        if (sensorVal == 0) return;  // return value for LR sensor if obstacle before lowerRange
+    	
+//    	if (sensorVal == 0) return;  // return value for LR sensor if obstacle before lowerRange
 
         // Check if starting point is valid for sensors with lowerRange > 1.
         for (int i = 1; i < this.lowerRange; i++) {

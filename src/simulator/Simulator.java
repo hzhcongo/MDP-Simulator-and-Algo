@@ -62,7 +62,7 @@ public class Simulator {
 
         	while (true) {
                 msg = communicator.recvMsg();
-            
+//        		msg = "0";
 	            switch (msg) {
 	    		case "0":
 	    			//Explore. Codes from mousePressed in Listener
@@ -254,8 +254,9 @@ public class Simulator {
 
                 FastestPathAlgo fastestPath;
                 fastestPath = new FastestPathAlgo(exploredMap, robot, actualMap, false);
-                wrow = 10;
-                wcol = 10;
+                //TTD HARDCODED WAYPOINT
+                wrow = 1;
+                wcol = 4;
                 fastestPath.findFastestPath(wrow, wcol);
                 fastestPath.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
 

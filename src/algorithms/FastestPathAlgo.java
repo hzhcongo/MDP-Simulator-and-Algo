@@ -107,12 +107,12 @@ public class FastestPathAlgo {
      * Returns heuristic cost (h(n)) from cell to [goalRow, goalCol]
      */
     private double costH(Cell b, int goalRow, int goalCol) {
-        // Heuristic: The no. of moves will be equal to the difference in the row and column values
+        // Heuristic: No. of moves equal to difference in the row and column values
         double movementCost = (Math.abs(goalCol - b.getCol()) + Math.abs(goalRow - b.getRow())) * RobotConstants.MOVE_COST;
 
         if (movementCost == 0) return 0;
 
-        // Heuristic: If b is not in the same row or column, 1 turn needed
+        // Heuristic: If b not in the same row or column, 1 turn needed
         double turnCost = 0;
         if (goalCol - b.getCol() != 0 || goalRow - b.getRow() != 0) {
             turnCost = RobotConstants.TURN_COST;
