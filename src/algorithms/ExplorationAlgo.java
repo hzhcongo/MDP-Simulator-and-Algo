@@ -8,9 +8,7 @@ import robot.RobotConstants;
 import robot.RobotConstants.DIRECTION;
 import robot.RobotConstants.MOVEMENT;
 import simulator.Simulator;
-//import utils.Communicator;
 import utils.MapDescriptor;
-
 import java.util.Stack;
 
 /**
@@ -31,7 +29,6 @@ public class ExplorationAlgo {
     private int x;
     private int y;
     private Stack<String> directionMoved = new Stack<String>();
-    private int array[][] = new int [99][99];
     
     public ExplorationAlgo(Map exploredMap, Map realMap, Robot bot, int coverageLimit, int timeLimit) {
         this.exploredMap = exploredMap;
@@ -106,6 +103,10 @@ public class ExplorationAlgo {
             nextMove();
 
             areaExplored = calculateAreaExplored();
+            if(areaExplored == 300 && !bot.getTouchedGoal()) {
+            	FastestPathAlgo goToCell = new FastestPathAlgo(exploredMap,bot, realMap, true);
+            	goToCell.findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL);
+            }
         } while ((areaExplored <= coverageLimit && System.currentTimeMillis() <= endTime));
 
         goHome();
@@ -118,8 +119,13 @@ public class ExplorationAlgo {
     	x = bot.getRobotPosRow();
     	y = bot.getRobotPosCol();
     	System.out.println("Bot current pos: " + x + ", " + y);
-    	   	
-	    if(southFree() && !exploredMap.getCell(x-1,y).getIsWalked()) {
+    	//TTD: DOESNT WORK COS GOALZONE NOT FULLY EXPLORED.
+//    	if(Math.abs(bot.getRobotPosRow() - MapConstants.GOAL_ROW) + Math.abs(bot.getRobotPosCol() - MapConstants.GOAL_COL) < 10) {
+//    		System.out.println("< 4");
+//    		FastestPathAlgo goToCell = new FastestPathAlgo(exploredMap,bot, realMap, true);
+//        	goToCell.findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL);
+//    	}
+    	if(southFree() && !exploredMap.getCell(x-1,y).getIsWalked()) {
 	    		
 	    	if(bot.getRobotCurDir() == DIRECTION.WEST) {
 	    		moveBot(MOVEMENT.LEFT);
@@ -133,24 +139,8 @@ public class ExplorationAlgo {
 	    	exploredMap.getCell(x-1, y).setIsWalked(true);
 	
 		}
-	    else if (eastFree() && !exploredMap.getCell(x,y+1).getIsWalked()) {
-	    	//Map2 eastfree returns true as it never detect obstacle at top right side. 
-	    	//SOLVE BY PUTTING 1 MORE SENSOR, 
-	    	//OR REMOVE BACKWARDS, 
-	    	//OR IF DIRECTION NOT ALL 3 CELLS EXPLORED, TURN TO FACE THERE TO EXPLORE BEFORE. xFree() need check
-	    	if (bot.getRobotCurDir() == DIRECTION.SOUTH) {
-	    		moveBot(MOVEMENT.LEFT);
-	    	}
-	    	else while (bot.getRobotCurDir() != DIRECTION.EAST) {
-	    		moveBot(MOVEMENT.RIGHT);
-			}
-			moveBot(MOVEMENT.FORWARD);
-			directionMoved.push("E");
-			
-		  	exploredMap.getCell(x, y+1).setIsWalked(true);
-		}
 	    else if (westFree() && !exploredMap.getCell(x,y-1).getIsWalked()) {
-	        	
+        	
 	    	if (bot.getRobotCurDir() == DIRECTION.NORTH) {
 	    		moveBot(MOVEMENT.LEFT);
 	    	}
@@ -162,6 +152,17 @@ public class ExplorationAlgo {
 	    	directionMoved.push("W");
 	    	exploredMap.getCell(x, y-1).setIsWalked(true);
 	    }
+	    else if (eastFree() && !exploredMap.getCell(x,y+1).getIsWalked()) {
+	    	if (bot.getRobotCurDir() == DIRECTION.SOUTH) {
+	    		moveBot(MOVEMENT.LEFT);
+	    	}
+	    	else while (bot.getRobotCurDir() != DIRECTION.EAST) {
+	    		moveBot(MOVEMENT.RIGHT);
+			}
+			moveBot(MOVEMENT.FORWARD);
+			directionMoved.push("E");
+		  	exploredMap.getCell(x, y+1).setIsWalked(true);
+		}
 	    else if (northFree() && !exploredMap.getCell(x+1,y).getIsWalked()) {
 	
 	    	if (bot.getRobotCurDir() == DIRECTION.EAST) {
@@ -189,19 +190,31 @@ public class ExplorationAlgo {
     	FastestPathAlgo goToCell = new FastestPathAlgo(exploredMap,bot, realMap, true);
     	
     	int z = 0; //z is to store the array counter
+        int array[][] = new int [2][50];
     	int num = 999; //storing the minimum cost
-    	
-    	for (int i = 18; i > 0;i--) {
-    		for (int j = 13; j > 0;j--) {
-   			if (!(exploredMap.getCell(i, j).getIsWalked()) && (exploredMap.getCell(i, j).getIsExplored()) && !(exploredMap.getCell(i, j).getIsObstacle())) {  				
+    	for (int i = 1; i < 19;i++) {
+    		for (int j = 1; j < 14;j++) {
+   			if (!exploredMap.getCell(i, j).getIsWalked() && exploredMap.getCell(i, j).getIsExplored()) {  				
     				if (exploredMap.checkIfWalkable(i,j)) {
-    				array[0][z] = i; //storing the row values 
-    				array[1][z] = j; //storing the col values
-    				z++;
+    					System.out.println(i + " " + j);
+	    				array[0][z] = i; //storing the row values 
+	    				array[1][z] = j; //storing the col values
+	    				z++;
     				}
     			}	
     		}
     	}
+//    	for (int i = 18; i > 0;i--) {
+//    		for (int j = 13; j > 0;j--) {
+//   			if (!exploredMap.getCell(i, j).getIsWalked() && exploredMap.getCell(i, j).getIsExplored()) {  				
+//    				if (exploredMap.checkIfWalkable(i,j)) { //Check if 3x3 free
+//	    				array[0][z] = i; //storing the row values 
+//	    				array[1][z] = j; //storing the col values
+//	    				z++;
+//    				}
+//    			}	
+//    		}
+//    	}
     	int minCost = 999;
     		//iterate thru the above array
 		for (int i = 0; i<z; i++) {
@@ -230,9 +243,11 @@ public class ExplorationAlgo {
         int botRow = bot.getRobotPosRow();
         int botCol = bot.getRobotPosCol();
         if(isNotExploredandValid(botRow + 2, botCol - 1) || isNotExploredandValid(botRow + 2, botCol) || isNotExploredandValid(botRow + 2, botCol + 1)) {
-        	while (bot.getRobotCurDir() != DIRECTION.NORTH) {
-        		moveBot(MOVEMENT.RIGHT);
-        	}
+        	if(bot.getRobotCurDir() == DIRECTION.EAST) moveBot(MOVEMENT.LEFT);
+        	else
+        		while (bot.getRobotCurDir() != DIRECTION.NORTH) {
+        			moveBot(MOVEMENT.RIGHT);
+        		}
         }
         return (isExploredNotObstacle(botRow + 1, botCol - 1) && isExploredAndFree(botRow + 1, botCol) && isExploredNotObstacle(botRow + 1, botCol + 1));
     }
@@ -243,7 +258,9 @@ public class ExplorationAlgo {
         int botRow = bot.getRobotPosRow();
         int botCol = bot.getRobotPosCol();
         if(isNotExploredandValid(botRow - 1, botCol + 2) || isNotExploredandValid(botRow, botCol + 2) || isNotExploredandValid(botRow + 1, botCol + 2)) {
-        	while (bot.getRobotCurDir() != DIRECTION.EAST) {
+        	if(bot.getRobotCurDir() == DIRECTION.SOUTH) moveBot(MOVEMENT.LEFT);
+        	else
+        		while (bot.getRobotCurDir() != DIRECTION.EAST) {
         		moveBot(MOVEMENT.RIGHT);
         	}
         }
@@ -257,7 +274,9 @@ public class ExplorationAlgo {
         int botRow = bot.getRobotPosRow();
         int botCol = bot.getRobotPosCol();
         if(isNotExploredandValid(botRow - 2, botCol - 1) || isNotExploredandValid(botRow - 2, botCol) || isNotExploredandValid(botRow - 2, botCol + 1)) {
-        	while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
+        	if(bot.getRobotCurDir() == DIRECTION.WEST) moveBot(MOVEMENT.LEFT);
+        	else
+        		while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
         		moveBot(MOVEMENT.RIGHT);
         	}
         }
@@ -271,7 +290,9 @@ public class ExplorationAlgo {
         int botRow = bot.getRobotPosRow();
         int botCol = bot.getRobotPosCol();
         if(isNotExploredandValid(botRow - 1, botCol - 2) || isNotExploredandValid(botRow, botCol - 2) || isNotExploredandValid(botRow + 1, botCol - 2)) {
-        	while (bot.getRobotCurDir() != DIRECTION.WEST) {
+        	if(bot.getRobotCurDir() == DIRECTION.NORTH) moveBot(MOVEMENT.LEFT);
+        	else
+        		while (bot.getRobotCurDir() != DIRECTION.WEST) {
         		moveBot(MOVEMENT.RIGHT);
         	}
         }
@@ -331,7 +352,7 @@ public class ExplorationAlgo {
     private boolean isExploredNotObstacle(int r, int c) {
         if (exploredMap.checkValidCoordinates(r, c)) {
             Cell tmp = exploredMap.getCell(r, c);
-            return (tmp.getIsExplored() && !tmp.getIsObstacle());
+            return (tmp.getIsExplored() && !tmp.getIsWalked() && !tmp.getIsObstacle());
         }
         return false;
     }
@@ -342,9 +363,39 @@ public class ExplorationAlgo {
     private boolean isExploredAndFree(int r, int c) {
         if (exploredMap.checkValidCoordinates(r, c)) {
             Cell b = exploredMap.getCell(r, c);
-            return (b.getIsExplored() && !b.getIsWall() && !b.getIsObstacle());
+            return (b.getIsExplored() && !b.getIsWalked()  && !b.getIsWall() && !b.getIsObstacle());
         }
         return false;
+    }
+    
+    /**
+     * Returns true for cells that are explored, not virtual walls and not obstacles.
+     */
+    public boolean checkIfWalkable(int r, int c) {
+    	boolean a = !isNotExploredandValid(r,c) && !isNotExploredandValid(r+1,c) && !isNotExploredandValid(r-1,c) &&
+    				!isNotExploredandValid(r,c+1) && !isNotExploredandValid(r+1,c+1) && !isNotExploredandValid(r-1,c+1) &&
+    				!isNotExploredandValid(r,c-1)  && !isNotExploredandValid(r+1,c-1) && !isNotExploredandValid(r-1,c-1);
+	
+		boolean b = isExploredNotObstacle(r,c) && isExploredNotObstacle(r+1,c) && isExploredNotObstacle(r-1,c) &&
+					isExploredNotObstacle(r,c+1) && isExploredNotObstacle(r+1,c+1) && isExploredNotObstacle(r-1,c+1) &&
+					isExploredNotObstacle(r,c-1)  && isExploredNotObstacle(r+1,c-1) && isExploredNotObstacle(r-1,c-1);
+	   	
+		boolean d = isNotExploredandValid(r, c+2) || isNotExploredandValid(r+1,c+2) || isNotExploredandValid(r-1,c+2) ||
+					isNotExploredandValid(r,c-2) || isNotExploredandValid(r+1,c-2) || isNotExploredandValid(r-1,c-2) ||
+					isNotExploredandValid(r+2,c) || isNotExploredandValid(r+2,c+1) || isNotExploredandValid(r+2,c-1) ||
+					isNotExploredandValid(r-2,c) || isNotExploredandValid(r-2,c+1) || isNotExploredandValid(r-2,c-1);
+	
+		if (a) {
+			return false;
+		}
+		if (b) {
+			return false;
+		}
+		if (d) {
+			return true;
+		}
+		
+		return false;
     }
 
     /**
@@ -366,7 +417,7 @@ public class ExplorationAlgo {
      * Moves the bot, repaints the map and calls senseAndRepaint().
      */
     public void moveBot(MOVEMENT m) {
-		System.out.print("moveBot(): " + MOVEMENT.print(m));
+		System.out.println("moveBot(): " + MOVEMENT.print(m));
         
 		bot.move(m, bot, exploredMap);
 //        if (!bot.getRealBot()) {

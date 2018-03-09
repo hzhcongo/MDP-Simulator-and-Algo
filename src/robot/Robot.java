@@ -157,7 +157,6 @@ public class Robot {
 
 //        if (realBot) sendMovement(m, sendMoveToAndroid);
 //        else System.out.println(MOVEMENT.print(m));
-        System.out.println(MOVEMENT.print(m));
         updateTouchedGoal();
     }
 
@@ -185,8 +184,6 @@ public class Robot {
         String output = "@" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
         		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
         		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
-//        System.out.println("Instruction: " + output);
-        System.out.println(output);
     	if(bot.getRealBot()) {
 	    	Simulator.communicator.sendMsg(output, null);
     	}

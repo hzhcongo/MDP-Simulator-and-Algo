@@ -8,13 +8,10 @@ import robot.RobotConstants;
 import robot.RobotConstants.DIRECTION;
 import robot.RobotConstants.MOVEMENT;
 import simulator.Simulator;
-//import utils.Communicator;
-//import utils.MapDescriptor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
-//import java.util.concurrent.TimeUnit;
 
 /**
  * Fastest path algorithm using A* algorithm
@@ -33,12 +30,9 @@ public class FastestPathAlgo {
     private Robot bot;
     private Map exploredMap;
     private final Map realMap;
-//    private int loopCount;
-//    private boolean explorationMode;
 
     public FastestPathAlgo(Map exploredMap, Robot bot, Map realMap, boolean exploreMode) {
         this.realMap = realMap;
-//        this.explorationMode = exploreMode;
         initAlgo(exploredMap, bot);
     }
 
@@ -71,7 +65,6 @@ public class FastestPathAlgo {
 
         // Initialize starting point
         gCosts[bot.getRobotPosRow()][bot.getRobotPosCol()] = 0;
-//        this.loopCount = 0;
     }
 
     /**
@@ -171,7 +164,6 @@ public class FastestPathAlgo {
     	System.out.print("\nCalculating fastest path from (" + current.getRow() + ", " + current.getCol() + ") to goal (" + goalRow + ", " + goalCol + ") ");
         Stack<Cell> path;
         do {
-//            loopCount++;
 
             // Get cell with minimum cost from toVisit and assign it to current.
             current = minimumCostCell(goalRow, goalCol);
@@ -268,8 +260,7 @@ public class FastestPathAlgo {
         StringBuilder shortOutputString = new StringBuilder();
         Cell temp = path.pop();
         DIRECTION targetDir;
-        int bin = 1;
-//        int flag = 0;
+        int bin = 0;
         char prev = '0';
         Robot tempB = new Robot(bot.getRobotPosRow(), bot.getRobotPosCol(), false);
         tempB.setRobotDir(bot.getRobotCurDir());
@@ -316,14 +307,14 @@ public class FastestPathAlgo {
 //            tempB.move(MOVEMENT.FORWARD);
         }
         
-        System.out.println("\nInstruction string:" + outputString.toString());
+        System.out.println("Instruction string:" + outputString.toString());
         
         shortOutputString.append("#");
-        prev = outputString.charAt(1);
+        prev = outputString.charAt(0);
         shortOutputString.append(prev);
         bin++;
 	        
-        for(int i = 2; i < outputString.length(); i++) {
+        for(int i = 1; i < outputString.length(); i++) {
         	
         	switch (outputString.charAt(i)) {
 			case 'F':
@@ -404,8 +395,9 @@ public class FastestPathAlgo {
         }
         
         shortOutputString.append(bin);
+        shortOutputString.append("!");
         
-        System.out.println("\nShort string:" + shortOutputString);
+        System.out.println("Short string:" + shortOutputString);
 
         if(bot.getRealBot()) {
 	    	Simulator.communicator.sendMsg(shortOutputString.toString(), null);

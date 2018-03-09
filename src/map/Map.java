@@ -4,6 +4,9 @@ import robot.Robot;
 import robot.RobotConstants;
 
 import javax.swing.*;
+
+import algorithms.ExplorationAlgo;
+
 import java.awt.*;
 
 /**
@@ -65,12 +68,45 @@ public class Map extends JPanel {
      * Returns true if a 3x3 Grid of specified center row and col has no obstacles and is walkable
      */
     public boolean checkIfWalkable(int row, int col) {
-    	if (grid[row][col].getIsObstacle() || grid[row+1][col].getIsObstacle() || grid[row-1][col].getIsObstacle() ||
-    			 grid[row+1][col+1].getIsObstacle() || grid[row+1][col-1].getIsObstacle()|| grid [row][col-1].getIsObstacle() || 
-    			 grid[row-1][col-1].getIsObstacle()  || grid [row][col+1].getIsObstacle() || grid [row-1][col+1].getIsObstacle()) {
-    		return false;
+//    	for(int i = -1; i < 1; i++) {
+//        	for(int j = -1; j < 1; j++) {
+//                if(row + i>= 0 && col + j>= 0 && row < MapConstants.MAP_ROWS && col < MapConstants.MAP_COLS) {
+//                	return false;
+//                }
+//        	}
+//    	}
+    	
+    	boolean a = grid[row][col].getIsExplored() && grid[row+1][col].getIsExplored() && grid[row-1][col].getIsExplored() &&
+    				grid[row+1][col+1].getIsExplored() && grid[row+1][col-1].getIsExplored() && grid [row][col-1].getIsExplored() &&
+					grid[row-1][col-1].getIsExplored()  && grid [row][col+1].getIsExplored() && grid [row-1][col+1].getIsExplored();
+    	
+    	boolean b = !grid[row][col].getIsObstacle() && !grid[row+1][col].getIsObstacle() && !grid[row-1][col].getIsObstacle() &&
+    				!grid[row+1][col+1].getIsObstacle() && !grid[row+1][col-1].getIsObstacle() && !grid [row][col-1].getIsObstacle() &&
+					!grid[row-1][col-1].getIsObstacle()  && !grid [row][col+1].getIsObstacle() && !grid [row-1][col+1].getIsObstacle();
+	    	
+    	boolean c = (checkValidCoordinates(row, col + 2) && !grid[row][col + 2].getIsExplored()) || 
+    				(checkValidCoordinates(row + 1, col + 2) && !grid[row + 1][col + 2].getIsExplored()) || 
+					(checkValidCoordinates(row - 1, col + 2) && !grid[row - 1][col + 2].getIsExplored()) ||
+					(checkValidCoordinates(row, col - 2) && !grid[row][col - 2].getIsExplored()) || 
+					(checkValidCoordinates(row + 1, col - 2) && !grid[row + 1][col - 2].getIsExplored()) || 
+					(checkValidCoordinates(row - 1, col - 2) && !grid [row - 1][col - 2].getIsExplored()) ||
+					(checkValidCoordinates(row + 2, col) && !grid[row + 2][col].getIsExplored()) || 
+					(checkValidCoordinates(row + 2, col + 1) && !grid [row + 2][col + 1].getIsExplored()) || 
+					(checkValidCoordinates(row + 2, col - 1) && !grid [row + 2][col - 1].getIsExplored()) ||
+					(checkValidCoordinates(row - 2, col) && !grid[row - 2][col].getIsExplored()) || 
+					(checkValidCoordinates(row - 2, col + 1) && !grid [row - 2][col + 1].getIsExplored()) || 
+					(checkValidCoordinates(row - 2, col - 1) && !grid [row - 2][col - 1].getIsExplored());
+    	
+//    	if (a) {
+//    		return false;
+//    	}
+//    	if (b) {
+//    		return false;
+//    	}
+    	if (a && b && c) {
+    		return true;
     	}
-    	else return true;
+    	return false;
     }
     
     /**
@@ -93,7 +129,8 @@ public class Map extends JPanel {
     public void setAllUnexplored() {
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid[0].length; col++) {
-                if (inStartZone(row, col) || inGoalZone(row, col)) {
+                if (inStartZone(row, col)) {
+//                    if (inStartZone(row, col) || inGoalZone(row, col)) {
                     grid[row][col].setIsExplored(true);
                 } else {
                     grid[row][col].setIsExplored(false);
