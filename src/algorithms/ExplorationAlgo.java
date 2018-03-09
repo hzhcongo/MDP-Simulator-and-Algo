@@ -45,7 +45,7 @@ public class ExplorationAlgo {
      * Main method that is called to start the exploration.
      */
     public void runExploration() {
-        if (bot.getRealBot()) {
+//        if (bot.getRealBot()) {
 //        	FOR CALIBRATION
 //            System.out.println("Starting calibration...");
 
@@ -72,7 +72,7 @@ public class ExplorationAlgo {
 //                String[] msgArr = msg.split(";");
 //                if (msgArr[0].equals(Communicator.EX_START)) break;
 //            }
-        }
+//        }
         exploredMap.getCell(1,1).setIsWalked(true);
 
         startTime = System.currentTimeMillis();
