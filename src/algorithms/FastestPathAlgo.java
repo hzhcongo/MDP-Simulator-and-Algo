@@ -274,7 +274,7 @@ public class FastestPathAlgo {
         StringBuilder shortOutputString = new StringBuilder();
         Cell temp = path.pop();
         DIRECTION targetDir;
-        int bin = 0;
+        int bin = 1;
         int flag = 0;
         char prev = '0';
         Robot tempB = new Robot(bot.getRobotPosRow(), bot.getRobotPosCol(), false);
@@ -334,40 +334,82 @@ public class FastestPathAlgo {
         System.out.println("\nInstruction string:" + outputString.toString());
 //        System.out.println("\nMovements: " + outputString.toString());
         
-        if(bot.getRealBot()) {
-	        shortOutputString.append("#");
-        }
-        for(int i = 0; i < outputString.length(); i++) {
+        shortOutputString.append("#");
+        prev = outputString.charAt(1);
+        shortOutputString.append(prev);
+        bin++;
+	        
+        for(int i = 2; i < outputString.length(); i++) {
         	
         	switch (outputString.charAt(i)) {
 			case 'F':
-				if(prev == 'F') bin++;
+				if(prev == 'F') {
+					if(bin == 9) {
+						shortOutputString.append(bin);
+						shortOutputString.append('F');
+						bin = 1;
+					}
+					else{
+						bin++;
+					}
+				}
 				else {
 					shortOutputString.append(bin);
+					shortOutputString.append('F');
 					bin = 1;
 					prev = 'F';
 				}
 				break;
 			case 'L':
-				if(prev == 'L') bin++;
+				if(prev == 'L') {
+					if(bin == 9) {
+						shortOutputString.append(bin);
+						shortOutputString.append('L');
+						bin = 1;
+					}
+					else{
+						bin++;
+					}
+				}
 				else {
 					shortOutputString.append(bin);
+					shortOutputString.append('L');
 					bin = 1;
 					prev = 'L';
 				}
 				break;
 			case 'B':
-				if(prev == 'B') bin++;
+				if(prev == 'B') {
+					if(bin == 9) {
+						shortOutputString.append(bin);
+						shortOutputString.append('B');
+						bin = 1;
+					}
+					else{
+						bin++;
+					}
+				}
 				else {
 					shortOutputString.append(bin);
+					shortOutputString.append('B');
 					bin = 1;
 					prev = 'B';
 				}
 				break;
 			case 'R':
-				if(prev == 'R') bin++;
+				if(prev == 'R') {
+					if(bin == 9) {
+						shortOutputString.append(bin);
+						shortOutputString.append('R');
+						bin = 1;
+					}
+					else{
+						bin++;
+					}
+				}
 				else {
 					shortOutputString.append(bin);
+					shortOutputString.append('R');
 					bin = 1;
 					prev = 'R';
 				}
@@ -376,6 +418,10 @@ public class FastestPathAlgo {
 				findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL);
 			}
         }
+        
+        shortOutputString.append(bin);
+        
+        System.out.println("\nShort string:" + shortOutputString);
 
         if(bot.getRealBot()) {
 	    	Simulator.communicator.sendMsg(shortOutputString.toString(), null);
