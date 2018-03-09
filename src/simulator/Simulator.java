@@ -33,7 +33,7 @@ public class Simulator {
     private static int coverageLimit = 300;         // coverage limit
 
     public static final Communicator communicator = Communicator.getCommMgr();
-    public static final boolean actualRun = true;
+    public static final boolean actualRun = false;
     private static String msg = "";   
 
     public static int wrow = -1;   
@@ -49,11 +49,8 @@ public class Simulator {
         //SET NO SLEEP WHEN ACTUAL RUN
         if(actualRun) robot.setSpeed(0);
         
-//        if (!actualRun) {
-            actualMap = new Map(robot);
-            actualMap.setAllUnexplored();
-//        }
-
+        actualMap = new Map(robot);
+        actualMap.setAllUnexplored();
         exploredMap = new Map(robot);
         exploredMap.setAllUnexplored();
 
@@ -267,11 +264,6 @@ public class Simulator {
 
                 ExplorationAlgo exploration;
                 exploration = new ExplorationAlgo(exploredMap, actualMap, robot, coverageLimit, timeLimit);
-                
-//              MOVED SENDING TO SWITCH CASE
-                if (actualRun) {
-//                    Communicator.getCommMgr().sendMsg(null, Communicator.EX_START);
-                }
 
                 exploration.runExploration();
                 generateMapDescriptor(exploredMap);
@@ -348,7 +340,6 @@ public class Simulator {
                         CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
                         cl.show(mapCardsJPanel, "EXPLORATION");
                         new TimeExploration().execute();
-//                        timeExploDialog.setVisible(false);
                     }
                 });
 
@@ -356,7 +347,6 @@ public class Simulator {
                 timeExploDialog.add(timeTF);
                 timeExploDialog.add(timeSaveButton);
                 timeExploDialog.setVisible(true);
-//                timeExploDialog.setVisible(false);
             }
         });
         buttonsJPanel.add(btn_TimeExploration);

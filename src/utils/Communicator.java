@@ -3,7 +3,6 @@ package utils;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * To communicate with the different parts of the system via RPi
@@ -24,8 +23,6 @@ public class Communicator {
 
     public BufferedWriter writer;
     public BufferedReader reader;
-    
-	private static final Object lock = new Object();
 	
     private Communicator() {
     }
@@ -92,24 +89,8 @@ public class Communicator {
     public void sendMsg(String msg, String msgType) {
         System.out.print("Sending message: ");
         try {
-//            String outputMsg;
-//            if (msg == null) {
-//                outputMsg = msgType;
-//            } else if (msgType.equals(MAP_STRINGS) || msgType.equals(BOT_POS)) {
-//                outputMsg = msgType + " " + msg;
-//            } else {
-//                outputMsg = msgType + " " + msg;
-//            }
-
             writer.write(msg);
             writer.flush();
-            
-//			Simulate actual movement by sleeping app
-//            try {
-//                TimeUnit.MILLISECONDS.sleep(1000);
-//            } catch (InterruptedException e) {
-//                System.out.println("Error in Robot.move()");
-//            }
             System.out.println(msg);
         } catch (IOException e) {
             System.out.println("IOException at sendMsg()");

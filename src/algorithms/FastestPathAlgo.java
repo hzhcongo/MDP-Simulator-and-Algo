@@ -8,13 +8,13 @@ import robot.RobotConstants;
 import robot.RobotConstants.DIRECTION;
 import robot.RobotConstants.MOVEMENT;
 import simulator.Simulator;
-import utils.Communicator;
-import utils.MapDescriptor;
+//import utils.Communicator;
+//import utils.MapDescriptor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
-import java.util.concurrent.TimeUnit;
+//import java.util.concurrent.TimeUnit;
 
 /**
  * Fastest path algorithm using A* algorithm
@@ -33,17 +33,12 @@ public class FastestPathAlgo {
     private Robot bot;
     private Map exploredMap;
     private final Map realMap;
-    private int loopCount;
-    private boolean explorationMode;
-
-//    public FastestPathAlgo(Map exploredMap, Robot bot, Map realMap) {
-//        this.realMap = realMap;
-//        initAlgo(exploredMap, bot);
-//    }
+//    private int loopCount;
+//    private boolean explorationMode;
 
     public FastestPathAlgo(Map exploredMap, Robot bot, Map realMap, boolean exploreMode) {
         this.realMap = realMap;
-        this.explorationMode = exploreMode;
+//        this.explorationMode = exploreMode;
         initAlgo(exploredMap, bot);
     }
 
@@ -76,7 +71,7 @@ public class FastestPathAlgo {
 
         // Initialize starting point
         gCosts[bot.getRobotPosRow()][bot.getRobotPosCol()] = 0;
-        this.loopCount = 0;
+//        this.loopCount = 0;
     }
 
     /**
@@ -171,13 +166,12 @@ public class FastestPathAlgo {
      * Find fastest path from the robot's current pos to [goalRow, goalCol]
      */
     public String findFastestPath(int goalRow, int goalCol) {
-    	//TTD: FIND A WAY TO GIVE ANDROID DIRECTION, ALONG WITH CELL TO TELEPORT TO
     	initAlgo(exploredMap, bot);
     	
     	System.out.print("\nCalculating fastest path from (" + current.getRow() + ", " + current.getCol() + ") to goal (" + goalRow + ", " + goalCol + ") ");
         Stack<Cell> path;
         do {
-            loopCount++;
+//            loopCount++;
 
             // Get cell with minimum cost from toVisit and assign it to current.
             current = minimumCostCell(goalRow, goalCol);
@@ -275,7 +269,7 @@ public class FastestPathAlgo {
         Cell temp = path.pop();
         DIRECTION targetDir;
         int bin = 1;
-        int flag = 0;
+//        int flag = 0;
         char prev = '0';
         Robot tempB = new Robot(bot.getRobotPosRow(), bot.getRobotPosCol(), false);
         tempB.setRobotDir(bot.getRobotCurDir());
@@ -283,8 +277,6 @@ public class FastestPathAlgo {
 
         ArrayList<MOVEMENT> movements = new ArrayList<>();
         
-        //SEND MOVEMENTS AS STRING THEN 'SIMULATE' SAME SPEED AS ACTUAL BOT MOVEMENT. NEED FIND ACTUAL BOT SPEED
-        //TTD: SEND AS SUBSETS: #F4R1F2L1B1
         while ((tempB.getRobotPosRow() != goalRow) || (tempB.getRobotPosCol() != goalCol)) {
             if (tempB.getRobotPosRow() == temp.getRow() && tempB.getRobotPosCol() == temp.getCol()) {
                 temp = path.pop();
@@ -301,7 +293,6 @@ public class FastestPathAlgo {
                 outputString.append(MOVEMENT.print(MOVEMENT.BACKWARD));
 
                 tempB.move(MOVEMENT.BACKWARD);
-//        		bot.move(MOVEMENT.BACKWARD, bot, exploredMap);
             }
             //Else rotate to the right direction before moving forward
             else {
@@ -309,30 +300,23 @@ public class FastestPathAlgo {
 	            while (tempB.getRobotCurDir() != targetDir) {
 	                movements.add(getTargetMove(tempB.getRobotCurDir(), targetDir));
 	                outputString.append(MOVEMENT.print(getTargetMove(tempB.getRobotCurDir(), targetDir)));
-//	                System.out.println("while: " + outputString);
 	                tempB.move(getTargetMove(tempB.getRobotCurDir(), targetDir));
-//	        		bot.move(getTargetMove(bot.getRobotCurDir(), targetDir), bot, exploredMap);
 	            }
                 movements.add(MOVEMENT.FORWARD);
                 outputString.append(MOVEMENT.print(MOVEMENT.FORWARD));
-//                System.out.println("else: " + outputString);
                 tempB.move(MOVEMENT.FORWARD);
-//        		bot.move(MOVEMENT.FORWARD, bot, exploredMap);
             }
             
 //            ExplorationAlgo explalgo = new ExplorationAlgo(exploredMap, realMap, bot, 300, 3000);
 //            explalgo.senseAndRepaint();
-
-//            System.out.println("big while loop: " + outputString);
             System.out.println("Direction " + DIRECTION.print(targetDir)+ " to (" + tempB.getRobotPosRow() + ", " + tempB.getRobotPosCol() + ")");
             
 //            movements.add(MOVEMENT.FORWARD);
 //            outputString.append(MOVEMENT.print(MOVEMENT.FORWARD));
 //            tempB.move(MOVEMENT.FORWARD);
         }
-//        System.out.println("Instruction char array to send Arduino:\n" + movements.toString());
+        
         System.out.println("\nInstruction string:" + outputString.toString());
-//        System.out.println("\nMovements: " + outputString.toString());
         
         shortOutputString.append("#");
         prev = outputString.charAt(1);
@@ -430,31 +414,25 @@ public class FastestPathAlgo {
     	executePathMovements(outputString.toString(), false);
     	
         return outputString.toString();
-//        return movements.toString();
     }
     
     private boolean executePathMovements(String outputString, boolean actualFastestPath){
     	try {
 
-    		//MATCH BOT SPEED
 	        if(Simulator.actualRun) bot.setSpeed(500);
 	        
 	    	for(int i = 0; i < outputString.length(); i++) {
 		    	switch (outputString.charAt(i)) {
 				case 'F':
-//		            TimeUnit.MILLISECONDS.sleep(100);
 			        bot.move(MOVEMENT.FORWARD);
 					break;
 				case 'L':
-//		            TimeUnit.MILLISECONDS.sleep(200);
 			        bot.move(MOVEMENT.LEFT);
 					break;
 				case 'B':
-//		            TimeUnit.MILLISECONDS.sleep(100);
 			        bot.move(MOVEMENT.BACKWARD);
 					break;
 				case 'R':
-//		            TimeUnit.MILLISECONDS.sleep(200);
 			        bot.move(MOVEMENT.RIGHT);
 					break;
 				default:
@@ -476,42 +454,6 @@ public class FastestPathAlgo {
     	return true;
     }
 
-
-//  while ((bot.getRobotPosRow() != goalRow) || (bot.getRobotPosCol() != goalCol)) {
-//      if (bot.getRobotPosRow() == temp.getRow() && bot.getRobotPosCol() == temp.getCol()) {
-//          temp = path.pop();
-//      }
-//
-//      targetDir = getTargetDir(bot.getRobotPosRow(), bot.getRobotPosCol(), bot.getRobotCurDir(), temp);
-//
-//      //If bot has to move backwards (To save 1 rotation)
-//      if(targetDir == DIRECTION.SOUTH && bot.getRobotCurDir() == DIRECTION.NORTH ||
-//      		targetDir == DIRECTION.NORTH && bot.getRobotCurDir() == DIRECTION.SOUTH ||
-//      		targetDir == DIRECTION.WEST && bot.getRobotCurDir() == DIRECTION.EAST ||
-//      		targetDir == DIRECTION.EAST && bot.getRobotCurDir() == DIRECTION.WEST) {
-////          bot.move(MOVEMENT.BACKWARD);
-//  		bot.move(MOVEMENT.BACKWARD, bot, exploredMap);
-//      }
-//      //Else rotate to the right direction before moving forward
-//      else {
-//      	
-//          while (bot.getRobotCurDir() != targetDir) {
-////              bot.move(getTargetMove(bot.getRobotCurDir(), targetDir));
-//      		bot.move(getTargetMove(bot.getRobotCurDir(), targetDir), bot, exploredMap);
-//          }
-////          bot.move(MOVEMENT.FORWARD);
-//  		bot.move(MOVEMENT.FORWARD, bot, exploredMap);
-//      }
-//      
-//      ExplorationAlgo explalgo = new ExplorationAlgo(exploredMap, realMap, bot, 300, 3600);
-//      explalgo.senseAndRepaint();
-//      
-//      System.out.println("Direction " + DIRECTION.print(targetDir)+ " to (" + bot.getRobotPosRow() + ", " + bot.getRobotPosCol() + ")");
-//      
-//      movements.add(MOVEMENT.FORWARD);
-//      outputString.append(MOVEMENT.print(MOVEMENT.FORWARD));
-//  }
-  
     /**
      * Returns movement to execute to get from 1 direction to another
      */
@@ -572,12 +514,9 @@ public class FastestPathAlgo {
      * Prints fastest path from Stack
      */
     private void printFastestPath(Stack<Cell> path) {
-//        System.out.println("\nLooped " + loopCount + " times.");
-//        System.out.println((path.size() - 1) + " steps");
 
         Stack<Cell> pathForPrint = (Stack<Cell>) path.clone();
         Cell temp;
-//        System.out.println("Path:");
         while (!pathForPrint.isEmpty()) {
             temp = pathForPrint.pop();
             if (!pathForPrint.isEmpty()) System.out.print("(" + temp.getRow() + ", " + temp.getCol() + ") -> ");
