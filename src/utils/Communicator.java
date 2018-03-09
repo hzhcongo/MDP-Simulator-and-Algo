@@ -41,7 +41,7 @@ public class Communicator {
         System.out.println("Opening connection...");
 
         try {
-            String HOST = "192.168.4.2";
+            String HOST = "192.168.4.1";
             int PORT = 2323;
             connectionSocket = new Socket(HOST, PORT);
             connectionSocket.setTcpNoDelay(true);

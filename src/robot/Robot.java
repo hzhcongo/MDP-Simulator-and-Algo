@@ -156,7 +156,7 @@ public class Robot {
         }
 
         if (realBot) sendMovement(m, sendMoveToAndroid);
-        else System.out.println(" move(): " + MOVEMENT.print(m));
+        else System.out.println(MOVEMENT.print(m));
 
         updateTouchedGoal();
     }
@@ -315,6 +315,7 @@ public class Robot {
     public int[] sense(Map explorationMap, Map realMap, Robot bot) {
         int[] result = new int[5];
         char[] result2 = new char[5];
+        String result3 = "";
     	String msg1 = "";
     	
         if (!realBot) {
@@ -329,30 +330,32 @@ public class Robot {
 			System.out.println("Getting start flag of sensor data");
         	while(true) {
         		msg1 = Simulator.communicator.recvMsg();
-        		if(msg1.equals("*")) 
+        		if(msg1.hashCode() != 0 && msg1.charAt(0) == '*') 
     			{
         			System.out.println("Start flag recieved from Arduino");
         			break;
     			}
         	}
-        	
-//        	result[0] = Simulator.communicator.recvMsg().charAt(0);
-//        	result[1] = Simulator.communicator.recvMsg().charAt(0);
-//            result[2] = Simulator.communicator.recvMsg().charAt(0);
-//            result[3] = Simulator.communicator.recvMsg().charAt(0);
-//            result[4] = Simulator.communicator.recvMsg().charAt(0);
 
-			System.out.println("Recieving sensor data");
-        	String result3= Simulator.communicator.recvMsg();
-			System.out.println("Sensor data: " + result3);
+			System.out.print("Calculating sensor data: ");
 			
             for(int i = 0; i < 5; i++) {
                 if(result[i] == 'B') result[0] = 2;
                 else if(result[i] == 'A') result[0] = 1;
                 else result[i] = 0;
+    			System.out.print(result[i]);
             }
+            System.out.println();
 
 //			System.out.println("converted to ints");
+            
+//          FOR RECEIVING SENSOR DATA IN CHAR
+          SRLeft.senseReal(explorationMap, result[0]);
+          SRFrontLeft.senseReal(explorationMap, result[1]);
+          SRFrontCenter.senseReal(explorationMap, result[2]);
+          SRFrontRight.senseReal(explorationMap, result[3]);
+          SRRight.senseReal(explorationMap, result[4]);
+//          LRLeft.senseReal(explorationMap, result[5]);
 
 //            FOR RECEIVING SENSOR DATA IN CHAR
 //            SRLeft.senseReal(explorationMap, msg1.charAt(0));
@@ -364,11 +367,11 @@ public class Robot {
 
 //          DUMMY SENSOR DATA FOR TESTING DRY RUN
 //			System.out.println("start sense real");
-            SRLeft.senseReal(explorationMap, 0);
-            SRFrontLeft.senseReal(explorationMap, 0);
-            SRFrontCenter.senseReal(explorationMap, 0);
-            SRFrontRight.senseReal(explorationMap, 0);
-            SRRight.senseReal(explorationMap, 0);
+//            SRLeft.senseReal(explorationMap, 0);
+//            SRFrontLeft.senseReal(explorationMap, 0);
+//            SRFrontCenter.senseReal(explorationMap, 0);
+//            SRFrontRight.senseReal(explorationMap, 0);
+//            SRRight.senseReal(explorationMap, 0);
 //            LRLeft.senseReal(explorationMap, result[5]);
 
 //            ACTUAL SENSOR DATA FOR TESTING DRY RUN

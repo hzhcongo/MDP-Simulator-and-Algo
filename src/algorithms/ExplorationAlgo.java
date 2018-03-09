@@ -90,8 +90,7 @@ public class ExplorationAlgo {
     private void explorationLoop(int r, int c) {
 
         if (bot.getRealBot()) {
-        	Simulator.communicator.sendMsg("@", null);
-        	Simulator.communicator.sendMsg("E", null);
+        	Simulator.communicator.sendMsg("@E", null);
         }            
     	senseAndRepaint();
 
@@ -373,7 +372,7 @@ public class ExplorationAlgo {
      * Moves the bot, repaints the map and calls senseAndRepaint().
      */
     public void moveBot(MOVEMENT m) {
-		System.out.println("moveBot(): " + MOVEMENT.print(m));
+		System.out.print("moveBot(): " + MOVEMENT.print(m));
         
 		bot.move(m, bot, exploredMap);
 //        if (!bot.getRealBot()) {
