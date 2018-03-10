@@ -15,18 +15,16 @@ import java.util.Stack;
 
 /**
  * Fastest path algorithm using A* algorithm
- * g(n) = Real Cost from START to n
- * h(n) = Heuristic Cost from n to GOAL
  */
 
 public class FastestPathAlgo {
-    private ArrayList<Cell> toVisit;        // array of Cells to be visited
-    private ArrayList<Cell> visited;        // array of visited Cells
-    private HashMap<Cell, Cell> parents;    // HashMap of Child --> Parent
-    private Cell current;                   // current Cell
-    private Cell[] neighbors;               // array of neighbors of current Cell
-    private DIRECTION curDir;               // current direction of robot
-    private double[][] gCosts;              // array of real cost from START to [row][col] i.e. g(n)
+    private ArrayList<Cell> toVisit;        //Array of Cells to be visited
+    private ArrayList<Cell> visited;        //Array of visited Cells
+    private HashMap<Cell, Cell> parents;    //HashMap of Child --> Parent
+    private Cell current;                   //Current Cell
+    private Cell[] neighbors;               //Array of neighbors of current Cell
+    private DIRECTION curDir;               //Current direction of robot
+    private double[][] gCosts;              //Array of real cost from START to [row][col] i.e. g(n)
     private Robot bot;
     private Map exploredMap;
     private final Map realMap;
@@ -50,7 +48,7 @@ public class FastestPathAlgo {
         this.curDir = bot.getRobotCurDir();
         this.gCosts = new double[MapConstants.MAP_ROWS][MapConstants.MAP_COLS];
 
-        // Initialize gCosts array
+        //Initialize gCosts array
         for (int i = 0; i < MapConstants.MAP_ROWS; i++) {
             for (int j = 0; j < MapConstants.MAP_COLS; j++) {
                 Cell cell = map.getCell(i, j);
@@ -63,7 +61,7 @@ public class FastestPathAlgo {
         }
         toVisit.add(current);
 
-        // Initialize starting point
+        //Initialize starting point
         gCosts[bot.getRobotPosRow()][bot.getRobotPosCol()] = 0;
     }
 
@@ -98,12 +96,12 @@ public class FastestPathAlgo {
      * Returns heuristic cost (h(n)) from cell to [goalRow, goalCol]
      */
     private double costH(Cell b, int goalRow, int goalCol) {
-        // Heuristic: No. of moves equal to difference in the row and column values
+        //Heuristic: No. of moves equal to difference in the row and column values
         double movementCost = (Math.abs(goalCol - b.getCol()) + Math.abs(goalRow - b.getRow())) * RobotConstants.MOVE_COST;
 
         if (movementCost == 0) return 0;
 
-        // Heuristic: If b not in the same row or column, 1 turn needed
+        //Heuristic: If b not in the same row or column, 1 turn needed
         double turnCost = 0;
         if (goalCol - b.getCol() != 0 || goalRow - b.getRow() != 0) {
             turnCost = RobotConstants.TURN_COST;
@@ -113,7 +111,7 @@ public class FastestPathAlgo {
     }
 
     /**
-     * Returns target direction from robot to cell
+     * Returns target direction from bot to cell
      */
     private DIRECTION getTargetDir(int botR, int botC, DIRECTION botDir, Cell target) {
         if (botC - target.getCol() > 0) {
@@ -156,7 +154,7 @@ public class FastestPathAlgo {
     }
 
     /**
-     * Find fastest path from the robot's current pos to [goalRow, goalCol]
+     * Find fastest path from the bot's current pos to [goalRow, goalCol]
      */
     public String findFastestPath(int goalRow, int goalCol) {
     	initAlgo(exploredMap, bot);
@@ -165,10 +163,10 @@ public class FastestPathAlgo {
         Stack<Cell> path;
         do {
 
-            // Get cell with minimum cost from toVisit and assign it to current.
+            //Get cell with minimum cost from toVisit and assign it to current
             current = minimumCostCell(goalRow, goalCol);
 
-            // Point the robot in the direction of current from the previous cell.
+            //Point the robot in the direction of current from the previous cell
             if (parents.containsKey(current)) {
                 curDir = getTargetDir(parents.get(current).getRow(), parents.get(current).getCol(), curDir, current);
             }
@@ -182,7 +180,8 @@ public class FastestPathAlgo {
                 printFastestPath(path);
                 return executePath(path, goalRow, goalCol);
             }
-            // Setup neighbors of current cell. [Top, Bottom, Left, Right].
+            
+            //Setup neighbors of current cell. [Top, Bottom, Left, Right].
             if (exploredMap.checkValidCoordinates(current.getRow() + 1, current.getCol())) {
                 neighbors[0] = exploredMap.getCell(current.getRow() + 1, current.getCol());
                 if (!canBeVisited(neighbors[0])) {
@@ -208,7 +207,7 @@ public class FastestPathAlgo {
                 }
             }
 
-            // Iterate through neighbors and update their g(n) values
+            //Iterate through neighbors and update their g(n) values
             for (int i = 0; i < 4; i++) {
                 if (neighbors[i] != null) {
                     if (visited.contains(neighbors[i])) {
@@ -235,7 +234,7 @@ public class FastestPathAlgo {
     }
 
     /**
-     * Generates path in reverse using the parents HashMap
+     * Generates path in reverse using parents' HashMap
      */
     private Stack<Cell> getPath(int goalRow, int goalCol) {
         Stack<Cell> actualPath = new Stack<>();

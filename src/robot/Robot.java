@@ -98,8 +98,8 @@ public class Robot {
     }
 
     /**
-     * Rotates / moves robot according to MOVEMENT by changing its position and direction
-     * Sends the movement if this.realBot is set to true
+     * Rotates / moves bot according to MOVEMENT by changing its position and direction
+     * Sends movement if this.realBot true
      */
     public void move(MOVEMENT m, boolean sendMoveToAndroid) {
         if (!realBot) {
@@ -243,7 +243,6 @@ public class Robot {
         }
     }
 
-    //	NOT USED
     /**
      * Uses Communicator to send next movement to robot
      */
@@ -296,7 +295,7 @@ public class Robot {
     }
 
     /**
-     * Find new direction of the robot via current direction of robot and the given movement
+     * Find new direction of the bot via current direction of robot and the given movement
      */
     private DIRECTION findNewDirection(MOVEMENT m) {
         if (m == MOVEMENT.RIGHT) {
@@ -344,13 +343,12 @@ public class Robot {
             
             System.out.println();
             
-//          FOR RECEIVING SENSOR DATA IN CHAR
-          SRLeft.senseReal(explorationMap, result[0]);
-          SRFrontLeft.senseReal(explorationMap, result[1]);
-          SRFrontCenter.senseReal(explorationMap, result[2]);
-          SRFrontRight.senseReal(explorationMap, result[3]);
-          SRRight.senseReal(explorationMap, result[4]);
-//          LRLeft.senseReal(explorationMap, result[5]);
+	          SRLeft.senseReal(explorationMap, result[0]);
+	          SRFrontLeft.senseReal(explorationMap, result[1]);
+	          SRFrontCenter.senseReal(explorationMap, result[2]);
+	          SRFrontRight.senseReal(explorationMap, result[3]);
+	          SRRight.senseReal(explorationMap, result[4]);
+//          	LRLeft.senseReal(explorationMap, result[5]);
         }
         
         return result;

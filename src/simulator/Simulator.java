@@ -17,7 +17,7 @@ import static utils.MapDescriptor.generateMapDescriptor;
 import static utils.MapDescriptor.loadMap;
 
 /**
- * Simulator of actual robot traversing through arena
+ * Simulator of actual bot traversing through arena
  */
 public class Simulator {
     private static JFrame simJFrame = null;         // application JFrame
@@ -251,7 +251,7 @@ public class Simulator {
             }
         }
 
-        // Exploration Class for Multithreading
+        //Exploration Class for Multithreading
         class Exploration extends SwingWorker<Integer, String> {
             protected Integer doInBackground() throws Exception {
                 int row, col;
@@ -276,7 +276,7 @@ public class Simulator {
             }
         }
 
-        // Exploration Button
+        //Exploration Button
         JButton btn_Exploration = new JButton("Explore map");
         formatButton(btn_Exploration);
         btn_Exploration.addMouseListener(new MouseAdapter() {
@@ -288,7 +288,7 @@ public class Simulator {
         });
         buttonsJPanel.add(btn_Exploration);
 
-        // Fastest Path Button
+        //Fastest Path Button
         JButton btn_FastestPath = new JButton("Find fastest path");
         formatButton(btn_FastestPath);
         btn_FastestPath.addMouseListener(new MouseAdapter() {
@@ -301,7 +301,7 @@ public class Simulator {
         buttonsJPanel.add(btn_FastestPath);
 
 
-        // TimeExploration Class for Multithreading
+        //TimeExploration Class for Multithreading
         class TimeExploration extends SwingWorker<Integer, String> {
             protected Integer doInBackground() throws Exception {
                 robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
@@ -316,7 +316,7 @@ public class Simulator {
             }
         }
 
-        // Time-limited Exploration Button
+        //Time-limited Exploration Button
         JButton btn_TimeExploration = new JButton("Explore with time limit");
         formatButton(btn_TimeExploration);
         btn_TimeExploration.addMouseListener(new MouseAdapter() {
@@ -351,7 +351,7 @@ public class Simulator {
         });
         buttonsJPanel.add(btn_TimeExploration);
 
-        // CoverageExploration Class for Multithreading
+        //CoverageExploration Class for Multithreading
         class CoverageExploration extends SwingWorker<Integer, String> {
             protected Integer doInBackground() throws Exception {
                 robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
@@ -366,7 +366,7 @@ public class Simulator {
             }
         }
 
-        // Coverage-limited Exploration Button
+        //Coverage-limited Exploration Button
         JButton btn_CoverageExploration = new JButton("Explore with coverage limit");
         formatButton(btn_CoverageExploration);
        
@@ -400,7 +400,7 @@ public class Simulator {
         });
         buttonsJPanel.add(btn_CoverageExploration);
         
-     // Coverage-limited Exploration Button
+        //Coverage-limited Exploration Button
         JButton btn_changeBotSpeed = new JButton("Change robot speed");
         formatButton(btn_changeBotSpeed);
        
