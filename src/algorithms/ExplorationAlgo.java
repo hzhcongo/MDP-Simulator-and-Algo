@@ -123,9 +123,9 @@ public class ExplorationAlgo {
     	System.out.println("Bot current pos: " + x + ", " + y);
     	
     	//Find fastestpath to goal if bot is near goal
-    	//Should decrease limit when goal is surrounded by walls, increase limit if not (5-7 optimal)
-    	if(!bot.getTouchedGoal() && Math.abs(bot.getRobotPosRow() - MapConstants.GOAL_ROW) + Math.abs(bot.getRobotPosCol() - MapConstants.GOAL_COL) < 5) {
-    		System.out.println("< 4");
+    	//Should decrease limit when goal is surrounded by walls, increase limit if not (4/5 optimal)
+    	if(!bot.getTouchedGoal() && Math.abs(bot.getRobotPosRow() - MapConstants.GOAL_ROW) + Math.abs(bot.getRobotPosCol() - MapConstants.GOAL_COL) < 4) {
+    		System.out.println("Near goal (<4)");
     		FastestPathAlgo goToCell = new FastestPathAlgo(exploredMap,bot, realMap, true);
         	goToCell.findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL);
     	}

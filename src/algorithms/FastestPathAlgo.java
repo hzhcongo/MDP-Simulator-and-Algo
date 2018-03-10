@@ -266,6 +266,8 @@ public class FastestPathAlgo {
         tempB.setSpeed(0);
 
         ArrayList<MOVEMENT> movements = new ArrayList<>();
+
+        System.out.print("Directions:");
         
         while ((tempB.getRobotPosRow() != goalRow) || (tempB.getRobotPosCol() != goalCol)) {
             if (tempB.getRobotPosRow() == temp.getRow() && tempB.getRobotPosCol() == temp.getCol()) {
@@ -299,14 +301,14 @@ public class FastestPathAlgo {
             
 //            ExplorationAlgo explalgo = new ExplorationAlgo(exploredMap, realMap, bot, 300, 3000);
 //            explalgo.senseAndRepaint();
-            System.out.println("Direction " + DIRECTION.print(targetDir)+ " to (" + tempB.getRobotPosRow() + ", " + tempB.getRobotPosCol() + ")");
+            System.out.print(" -> " + DIRECTION.print(targetDir)+ "(" + tempB.getRobotPosRow() + ", " + tempB.getRobotPosCol() + ")");
             
 //            movements.add(MOVEMENT.FORWARD);
 //            outputString.append(MOVEMENT.print(MOVEMENT.FORWARD));
 //            tempB.move(MOVEMENT.FORWARD);
         }
-        
-        System.out.println("Instruction string:" + outputString.toString());
+
+        System.out.println("\nInstruction string:" + outputString.toString());
         
         shortOutputString.append("#");
         prev = outputString.charAt(0);
