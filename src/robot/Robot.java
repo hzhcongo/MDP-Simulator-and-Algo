@@ -163,7 +163,7 @@ public class Robot {
     /**
      * Overloaded method
      */
-    public void move(MOVEMENT m, Robot bot, Map exploredMap) {
+    public void move(MOVEMENT m, Robot bot, Map exploredMap, boolean exploring) {
     	switch(m) {
     	case FORWARD:  DirectionMoved.add("F");
     					break;
@@ -181,9 +181,44 @@ public class Robot {
         this.move(m, true);
         
         String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
-        String output = "@" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
-        		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
-        		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
+        String output;
+        
+        if(exploring) {
+            output = "@" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
+            		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
+            		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
+        }
+        else {
+            output = "@" + MOVEMENT.print(m);
+        }
+        
+    	if(bot.getRealBot()) {
+	    	Simulator.communicator.sendMsg(output, null);
+    	}
+    }
+    
+    /**
+     * Overloaded method for Fastest Path
+     */
+    public void moveFastest(MOVEMENT m, Robot bot, Map exploredMap) {
+    	switch(m) {
+    	case FORWARD:  DirectionMoved.add("F");
+    					break;
+    	case BACKWARD:  DirectionMoved.add("B");
+						break;
+    	case LEFT:		DirectionMoved.add("L");
+    					break;
+    	case RIGHT: 	DirectionMoved.add("R");
+    					break;
+    	case ERROR: 	System.out.println("MOVEMENT.ERROR provided to move()");
+						break;
+    	case CALIBRATE: System.out.println("MOVEMENT.CALIBRATE provided to move()");
+						break;
+    	}
+        this.move(m, true);
+        
+        String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
+        String output = "@" + MOVEMENT.print(m);
     	if(bot.getRealBot()) {
 	    	Simulator.communicator.sendMsg(output, null);
     	}
@@ -215,7 +250,7 @@ public class Robot {
      */
     public void moveForwardMultiple(int count, Robot bot, Map exploredMap) {
         if (count == 1) {
-            move(MOVEMENT.FORWARD, bot, exploredMap);
+            move(MOVEMENT.FORWARD, bot, exploredMap, true);
         } else {
 //            Communicator comm = Communicator.getCommMgr();
             if (count == 10) {
@@ -334,11 +369,11 @@ public class Robot {
 
 			System.out.print("Calculating sensor data: ");
 			
-            for(int i = 0; i < 5; i++) {
-                if(result[i] == 'B') result[0] = 2;
-                else if(result[i] == 'A') result[0] = 1;
-                else result[i] = 0;
-    			System.out.print(result[i]);
+            for(int i = 1; i < 6; i++) {
+                if(msg1.charAt(i) == 'B') result[i-1] = 2;
+                else if(msg1.charAt(i) == 'A') result[i-1] = 1;
+                else result[i-1] = 0;
+    			System.out.print(result[i-1]);
             }
             
             System.out.println();

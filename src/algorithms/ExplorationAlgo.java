@@ -89,7 +89,9 @@ public class ExplorationAlgo {
     private void explorationLoop(int r, int c) {
 
         if (bot.getRealBot()) {
+        	//@E works as of 14/3/2018 2.32pm
         	Simulator.communicator.sendMsg("@E", null);
+//        	Simulator.communicator.sendMsg("E", null);
         }            
     	senseAndRepaint();
 
@@ -107,7 +109,7 @@ public class ExplorationAlgo {
             areaExplored = calculateAreaExplored();
             if(areaExplored == 300 && !bot.getTouchedGoal()) {
             	FastestPathAlgo goToCell = new FastestPathAlgo(exploredMap,bot, realMap, true);
-            	goToCell.findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL);
+            	goToCell.findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL, true);
             }
         } while ((areaExplored <= coverageLimit && System.currentTimeMillis() <= endTime));
 
@@ -127,7 +129,7 @@ public class ExplorationAlgo {
     	if(!bot.getTouchedGoal() && Math.abs(bot.getRobotPosRow() - MapConstants.GOAL_ROW) + Math.abs(bot.getRobotPosCol() - MapConstants.GOAL_COL) < 4) {
     		System.out.println("Near goal (<4)");
     		FastestPathAlgo goToCell = new FastestPathAlgo(exploredMap,bot, realMap, true);
-        	goToCell.findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL);
+        	goToCell.findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL, true);
     	}
     	
     	if(southUnexplored() && !exploredMap.getCell(x-1,y).getIsWalked()) {
@@ -138,11 +140,10 @@ public class ExplorationAlgo {
 	    	else while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
 	    		moveBot(MOVEMENT.RIGHT);
 	    	}
+	    	
 	    	moveBot(MOVEMENT.FORWARD);
 	    	directionMoved.push("S");
-	        	
 	    	exploredMap.getCell(x-1, y).setIsWalked(true);
-	
 		}
 	    else if (westUnexplored() && !exploredMap.getCell(x,y-1).getIsWalked()) {
         	
@@ -169,7 +170,6 @@ public class ExplorationAlgo {
 		  	exploredMap.getCell(x, y+1).setIsWalked(true);
 		}
 	    else if (northUnexplored() && !exploredMap.getCell(x+1,y).getIsWalked()) {
-	
 	    	if (bot.getRobotCurDir() == DIRECTION.EAST) {
 	    		moveBot(MOVEMENT.LEFT);
 	    	}
@@ -183,7 +183,7 @@ public class ExplorationAlgo {
 	    }  
 	    else{
 	    	fastestPath();
-	    	senseAndRepaint();
+//	    	senseAndRepaint();
     	}
     }
     
@@ -243,8 +243,7 @@ public class ExplorationAlgo {
 			int y = array[1][num];
 	
 			System.out.println("Executing fastest path from Exploration");
-	    	goToCell.findFastestPath(x, y);
-	    	senseAndRepaint();
+	    	goToCell.findFastestPath(x, y, true);
 	    	return true;
 		}
     }
@@ -264,7 +263,7 @@ public class ExplorationAlgo {
         			moveBot(MOVEMENT.RIGHT);
         		}
         }
-        for(int i = botRow; i < 19; i++) {
+        for(int i = botRow; i <= 19; i++) {
 	    	if(!exploredMap.getCell(i, botCol).getIsExplored() || !exploredMap.getCell(i, botCol + 1).getIsExplored() || !exploredMap.getCell(i, botCol - 1).getIsExplored()) {
 	    		flag = 1;
 	    		break;
@@ -299,7 +298,7 @@ public class ExplorationAlgo {
         		moveBot(MOVEMENT.RIGHT);
         	}
         }
-        for(int i = botCol; i < 14; i++) {
+        for(int i = botCol; i <= 14; i++) {
 	    	if(!exploredMap.getCell(botRow, i).getIsExplored() || !exploredMap.getCell(botRow + 1, i).getIsExplored() || !exploredMap.getCell(botRow - 1, i).getIsExplored()) {
 	    		flag = 1;
 	    		break;
@@ -344,7 +343,7 @@ public class ExplorationAlgo {
 	    		moveBot(MOVEMENT.RIGHT);
 	    	}
 	    }
-	    for(int i = botRow; i > 0; i--) {
+	    for(int i = botRow; i >= 0; i--) {
 	    	if(!exploredMap.getCell(i, botCol).getIsExplored() || !exploredMap.getCell(i, botCol + 1).getIsExplored() || !exploredMap.getCell(i, botCol - 1).getIsExplored()) {
 	    		flag = 1;
 	    		break;
@@ -369,7 +368,7 @@ public class ExplorationAlgo {
         		moveBot(MOVEMENT.RIGHT);
         	}
         }
-        for(int i = botCol; i > 0; i--) {
+        for(int i = botCol; i >= 0; i--) {
 	    	if(!exploredMap.getCell(botRow, i).getIsExplored() || !exploredMap.getCell(botRow + 1, i).getIsExplored() || !exploredMap.getCell(botRow - 1, i).getIsExplored()) {
 	    		flag = 1;
 	    		break;
@@ -398,11 +397,11 @@ public class ExplorationAlgo {
 		
         if (!bot.getTouchedGoal() && coverageLimit == 300 && timeLimit == 3600) {
             FastestPathAlgo goToGoal = new FastestPathAlgo(exploredMap, bot, realMap, true);
-            goToGoal.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
+            goToGoal.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL, false);
         }
 
         FastestPathAlgo returnToStart = new FastestPathAlgo(exploredMap, bot, realMap, true);
-        returnToStart.findFastestPath(RobotConstants.START_ROW, RobotConstants.START_COL);
+        returnToStart.findFastestPath(RobotConstants.START_ROW, RobotConstants.START_COL, false);
 
         System.out.println("\nResetting bot direction");
 //        if (bot.getRealBot()) {
@@ -508,7 +507,8 @@ public class ExplorationAlgo {
     public void moveBot(MOVEMENT m) {
 		System.out.println("moveBot(): " + MOVEMENT.print(m));
         
-		bot.move(m, bot, exploredMap);
+		bot.move(m, bot, exploredMap, true);
+		
 //        if (!bot.getRealBot()) {
 //            senseAndRepaint();
 //        } else {

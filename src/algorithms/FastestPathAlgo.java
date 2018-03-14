@@ -156,7 +156,7 @@ public class FastestPathAlgo {
     /**
      * Find fastest path from the bot's current pos to [goalRow, goalCol]
      */
-    public String findFastestPath(int goalRow, int goalCol) {
+    public String findFastestPath(int goalRow, int goalCol, boolean exploring) {
     	initAlgo(exploredMap, bot);
     	
     	System.out.print("\nCalculating fastest path from (" + current.getRow() + ", " + current.getCol() + ") to goal (" + goalRow + ", " + goalCol + ") ");
@@ -178,7 +178,7 @@ public class FastestPathAlgo {
                 System.out.println("found: ");
                 path = getPath(goalRow, goalCol);
                 printFastestPath(path);
-                return executePath(path, goalRow, goalCol);
+                return executePath(path, goalRow, goalCol, exploring);
             }
             
             //Setup neighbors of current cell. [Top, Bottom, Left, Right].
@@ -254,162 +254,174 @@ public class FastestPathAlgo {
     /**
      * Executes fastest path and returns StringBuilder with the path steps
      */
-    private String executePath(Stack<Cell> path, int goalRow, int goalCol) {
+    private String executePath(Stack<Cell> path, int goalRow, int goalCol, boolean exploring) {
         StringBuilder outputString = new StringBuilder();
         StringBuilder shortOutputString = new StringBuilder();
         Cell temp = path.pop();
         DIRECTION targetDir;
         int bin = 0;
         char prev = '0';
-        Robot tempB = new Robot(bot.getRobotPosRow(), bot.getRobotPosCol(), false);
-        tempB.setRobotDir(bot.getRobotCurDir());
-        tempB.setSpeed(0);
+//        Robot bot = new Robot(bot.getRobotPosRow(), bot.getRobotPosCol(), false);
+//        bot.setRobotDir(bot.getRobotCurDir());
+//        bot.setSpeed(0);
 
         ArrayList<MOVEMENT> movements = new ArrayList<>();
 
         System.out.print("Directions:");
         
-        while ((tempB.getRobotPosRow() != goalRow) || (tempB.getRobotPosCol() != goalCol)) {
-            if (tempB.getRobotPosRow() == temp.getRow() && tempB.getRobotPosCol() == temp.getCol()) {
+        while ((bot.getRobotPosRow() != goalRow) || (bot.getRobotPosCol() != goalCol)) {
+            if (bot.getRobotPosRow() == temp.getRow() && bot.getRobotPosCol() == temp.getCol()) {
                 temp = path.pop();
             }
 
-            targetDir = getTargetDir(tempB.getRobotPosRow(), tempB.getRobotPosCol(), tempB.getRobotCurDir(), temp);
+            targetDir = getTargetDir(bot.getRobotPosRow(), bot.getRobotPosCol(), bot.getRobotCurDir(), temp);
 
             //If bot has to move backwards (To save 1 rotation)
-            if(targetDir == DIRECTION.SOUTH && tempB.getRobotCurDir() == DIRECTION.NORTH ||
-            		targetDir == DIRECTION.NORTH && tempB.getRobotCurDir() == DIRECTION.SOUTH ||
-            		targetDir == DIRECTION.WEST && tempB.getRobotCurDir() == DIRECTION.EAST ||
-            		targetDir == DIRECTION.EAST && tempB.getRobotCurDir() == DIRECTION.WEST) {
+            if(targetDir == DIRECTION.SOUTH && bot.getRobotCurDir() == DIRECTION.NORTH ||
+            		targetDir == DIRECTION.NORTH && bot.getRobotCurDir() == DIRECTION.SOUTH ||
+            		targetDir == DIRECTION.WEST && bot.getRobotCurDir() == DIRECTION.EAST ||
+            		targetDir == DIRECTION.EAST && bot.getRobotCurDir() == DIRECTION.WEST) {
                 movements.add(MOVEMENT.BACKWARD);
                 outputString.append(MOVEMENT.print(MOVEMENT.BACKWARD));
 
-                tempB.move(MOVEMENT.BACKWARD);
+//                bot.move(MOVEMENT.BACKWARD);
+        		bot.move(MOVEMENT.BACKWARD, bot, exploredMap, exploring);
+                bot.setSensors();
+                bot.sense(exploredMap, realMap, bot);
+                exploredMap.repaint();
             }
             //Else rotate to the right direction before moving forward
             else {
             	
-	            while (tempB.getRobotCurDir() != targetDir) {
-	                movements.add(getTargetMove(tempB.getRobotCurDir(), targetDir));
-	                outputString.append(MOVEMENT.print(getTargetMove(tempB.getRobotCurDir(), targetDir)));
-	                tempB.move(getTargetMove(tempB.getRobotCurDir(), targetDir));
+	            while (bot.getRobotCurDir() != targetDir) {
+	                movements.add(getTargetMove(bot.getRobotCurDir(), targetDir));
+	                outputString.append(MOVEMENT.print(getTargetMove(bot.getRobotCurDir(), targetDir)));
+//	                bot.move(getTargetMove(bot.getRobotCurDir(), targetDir));
+	        		bot.move(getTargetMove(bot.getRobotCurDir(), targetDir), bot, exploredMap, exploring);
+	                bot.setSensors();
+	                bot.sense(exploredMap, realMap, bot);
+	                exploredMap.repaint();
 	            }
                 movements.add(MOVEMENT.FORWARD);
                 outputString.append(MOVEMENT.print(MOVEMENT.FORWARD));
-                tempB.move(MOVEMENT.FORWARD);
+//                bot.move(MOVEMENT.FORWARD);
+        		bot.move(MOVEMENT.FORWARD, bot, exploredMap, exploring);
+                bot.setSensors();
+                bot.sense(exploredMap, realMap, bot);
+                exploredMap.repaint();
             }
             
 //            ExplorationAlgo explalgo = new ExplorationAlgo(exploredMap, realMap, bot, 300, 3000);
 //            explalgo.senseAndRepaint();
-            System.out.print(" -> " + DIRECTION.print(targetDir)+ "(" + tempB.getRobotPosRow() + ", " + tempB.getRobotPosCol() + ")");
+            System.out.print(" -> " + DIRECTION.print(targetDir)+ "(" + bot.getRobotPosRow() + ", " + bot.getRobotPosCol() + ")");
             
 //            movements.add(MOVEMENT.FORWARD);
 //            outputString.append(MOVEMENT.print(MOVEMENT.FORWARD));
 //            tempB.move(MOVEMENT.FORWARD);
         }
 
-        System.out.println("\nInstruction string:" + outputString.toString());
-        
-        shortOutputString.append("#");
-        prev = outputString.charAt(0);
-        shortOutputString.append(prev);
-        bin++;
-	        
-        for(int i = 1; i < outputString.length(); i++) {
-        	
-        	switch (outputString.charAt(i)) {
-			case 'F':
-				if(prev == 'F') {
-					if(bin == 9) {
-						shortOutputString.append(bin);
-						shortOutputString.append('F');
-						bin = 1;
-					}
-					else{
-						bin++;
-					}
-				}
-				else {
-					shortOutputString.append(bin);
-					shortOutputString.append('F');
-					bin = 1;
-					prev = 'F';
-				}
-				break;
-			case 'L':
-				if(prev == 'L') {
-					if(bin == 9) {
-						shortOutputString.append(bin);
-						shortOutputString.append('L');
-						bin = 1;
-					}
-					else{
-						bin++;
-					}
-				}
-				else {
-					shortOutputString.append(bin);
-					shortOutputString.append('L');
-					bin = 1;
-					prev = 'L';
-				}
-				break;
-			case 'B':
-				if(prev == 'B') {
-					if(bin == 9) {
-						shortOutputString.append(bin);
-						shortOutputString.append('B');
-						bin = 1;
-					}
-					else{
-						bin++;
-					}
-				}
-				else {
-					shortOutputString.append(bin);
-					shortOutputString.append('B');
-					bin = 1;
-					prev = 'B';
-				}
-				break;
-			case 'R':
-				if(prev == 'R') {
-					if(bin == 9) {
-						shortOutputString.append(bin);
-						shortOutputString.append('R');
-						bin = 1;
-					}
-					else{
-						bin++;
-					}
-				}
-				else {
-					shortOutputString.append(bin);
-					shortOutputString.append('R');
-					bin = 1;
-					prev = 'R';
-				}
-				break;
-			default:
-				findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL);
-			}
-        }
-        
-        shortOutputString.append(bin);
-        shortOutputString.append("!");
-        
-        System.out.println("Short string:" + shortOutputString);
-
-        if(bot.getRealBot()) {
-	    	Simulator.communicator.sendMsg(shortOutputString.toString(), null);
-    	}
-    	
-    	executePathMovements(outputString.toString(), false);
+//        System.out.println("\nInstruction string:" + outputString.toString());
+//        
+//        shortOutputString.append("#");
+//        prev = outputString.charAt(0);
+//        shortOutputString.append(prev);
+//        bin++;
+//	        
+//        for(int i = 1; i < outputString.length(); i++) {
+//        	
+//        	switch (outputString.charAt(i)) {
+//			case 'F':
+//				if(prev == 'F') {
+//					if(bin == 9) {
+//						shortOutputString.append(bin);
+//						shortOutputString.append('F');
+//						bin = 1;
+//					}
+//					else{
+//						bin++;
+//					}
+//				}
+//				else {
+//					shortOutputString.append(bin);
+//					shortOutputString.append('F');
+//					bin = 1;
+//					prev = 'F';
+//				}
+//				break;
+//			case 'L':
+//				if(prev == 'L') {
+//					if(bin == 9) {
+//						shortOutputString.append(bin);
+//						shortOutputString.append('L');
+//						bin = 1;
+//					}
+//					else{
+//						bin++;
+//					}
+//				}
+//				else {
+//					shortOutputString.append(bin);
+//					shortOutputString.append('L');
+//					bin = 1;
+//					prev = 'L';
+//				}
+//				break;
+//			case 'B':
+//				if(prev == 'B') {
+//					if(bin == 9) {
+//						shortOutputString.append(bin);
+//						shortOutputString.append('B');
+//						bin = 1;
+//					}
+//					else{
+//						bin++;
+//					}
+//				}
+//				else {
+//					shortOutputString.append(bin);
+//					shortOutputString.append('B');
+//					bin = 1;
+//					prev = 'B';
+//				}
+//				break;
+//			case 'R':
+//				if(prev == 'R') {
+//					if(bin == 9) {
+//						shortOutputString.append(bin);
+//						shortOutputString.append('R');
+//						bin = 1;
+//					}
+//					else{
+//						bin++;
+//					}
+//				}
+//				else {
+//					shortOutputString.append(bin);
+//					shortOutputString.append('R');
+//					bin = 1;
+//					prev = 'R';
+//				}
+//				break;
+//			default:
+//				findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL);
+//			}
+//        }
+//        
+//        shortOutputString.append(bin);
+//        shortOutputString.append("!");
+//        
+//        System.out.println("Short string:" + shortOutputString);
+//
+//        if(bot.getRealBot()) {
+//	    	Simulator.communicator.sendMsg(shortOutputString.toString(), null);
+//    	}
+//    	
+//    	executePathMovements(outputString.toString(), false);
     	
         return outputString.toString();
     }
     
-    private boolean executePathMovements(String outputString, boolean actualFastestPath){
+    private boolean executePathMovements(String outputString, boolean actualFastestPath, boolean exploring){
     	try {
 
 	        if(Simulator.actualRun) bot.setSpeed(500);
@@ -429,7 +441,7 @@ public class FastestPathAlgo {
 			        bot.move(MOVEMENT.RIGHT);
 					break;
 				default:
-					findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL);
+					findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL, exploring);
 					return false;
 				}
 		    	

@@ -107,7 +107,7 @@ public class Communicator {
             String input = reader.readLine();
             
             sb.append(input);
-            System.out.println(sb.toString());
+            if(sb != null) System.out.println(sb.toString());
             return sb.toString();
         } catch (IOException e) {
             System.out.println("IOException at recvMsg()");

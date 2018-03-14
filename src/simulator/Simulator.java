@@ -33,7 +33,7 @@ public class Simulator {
     private static int coverageLimit = 300;         // coverage limit
 
     public static final Communicator communicator = Communicator.getCommMgr();
-    public static final boolean actualRun = false;
+    public static final boolean actualRun = true;
     private static String msg = "";   
 
     public static int wrow = -1;   
@@ -92,8 +92,8 @@ public class Simulator {
 	                fastestPath = new FastestPathAlgo(exploredMap, robot, actualMap, false);
 	                
 	                if(wrow != -1 || wcol != -1)
-	                    fastestPath.findFastestPath(wrow, wcol);
-	                fastestPath.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
+	                    fastestPath.findFastestPath(wrow, wcol, false);
+	                fastestPath.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL, false);
 	
 	    			break;
 	    		default:
@@ -244,8 +244,8 @@ public class Simulator {
                 //TTD HARDCODED WAYPOINT
 //                wrow = 1;
 //                wcol = 4;
-                if(wrow > 0 || wcol > 0 ) fastestPath.findFastestPath(wrow, wcol);
-                fastestPath.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL);
+                if(wrow > 0 || wcol > 0 ) fastestPath.findFastestPath(wrow, wcol, false);
+                fastestPath.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL, false);
 
                 return 222;
             }
