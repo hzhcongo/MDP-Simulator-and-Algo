@@ -87,32 +87,32 @@ public class ExplorationAlgo {
      * FastestPath called to goal when all cells are explored but have not reached goal
      */
     private void explorationLoop(int r, int c) {
-
+   	
         if (bot.getRealBot()) {
         	//@E works as of 14/3/2018 2.32pm
         	Simulator.communicator.sendMsg("@E", null);
 //        	Simulator.communicator.sendMsg("E", null);
         }            
+        //can no need if bot facing north at start
     	senseAndRepaint();
 
-        do {
-            System.out.println("");
-            System.out.println("Entered explore do-while");
-            
-            if (bot.getTouchedGoal() && areaExplored >= coverageLimit) {
-                System.out.println("Touched goal and full coverage achieved.");
-            	break;
-            }
-
+    	do {
+        	//Cell.setIsWalked(0,0);
             nextMove();
 
             areaExplored = calculateAreaExplored();
-            if(areaExplored == 300 && !bot.getTouchedGoal()) {
-            	FastestPathAlgo goToCell = new FastestPathAlgo(exploredMap,bot, realMap, true);
-            	goToCell.findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL, true);
-            }
-        } while ((areaExplored <= coverageLimit && System.currentTimeMillis() <= endTime));
+            System.out.println("Area explored: " + areaExplored);
 
+            if (bot.getRobotPosRow() == r && bot.getRobotPosCol() == c) {
+                if (areaExplored >= 100) {
+                    break;
+                }
+            }
+        } while ((!bot.getTouchedGoal() && System.currentTimeMillis() <= endTime) || (areaExplored < coverageLimit && System.currentTimeMillis() <= endTime));
+
+    	//DO FASTESTPATH TO NEAREST UNEXPLORED CELL HERE
+    	//
+    	
         goHome();
     }
     
@@ -123,74 +123,114 @@ public class ExplorationAlgo {
     	x = bot.getRobotPosRow();
     	y = bot.getRobotPosCol();
     	System.out.println("Bot current pos: " + x + ", " + y);
-    	
-    	//Find fastestpath to goal if bot is near goal
-    	//Should decrease limit when goal is surrounded by walls, increase limit if not (4/5 optimal)
-    	if(!bot.getTouchedGoal() && Math.abs(bot.getRobotPosRow() - MapConstants.GOAL_ROW) + Math.abs(bot.getRobotPosCol() - MapConstants.GOAL_COL) < 4) {
-    		System.out.println("Near goal (<4)");
-    		FastestPathAlgo goToCell = new FastestPathAlgo(exploredMap,bot, realMap, true);
-        	goToCell.findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL, true);
-    	}
-    	
-    	if(southUnexplored() && !exploredMap.getCell(x-1,y).getIsWalked()) {
-	    		
-	    	if(bot.getRobotCurDir() == DIRECTION.WEST) {
-	    		moveBot(MOVEMENT.LEFT);
-	    	}
-	    	else while (bot.getRobotCurDir() != DIRECTION.SOUTH) {
-	    		moveBot(MOVEMENT.RIGHT);
-	    	}
-	    	
-	    	moveBot(MOVEMENT.FORWARD);
-	    	directionMoved.push("S");
-	    	exploredMap.getCell(x-1, y).setIsWalked(true);
-		}
-	    else if (westUnexplored() && !exploredMap.getCell(x,y-1).getIsWalked()) {
-        	
-	    	if (bot.getRobotCurDir() == DIRECTION.NORTH) {
-	    		moveBot(MOVEMENT.LEFT);
-	    	}
-			else while (bot.getRobotCurDir() != DIRECTION.WEST) {
-				moveBot(MOVEMENT.RIGHT);
-			}
-	
-	    	moveBot(MOVEMENT.FORWARD);
-	    	directionMoved.push("W");
-	    	exploredMap.getCell(x, y-1).setIsWalked(true);
+
+    	//if right no wall, turn right to hug wall
+        if (lookRight()) {
+	        moveBot(MOVEMENT.RIGHT);
+	        //if front no wall, move forward and break
+	        if (lookForward()) 
+	        	moveBot(MOVEMENT.FORWARD);
+        //else, right already has wall, so just check if can move forward
+	    } else if (lookForward()) {
+	        moveBot(MOVEMENT.FORWARD);
+	    //else, right already has wall but front has wall, left has no wall
+	    } else if (lookLeft()) {
+	        moveBot(MOVEMENT.LEFT);
+	        //if front no wall, move forward and break
+	        if (lookForward())
+	        	moveBot(MOVEMENT.FORWARD);
+        //else, check backwards
+	    } else {
+	        moveBot(MOVEMENT.RIGHT);
+	        moveBot(MOVEMENT.RIGHT);
 	    }
-	    else if (eastUnexplored() && !exploredMap.getCell(x,y+1).getIsWalked()) {
-	    	if (bot.getRobotCurDir() == DIRECTION.SOUTH) {
-	    		moveBot(MOVEMENT.LEFT);
-	    	}
-	    	else while (bot.getRobotCurDir() != DIRECTION.EAST) {
-	    		moveBot(MOVEMENT.RIGHT);
-			}
-			moveBot(MOVEMENT.FORWARD);
-			directionMoved.push("E");
-		  	exploredMap.getCell(x, y+1).setIsWalked(true);
-		}
-	    else if (northUnexplored() && !exploredMap.getCell(x+1,y).getIsWalked()) {
-	    	if (bot.getRobotCurDir() == DIRECTION.EAST) {
-	    		moveBot(MOVEMENT.LEFT);
-	    	}
-	    	else while (bot.getRobotCurDir() != DIRECTION.NORTH) {
-	    		moveBot(MOVEMENT.RIGHT);
-	    	}
-	    	
-	    	moveBot(MOVEMENT.FORWARD);
-	    	directionMoved.push("N");
-	    	exploredMap.getCell(x+1, y).setIsWalked(true);
-	    }  
-	    else{
-	    	if(!fastestPath()) {
-	    		System.out.println("Re-sensing surroundings");
-	    		moveBot(MOVEMENT.RIGHT);
-	    		moveBot(MOVEMENT.RIGHT);
-	    		moveBot(MOVEMENT.RIGHT);
-	    		moveBot(MOVEMENT.RIGHT);
-	    	}
-//	    	senseAndRepaint();
-    	}
+    }
+    
+    /**
+     * Returns true if the right side of the robot is free to move into.
+     */
+    private boolean lookRight() {
+        switch (bot.getRobotCurDir()) {
+            case NORTH:
+                return eastFree();
+            case EAST:
+                return southFree();
+            case SOUTH:
+                return westFree();
+            case WEST:
+                return northFree();
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if the robot is free to move forward.
+     */
+    private boolean lookForward() {
+        switch (bot.getRobotCurDir()) {
+            case NORTH:
+                return northFree();
+            case EAST:
+                return eastFree();
+            case SOUTH:
+                return southFree();
+            case WEST:
+                return westFree();
+        }
+        return false;
+    }
+
+    /**
+     * * Returns true if the left side of the robot is free to move into.
+     */
+    private boolean lookLeft() {
+        switch (bot.getRobotCurDir()) {
+            case NORTH:
+                return westFree();
+            case EAST:
+                return northFree();
+            case SOUTH:
+                return eastFree();
+            case WEST:
+                return southFree();
+        }
+        return false;
+    }
+    
+    /**
+     * Returns true if the robot can move to the north cell.
+     */
+    private boolean northFree() {
+        int botRow = bot.getRobotPosRow();
+        int botCol = bot.getRobotPosCol();
+        return (isExploredNotObstacle(botRow + 1, botCol - 1) && isExploredAndFree(botRow + 1, botCol) && isExploredNotObstacle(botRow + 1, botCol + 1));
+    }
+
+    /**
+     * Returns true if the robot can move to the east cell.
+     */
+    private boolean eastFree() {
+        int botRow = bot.getRobotPosRow();
+        int botCol = bot.getRobotPosCol();
+        return (isExploredNotObstacle(botRow - 1, botCol + 1) && isExploredAndFree(botRow, botCol + 1) && isExploredNotObstacle(botRow + 1, botCol + 1));
+    }
+
+    /**
+     * Returns true if the robot can move to the south cell.
+     */
+    private boolean southFree() {
+        int botRow = bot.getRobotPosRow();
+        int botCol = bot.getRobotPosCol();
+        return (isExploredNotObstacle(botRow - 1, botCol - 1) && isExploredAndFree(botRow - 1, botCol) && isExploredNotObstacle(botRow - 1, botCol + 1));
+    }
+
+    /**
+     * Returns true if the robot can move to the west cell.
+     */
+    private boolean westFree() {
+        int botRow = bot.getRobotPosRow();
+        int botCol = bot.getRobotPosCol();
+        return (isExploredNotObstacle(botRow - 1, botCol - 1) && isExploredAndFree(botRow, botCol - 1) && isExploredNotObstacle(botRow + 1, botCol - 1));
     }
     
     private boolean fastestPath() {
@@ -440,23 +480,23 @@ public class ExplorationAlgo {
     }
     
     /**
-     * Returns true if valid cell explored and not obstacle
+     * Returns true for cells that are explored and not obstacles.
      */
     private boolean isExploredNotObstacle(int r, int c) {
         if (exploredMap.checkValidCoordinates(r, c)) {
             Cell tmp = exploredMap.getCell(r, c);
-            return (tmp.getIsExplored() && !tmp.getIsWalked() && !tmp.getIsObstacle());
+            return (tmp.getIsExplored() && !tmp.getIsObstacle());
         }
         return false;
     }
 
     /**
-     * Returns true if valid cell explored, not virtual wall and not obstacle
+     * Returns true for cells that are explored, not virtual walls and not obstacles.
      */
     private boolean isExploredAndFree(int r, int c) {
         if (exploredMap.checkValidCoordinates(r, c)) {
             Cell b = exploredMap.getCell(r, c);
-            return (b.getIsExplored() && !b.getIsWalked()  && !b.getIsWall() && !b.getIsObstacle());
+            return (b.getIsExplored() && !b.getIsWall() && !b.getIsObstacle());
         }
         return false;
     }

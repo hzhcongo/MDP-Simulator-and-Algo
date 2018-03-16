@@ -6,6 +6,7 @@ import map.Map;
 import map.MapConstants;
 import robot.Robot;
 import robot.RobotConstants;
+import robot.RobotConstants.DIRECTION;
 import utils.Communicator;
 
 import javax.swing.*;
@@ -33,7 +34,7 @@ public class Simulator {
     private static int coverageLimit = 300;         // coverage limit
 
     public static final Communicator communicator = Communicator.getCommMgr();
-    public static final boolean actualRun = true;
+    public static final boolean actualRun = false;
     private static String msg = "";   
 
     public static int wrow = -1;   
@@ -45,7 +46,7 @@ public class Simulator {
     public static void main(String[] args) {
 
         robot = new Robot(RobotConstants.START_ROW, RobotConstants.START_COL, actualRun);
-
+        robot.setRobotDir(DIRECTION.EAST);
         //SET NO SLEEP WHEN ACTUAL RUN
         if(actualRun) robot.setSpeed(0);
         
