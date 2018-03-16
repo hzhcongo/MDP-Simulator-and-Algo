@@ -370,7 +370,7 @@ public class Robot {
 			System.out.print("Calculating sensor data: ");
 			
             for(int i = 1; i < 6; i++) {
-                if(msg1.charAt(i) == 'B') result[i-1] = 2;
+                if(msg1.charAt(i) == 'B') result[i-1] = 0;
                 else if(msg1.charAt(i) == 'A') result[i-1] = 1;
                 else result[i-1] = 0;
     			System.out.print(result[i-1]);

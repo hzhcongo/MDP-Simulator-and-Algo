@@ -156,7 +156,7 @@ public class FastestPathAlgo {
     /**
      * Find fastest path from the bot's current pos to [goalRow, goalCol]
      */
-    public String findFastestPath(int goalRow, int goalCol, boolean exploring) {
+    public boolean findFastestPath(int goalRow, int goalCol, boolean exploring) {
     	initAlgo(exploredMap, bot);
     	
     	System.out.print("\nCalculating fastest path from (" + current.getRow() + ", " + current.getCol() + ") to goal (" + goalRow + ", " + goalCol + ") ");
@@ -230,7 +230,7 @@ public class FastestPathAlgo {
         } while (!toVisit.isEmpty());
 
         System.out.println("not found.");
-        return null;
+        return false;
     }
 
     /**
@@ -254,7 +254,7 @@ public class FastestPathAlgo {
     /**
      * Executes fastest path and returns StringBuilder with the path steps
      */
-    private String executePath(Stack<Cell> path, int goalRow, int goalCol, boolean exploring) {
+    private boolean executePath(Stack<Cell> path, int goalRow, int goalCol, boolean exploring) {
         StringBuilder outputString = new StringBuilder();
         StringBuilder shortOutputString = new StringBuilder();
         Cell temp = path.pop();
@@ -418,7 +418,7 @@ public class FastestPathAlgo {
 //    	
 //    	executePathMovements(outputString.toString(), false);
     	
-        return outputString.toString();
+        return true;
     }
     
     private boolean executePathMovements(String outputString, boolean actualFastestPath, boolean exploring){

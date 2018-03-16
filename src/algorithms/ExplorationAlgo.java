@@ -182,7 +182,13 @@ public class ExplorationAlgo {
 	    	exploredMap.getCell(x+1, y).setIsWalked(true);
 	    }  
 	    else{
-	    	fastestPath();
+	    	if(!fastestPath()) {
+	    		System.out.println("Re-sensing surroundings");
+	    		moveBot(MOVEMENT.RIGHT);
+	    		moveBot(MOVEMENT.RIGHT);
+	    		moveBot(MOVEMENT.RIGHT);
+	    		moveBot(MOVEMENT.RIGHT);
+	    	}
 //	    	senseAndRepaint();
     	}
     }
@@ -243,8 +249,7 @@ public class ExplorationAlgo {
 			int y = array[1][num];
 	
 			System.out.println("Executing fastest path from Exploration");
-	    	goToCell.findFastestPath(x, y, true);
-	    	return true;
+			return goToCell.findFastestPath(x, y, true);
 		}
     }
 
