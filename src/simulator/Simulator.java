@@ -242,9 +242,6 @@ public class Simulator {
 
                 FastestPathAlgo fastestPath;
                 fastestPath = new FastestPathAlgo(exploredMap, robot, actualMap, false);
-                //TTD HARDCODED WAYPOINT
-//                wrow = 1;
-//                wcol = 4;
                 if(wrow > 0 || wcol > 0 ) fastestPath.findFastestPath(wrow, wcol, false);
                 fastestPath.findFastestPath(RobotConstants.GOAL_ROW, RobotConstants.GOAL_COL, false);
 

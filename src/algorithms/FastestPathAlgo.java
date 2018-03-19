@@ -267,7 +267,7 @@ public class FastestPathAlgo {
 
         ArrayList<MOVEMENT> movements = new ArrayList<>();
 
-        System.out.print("Directions:");
+        System.out.print("Directions");
         
         while ((bot.getRobotPosRow() != goalRow) || (bot.getRobotPosCol() != goalCol)) {
             if (bot.getRobotPosRow() == temp.getRow() && bot.getRobotPosCol() == temp.getCol()) {
@@ -319,6 +319,7 @@ public class FastestPathAlgo {
 //            outputString.append(MOVEMENT.print(MOVEMENT.FORWARD));
 //            tempB.move(MOVEMENT.FORWARD);
         }
+        System.out.println("");
 
 //        System.out.println("\nInstruction string:" + outputString.toString());
 //        

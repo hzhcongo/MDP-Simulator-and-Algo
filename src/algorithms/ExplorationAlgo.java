@@ -26,8 +26,6 @@ public class ExplorationAlgo {
     private long endTime;
 //    private int lastCalibrate;
 //    private boolean calibrationMode;
-    private int x;
-    private int y;
     private Stack<String> directionMoved = new Stack<String>();
     
     public ExplorationAlgo(Map exploredMap, Map realMap, Robot bot, int coverageLimit, int timeLimit) {
@@ -95,34 +93,48 @@ public class ExplorationAlgo {
         }            
         //can no need if bot facing north at start
     	senseAndRepaint();
-
-    	do {
-        	//Cell.setIsWalked(0,0);
-            nextMove();
-
-            areaExplored = calculateAreaExplored();
-            System.out.println("Area explored: " + areaExplored);
-
-            if (bot.getRobotPosRow() == r && bot.getRobotPosCol() == c) {
-                if (areaExplored >= 100) {
-                    break;
-                }
-            }
-        } while ((!bot.getTouchedGoal() && System.currentTimeMillis() <= endTime) || (areaExplored < coverageLimit && System.currentTimeMillis() <= endTime));
-
-    	//DO FASTESTPATH TO NEAREST UNEXPLORED CELL HERE
-    	//
     	
+    	do {
+			rightWallHug();
+
+			areaExplored = calculateAreaExplored();
+            System.out.println("Area explored: " + areaExplored);
+            
+            //areaExplored >= 150 ensures map must be at least be half-explored before breaking out of loop
+            if (bot.getRobotPosRow() == r && bot.getRobotPosCol() == c && areaExplored >= 150) break;
+            
+        } while ((!bot.getTouchedGoal() && System.currentTimeMillis() <= endTime) || (areaExplored < coverageLimit && System.currentTimeMillis() <= endTime));
+        
+    	do {            
+            if (areaExplored == 300) {
+                break;
+            }
+            else {
+	    		System.out.println("Map not fully explored");
+	    		//TTD: IF THERES WALL NEARBY, CALL CALIBRATE?
+	    		//TTD: SEND CONCATENATED FASTEST PATH?
+            	if(!fastestPath()) {
+    	    		System.out.println("Re-sensing surroundings");
+    	    		moveBot(MOVEMENT.RIGHT);
+    	    		moveBot(MOVEMENT.RIGHT);
+    	    		moveBot(MOVEMENT.RIGHT);
+    	    		moveBot(MOVEMENT.RIGHT);
+    	    	}
+            }
+
+			areaExplored = calculateAreaExplored();
+            System.out.println("Area explored: " + areaExplored);
+            
+        } while ((!bot.getTouchedGoal() && System.currentTimeMillis() <= endTime) || (areaExplored < coverageLimit && System.currentTimeMillis() <= endTime));
+        
         goHome();
     }
     
     /**
-     * Determines the next move for the robot and executes it accordingly.
+     * Executes right-wall hug
      */
-    private void nextMove() {
-    	x = bot.getRobotPosRow();
-    	y = bot.getRobotPosCol();
-    	System.out.println("Bot current pos: " + x + ", " + y);
+    private void rightWallHug() {
+    	System.out.println("\nBot current pos: " + bot.getRobotPosRow() + ", " + bot.getRobotPosCol());
 
     	//if right no wall, turn right to hug wall
         if (lookRight()) {
@@ -247,7 +259,7 @@ public class ExplorationAlgo {
     		for (int j = 1; j < 14;j++) {
    			if (!exploredMap.getCell(i, j).getIsWalked() && exploredMap.getCell(i, j).getIsExplored()) {  				
     				if (exploredMap.checkIfWalkable(i,j)) {
-    					System.out.println(i + " " + j);
+//    					System.out.println(i + " " + j);
 	    				array[0][z] = i; //Row values 
 	    				array[1][z] = j; //Col values
 	    				z++;
