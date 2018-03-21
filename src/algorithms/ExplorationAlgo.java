@@ -139,6 +139,7 @@ public class ExplorationAlgo {
     	System.out.println("\nBot current pos: " + bot.getRobotPosRow() + ", " + bot.getRobotPosCol());
     	
     	//Failsafe to break out of constant right turning
+//    	if(lookRight() && lookForward() && lookLeft()) {
 //	        moveBot(MOVEMENT.FORWARD);
 //    	}
     	
