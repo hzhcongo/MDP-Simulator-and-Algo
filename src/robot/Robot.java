@@ -18,7 +18,7 @@ import map.Cell;
  *
  *        ^  ^  ^
  *        SR SR SR
- *   < SR R  R  R  SR >
+ *   < LR R  R  R  SR >
  *        R  R  R
  *        R  R  R
  *
@@ -56,7 +56,7 @@ public class Robot {
         SRFrontRight = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow + 1, this.posCol + 1, this.robotDir, "SRFR");
         
         //SRLeft is long range, but with short range values
-        SRLeft = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow, this.posCol - 1, findNewDirection(MOVEMENT.LEFT), "SRL");
+        SRLeft = new Sensor(RobotConstants.SENSOR_LONG_RANGE_L, RobotConstants.SENSOR_LONG_RANGE_H, this.posRow, this.posCol - 1, findNewDirection(MOVEMENT.LEFT), "LRL");
         
         SRRight = new Sensor(RobotConstants.SENSOR_SHORT_RANGE_L, RobotConstants.SENSOR_SHORT_RANGE_H, this.posRow, this.posCol + 1, findNewDirection(MOVEMENT.RIGHT), "SRR");
 //        LRLeft = new Sensor(RobotConstants.SENSOR_LONG_RANGE_L, RobotConstants.SENSOR_LONG_RANGE_H, this.posRow, this.posCol - 1, findNewDirection(MOVEMENT.LEFT), "LRL");
@@ -368,12 +368,17 @@ public class Robot {
         			System.out.println("Start flag recieved from Arduino");
         			break;
     			}
+//        		else {
+//        			System.out.println("Gibberish");
+//        		}
         	}
 
 			System.out.print("Calculating sensor data: ");
 			
             for(int i = 1; i < 6; i++) {
-                if(msg1.charAt(i) == 'B') result[i-1] = 0;
+                if(msg1.charAt(i) == 'D') result[i-1] = 4;
+                else if(msg1.charAt(i) == 'C') result[i-1] = 3;
+                else if(msg1.charAt(i) == 'B' && i == 1) result[i-1] = 2;
                 else if(msg1.charAt(i) == 'A') result[i-1] = 1;
                 else result[i-1] = 0;
     			System.out.print(result[i-1]);

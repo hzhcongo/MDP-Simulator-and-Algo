@@ -99,11 +99,12 @@ public class ExplorationAlgo {
 
 			areaExplored = calculateAreaExplored();
             System.out.println("Area explored: " + areaExplored);
+            System.out.println("Time passed: " + (System.currentTimeMillis() - startTime) + " ms");
             
             //areaExplored >= 150 ensures map must be at least be half-explored before breaking out of loop
             if (bot.getRobotPosRow() == r && bot.getRobotPosCol() == c && areaExplored >= 150) break;
             
-        } while ((!bot.getTouchedGoal() && System.currentTimeMillis() <= endTime) || (areaExplored < coverageLimit && System.currentTimeMillis() <= endTime));
+        } while ((!bot.getTouchedGoal() && System.currentTimeMillis() - startTime <= timeLimit) || (areaExplored < coverageLimit && System.currentTimeMillis() - startTime <= timeLimit));
         
     	do {            
             if (areaExplored == 300) {
@@ -124,8 +125,9 @@ public class ExplorationAlgo {
 
 			areaExplored = calculateAreaExplored();
             System.out.println("Area explored: " + areaExplored);
+            System.out.println("Time passed: " + (System.currentTimeMillis() - startTime) + " ms");
             
-        } while ((!bot.getTouchedGoal() && System.currentTimeMillis() <= endTime) || (areaExplored < coverageLimit && System.currentTimeMillis() <= endTime));
+        } while ((!bot.getTouchedGoal() && System.currentTimeMillis() - startTime <= timeLimit) || (areaExplored < coverageLimit && System.currentTimeMillis() - startTime <= timeLimit));
         
         goHome();
     }
@@ -135,9 +137,13 @@ public class ExplorationAlgo {
      */
     private void rightWallHug() {
     	System.out.println("\nBot current pos: " + bot.getRobotPosRow() + ", " + bot.getRobotPosCol());
-
+    	
+    	//Failsafe to break out of constant right turning
+//	        moveBot(MOVEMENT.FORWARD);
+//    	}
+    	
     	//if right no wall, turn right to hug wall
-        if (lookRight()) {
+    	if (lookRight()) {
 	        moveBot(MOVEMENT.RIGHT);
 	        //if front no wall, move forward and break
 	        if (lookForward()) 

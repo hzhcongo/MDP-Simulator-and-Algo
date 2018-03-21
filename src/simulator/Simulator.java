@@ -30,11 +30,11 @@ public class Simulator {
 
     private static Robot robot;						// robot for simulation
     
-    private static int timeLimit = 3000;            // time limit
+    private static int timeLimit = 240000;            // time limit in ms (4mins). Should take less time to goHome()
     private static int coverageLimit = 300;         // coverage limit
 
     public static final Communicator communicator = Communicator.getCommMgr();
-    public static final boolean actualRun = false;
+    public static final boolean actualRun = true;
     private static String msg = "";   
 
     public static int wrow = -1;   
