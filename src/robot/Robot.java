@@ -187,12 +187,16 @@ public class Robot {
         String output;
         
         if(exploring) {
-            output = "@" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
+//            output = "@" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
+//            		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
+//            		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
+            output = MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
             		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
             		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
         }
         else {
-            output = "@" + MOVEMENT.print(m);
+//            output = "@" + MOVEMENT.print(m);
+            output = Character.toString(MOVEMENT.print(m));
         }
         
     	if(bot.getRealBot()) {
@@ -221,7 +225,8 @@ public class Robot {
         this.move(m, true);
         
         String[] mapStrings = MapDescriptor.generateMapDescriptor(exploredMap);
-        String output = "@" + MOVEMENT.print(m);
+//      String output = "@" + MOVEMENT.print(m);
+        String output = Character.toString(MOVEMENT.print(m));
     	if(bot.getRealBot()) {
 	    	Simulator.communicator.sendMsg(output, null);
     	}

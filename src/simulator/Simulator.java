@@ -34,7 +34,7 @@ public class Simulator {
     private static int coverageLimit = 300;         // coverage limit
 
     public static final Communicator communicator = Communicator.getCommMgr();
-    public static final boolean actualRun = true;
+    public static final boolean actualRun = false;
     private static String msg = "";   
 
     public static int wrow = -1;   
@@ -61,10 +61,11 @@ public class Simulator {
         	communicator.openConnection();
 
         	while (true) {
-                msg = communicator.recvMsg();
-                
-//              FOR NON-ANDROID DRY RUN
+
+//              COMMENT OUT BELOW LINE FOR NON-ANDROID DRY RUN
+              msg = communicator.recvMsg();
 //        		msg = "0";
+        		
 	            switch (msg) {
 	    		case "0":
 	    			//Explore

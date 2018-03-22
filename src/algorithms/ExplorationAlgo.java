@@ -88,8 +88,8 @@ public class ExplorationAlgo {
    	
         if (bot.getRealBot()) {
         	//@E works as of 14/3/2018 2.32pm
-        	Simulator.communicator.sendMsg("@E", null);
-//        	Simulator.communicator.sendMsg("E", null);
+//        	Simulator.communicator.sendMsg("@E", null);
+        	Simulator.communicator.sendMsg("E", null);
         }            
         //can no need if bot facing north at start
     	senseAndRepaint();
