@@ -34,7 +34,7 @@ public class Simulator {
     private static int coverageLimit = 300;         // coverage limit
 
     public static final Communicator communicator = Communicator.getCommMgr();
-    public static final boolean actualRun = false;
+    public static final boolean actualRun = true;
     private static String msg = "";   
 
     public static int wrow = -1;   

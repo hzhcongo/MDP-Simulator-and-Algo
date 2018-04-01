@@ -24,6 +24,8 @@ public class ExplorationAlgo {
     private int areaExplored;
     private long startTime;
     private long endTime;
+    public MOVEMENT prevWalledTurn;
+    public int stepsTaken = 0;
 //    private int lastCalibrate;
 //    private boolean calibrationMode;
     private Stack<String> directionMoved = new Stack<String>();
@@ -145,13 +147,23 @@ public class ExplorationAlgo {
     	
     	//if right no wall, turn right to hug wall
     	if (lookRight()) {
-	        moveBot(MOVEMENT.RIGHT);
+    		if(stepsTaken >= 4) {
+	    		moveBot(MOVEMENT.LEFT);
+	    		stepsTaken = 0;
+	    	}
+	    	else
+	    	{
+    			moveBot(MOVEMENT.RIGHT);
+	    	}
 	        //if front no wall, move forward and break
-	        if (lookForward()) 
+	        if (lookForward()) {
 	        	moveBot(MOVEMENT.FORWARD);
+	        	stepsTaken++;
+	        }
         //else, right already has wall, so just check if can move forward
 	    } else if (lookForward()) {
 	        moveBot(MOVEMENT.FORWARD);
+    		stepsTaken = 0;
 	    //else, right already has wall but front has wall, left has no wall
 	    } else if (lookLeft()) {
 	        moveBot(MOVEMENT.LEFT);
@@ -159,10 +171,14 @@ public class ExplorationAlgo {
 	        if (lookForward())
 	        	moveBot(MOVEMENT.FORWARD);
         //else, check backwards
+    		stepsTaken = 0;
 	    } else {
 	        moveBot(MOVEMENT.RIGHT);
 	        moveBot(MOVEMENT.RIGHT);
+    		stepsTaken = 0;
 	    }
+    	
+    	//if no wall flr, 
     }
     
     /**
