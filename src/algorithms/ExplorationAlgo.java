@@ -178,7 +178,29 @@ public class ExplorationAlgo {
     		stepsTaken = 0;
 	    }
     	
-    	//if no wall flr, 
+    	
+//    	TTD: 
+//    	- new algorithm
+//    	- xFree/lookRight HAS TO SET AS 2 CELLS INSTEAD OF 1
+//        if (right adj is obs){
+//	        moveBot(MOVEMENT.LEFT);
+//	        moveBot(MOVEMENT.FORWARD);
+//	        moveBot(MOVEMENT.RIGHT);
+//        }
+//        else {
+//    		if (right adj adj is obs){
+//    			if(front adj adj is obs) {
+//    		        moveBot(MOVEMENT.FORWARD);
+//    			}
+//				else {
+//					
+//				}
+//			}
+//    		else{
+//    		
+//    		}
+//		}
+        
     }
     
     /**
