@@ -4,7 +4,9 @@ import map.Map;
 import robot.RobotConstants.DIRECTION;
 
 /**
- * Represents a sensor
+ * Sensor class for a sensor object
+ * @author Heng Ze Hao
+ *
  */
 
 public class Sensor {
@@ -57,7 +59,7 @@ public class Sensor {
                 int row = this.sensorPosRow + (rowInc * i);
                 int col = this.sensorPosCol + (colInc * i);
 
-                if (!exploredMap.checkValidCoordinates(row, col)) return i;
+                if (!exploredMap.checkIfCoordinatesValid(row, col)) return i;
                 if (realMap.getCell(row, col).getIsObstacle()) return i;
             }
         }
@@ -67,7 +69,7 @@ public class Sensor {
             int row = this.sensorPosRow + (rowInc * i);
             int col = this.sensorPosCol + (colInc * i);
 
-            if (!exploredMap.checkValidCoordinates(row, col)) return i;
+            if (!exploredMap.checkIfCoordinatesValid(row, col)) return i;
 
             exploredMap.getCell(row, col).setIsExplored(true);
 
@@ -113,7 +115,7 @@ public class Sensor {
             int row = this.sensorPosRow + (rowInc * i);
             int col = this.sensorPosCol + (colInc * i);
 
-            if (!exploredMap.checkValidCoordinates(row, col)) return;
+            if (!exploredMap.checkIfCoordinatesValid(row, col)) return;
             if (exploredMap.getCell(row, col).getIsObstacle()) return;
         }
 
@@ -122,7 +124,7 @@ public class Sensor {
             int row = this.sensorPosRow + (rowInc * i);
             int col = this.sensorPosCol + (colInc * i);
 
-            if (!exploredMap.checkValidCoordinates(row, col)) continue;
+            if (!exploredMap.checkIfCoordinatesValid(row, col)) continue;
 
             exploredMap.getCell(row, col).setIsExplored(true);
 

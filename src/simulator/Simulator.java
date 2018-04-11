@@ -17,24 +17,25 @@ import static utils.MDFGenerator.generateMapDescriptor;
 import static utils.MDFGenerator.loadMap;
 
 /**
- * Simulator and initiator or of actual bot traversing through arena
+ * Simulator + initiator of actual bot traversing through arena
  * @author Heng Ze Hao
  */
 public class Simulator {
-    private static JFrame simJFrame = null;         // application JFrame
+    public static final Communicator communicator = Communicator.getCommunicator();
+    
+    private static JFrame mainJFrame = null;         // application JFrame
     private static JPanel mapCardsJPanel = null;	// JPanel for map views
     private static JPanel buttonsJPanel = null;		// JPanel for buttons
 
     private static Map actualMap = null;            // actual map
     private static Map exploredMap = null;          // exploration map
-
-    private static Robot robot;						// robot for simulation
     
     private static int timeLimit = 240000;          // time limit in ms (4mins). Should take less time to goHome()
     private static int coverageLimit = 300;         // coverage limit
 
-    public static final Communicator communicator = Communicator.getCommunicator();
-    public static final boolean actualRun = true;
+    private static Robot robot;						// robot for simulation
+
+    public static final boolean actualRun = false;
     private static String msg = "";   
 
     public static int wrow = -1;   
@@ -56,7 +57,7 @@ public class Simulator {
 
         displaySimulator();
 
-        if (actualRun) {
+        if (actualRun) {	// If it's actual run and not a simulation, setup connection and await for instructions
         	communicator.openConnection();
 
         	while (true) {
@@ -122,37 +123,37 @@ public class Simulator {
 
     // Initializes and display simulator
     private static void displaySimulator() {
-        // Initialize main frame for display
-        simJFrame = new JFrame();
-        simJFrame.setTitle("MDP Algorithm Simulator");
-        simJFrame.setSize(new Dimension(468, 785));
-        simJFrame.setResizable(false);
+        // Initialize main display frame
+        mainJFrame = new JFrame();
+        mainJFrame.setTitle("MDP Algorithm Simulator");
+        mainJFrame.setSize(new Dimension(468, 785));
+        mainJFrame.setResizable(false);
 
         // Center window
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        simJFrame.setLocation(dim.width / 2 - simJFrame.getSize().width / 2, dim.height / 2 - simJFrame.getSize().height / 2);
+        mainJFrame.setLocation(dim.width / 2 - mainJFrame.getSize().width / 2, dim.height / 2 - mainJFrame.getSize().height / 2);
 
-        // Create CardLayout for storing the different maps
+        // Create CardLayout to store the different maps
         mapCardsJPanel = new JPanel(new CardLayout());
 
-        // Create the JPanel for the buttons
+        // Create JPanel for buttons
         buttonsJPanel = new JPanel(new GridLayout(0,2));
 
-        // Add mapCards & buttons to the main frame's content pane
-        Container contentPane = simJFrame.getContentPane();
+        // Add mapCards & buttons to main frame
+        Container contentPane = mainJFrame.getContentPane();
         contentPane.add(mapCardsJPanel, BorderLayout.CENTER);
         contentPane.add(buttonsJPanel, BorderLayout.PAGE_END);
 
-        // Initialize the main map view
+        // Initialize main map view
         initMainLayout();
 
         // Add buttons
         addButtons();
 
-        // Display the application
-        simJFrame.setVisible(true);
-        simJFrame.setResizable(true);
-        simJFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        // Display application
+        mainJFrame.setVisible(true);
+        mainJFrame.setResizable(true);
+        mainJFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
     // Initializes main map view by adding the different maps using CardLayout cards
@@ -178,8 +179,7 @@ public class Simulator {
         btn.setForeground(Color.black);
     }
 
-    // Initializes window and add JButtons
-    // Also creates classes for multithreading and mousePressed invokers JDialogs for buttons
+    // Initializes window and add JButtons, and creates classes for multithreading and mousePressed invokers JDialogs for buttons
     private static void addButtons() {
         if (!actualRun) {
             // Load Map Button
@@ -188,7 +188,7 @@ public class Simulator {
             
             loadMapBtn.addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
-                    JDialog loadMapDialog = new JDialog(simJFrame, "Select map from file", true);
+                    JDialog loadMapDialog = new JDialog(mainJFrame, "Select map from file", true);
                     loadMapDialog.setSize(400, 100);
                     loadMapDialog.setLayout(new FlowLayout());
 
@@ -219,7 +219,7 @@ public class Simulator {
             buttonsJPanel.add(loadMapBtn);
         }
 
-        // FastestPath Class for Multithreading
+        // FastestPath Class that executes fastest path algorithm
         class FastestPath extends SwingWorker<Integer, String> {
             protected Integer doInBackground() throws Exception {
                 robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
@@ -240,7 +240,7 @@ public class Simulator {
             }
         }
 
-        //Exploration Class for Multithreading
+        // Exploration Class that executes exploration algorithm
         class Exploration extends SwingWorker<Integer, String> {
             protected Integer doInBackground() throws Exception {
                 int row, col;
@@ -289,8 +289,7 @@ public class Simulator {
         });
         buttonsJPanel.add(btn_FastestPath);
 
-
-        //TimeExploration Class for Multithreading
+        //TimeExploration Class that executes exploration algorithm with time limit
         class TimeExploration extends SwingWorker<Integer, String> {
             protected Integer doInBackground() throws Exception {
                 robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
@@ -310,7 +309,7 @@ public class Simulator {
         formatButton(btn_TimeExploration);
         btn_TimeExploration.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                JDialog timeExploDialog = new JDialog(simJFrame, "Explore with time limit", true);
+                JDialog timeExploDialog = new JDialog(mainJFrame, "Explore with time limit", true);
                 timeExploDialog.setSize(400, 100);
                 timeExploDialog.setLayout(new FlowLayout());
                 final JTextField timeTF = new JTextField(5);
@@ -340,7 +339,7 @@ public class Simulator {
         });
         buttonsJPanel.add(btn_TimeExploration);
 
-        //CoverageExploration Class for Multithreading
+        //CoverageExploration Class that executes exploration algorithm with coverage limit
         class CoverageExploration extends SwingWorker<Integer, String> {
             protected Integer doInBackground() throws Exception {
                 robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
@@ -361,7 +360,7 @@ public class Simulator {
        
         btn_CoverageExploration.addMouseListener(new MouseAdapter() {
         	public void mousePressed(MouseEvent e) {
-    			JDialog coverageExploDialog = new JDialog(simJFrame, "Explore with coverage limit", true);
+    			JDialog coverageExploDialog = new JDialog(mainJFrame, "Explore with coverage limit", true);
                 coverageExploDialog.setSize(400, 100);
                 coverageExploDialog.setLayout(new FlowLayout()); 
                 final JTextField coverageTF = new JTextField(5);
@@ -396,7 +395,7 @@ public class Simulator {
         btn_changeBotSpeed.addMouseListener(new MouseAdapter() {
         	public void mousePressed(MouseEvent e) {
                 System.out.println("Initial steps per second: " + 1000 / RobotConstants.SPEED + ". Initial speed in ms: " + RobotConstants.SPEED);
-    			JDialog botSpeedDialog = new JDialog(simJFrame, "Change robot speed", true);
+    			JDialog botSpeedDialog = new JDialog(mainJFrame, "Change robot speed", true);
                 botSpeedDialog.setSize(400, 100);
                 botSpeedDialog.setLayout(new FlowLayout()); 
                 final JTextField botSpeedTF = new JTextField(5);

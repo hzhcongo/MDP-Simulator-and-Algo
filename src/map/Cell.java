@@ -1,9 +1,9 @@
 package map;
 
 /**
- * Represents each map grid
+ * Represents each grid in Map
+ * @author Heng Ze Hao
  */
-
 public class Cell {
     private final int row;
     private final int col;

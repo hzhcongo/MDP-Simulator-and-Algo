@@ -5,7 +5,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
- * Send / receive messages to / from RPi
+ * Talk to RPi
  * @author Heng Ze Hao
  */
 
@@ -27,6 +27,7 @@ public class Communicator {
         return communicator;
     }
 
+    // Initialize and open connection
     public void openConnection() {
         System.out.println("Opening connection...");
 
@@ -53,6 +54,7 @@ public class Communicator {
         System.out.println("Failed to connect");
     }
 
+    // Closes connection if open
     public void closeConnection() {
         System.out.println("Closing connection");
 
@@ -74,10 +76,12 @@ public class Communicator {
         }
     }
 
+    // Return true if socket is connected
     public boolean isConnected() {
         return connectionSocket.isConnected();
     }
 
+    // Send message to RPi
     public void sendMsg(String msg, String msgType) {
         System.out.print("Sending message: ");
         try {
@@ -92,6 +96,7 @@ public class Communicator {
         }
     }
 
+    // Receive message from RPi (Blocking)
     public String recvMsg() {
         System.out.print("Recieving message: ");
         try {

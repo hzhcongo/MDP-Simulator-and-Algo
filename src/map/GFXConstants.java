@@ -4,8 +4,8 @@ import java.awt.*;
 
 /**
  * Color Constants for Cells, Map, Robot etc
+ * @author Heng Ze Hao
  */
-
 class GFXConstants {
     public static final int CELL_LINE_WEIGHT = 2;
 

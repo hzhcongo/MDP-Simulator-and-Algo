@@ -14,21 +14,21 @@ import java.util.concurrent.TimeUnit;
 import map.Cell;
 
 /**
- * Represents the robot with the setup:
+ * Sensor class for a sensor object
  *
- *        ^  ^  ^
- *        SR SR SR
- *   < LR R  R  R  SR >
- *        R  R  R
- *        R  R  R  SR >
+ *        ^   ^   ^
+ *        SR  SR  SR
+ *   < LR --------- SR >
+ *        |  bot  |
+ *        --------- SR >
  *
  * SR = Short Range Sensor
  * LR = Long Range Sensor
  */
 
 public class Robot {
-    private int posRow; // center cell
-    private int posCol; // center cell
+    private int posRow; // center cell of bot
+    private int posCol; // center cell of bot
     private Queue<String> DirectionMoved = new LinkedList<String>();
     private DIRECTION robotDir;
     private int speed;
@@ -37,11 +37,12 @@ public class Robot {
     private final Sensor SRFrontRight;      // north-facing front-right SR
     private final Sensor LRLeft;            // west-facing left SR
     private final Sensor SRRight;           // east-facing right SR
-    private final Sensor SRRight2;          // east-facing right SR at the bottom
+    private final Sensor SRRight2;          // east-facing right SR at bottom right corner
     private boolean touchedGoal;
     private final boolean realBot;
     public Cell robotPos;
 
+    //Initialize robot and sensors
     public Robot(int row, int col, boolean realBot) {
         posRow = row;
         posCol = col;
@@ -95,10 +96,8 @@ public class Robot {
         return this.touchedGoal;
     }
 
-    /**
-     * Rotates / moves bot according to MOVEMENT by changing its position and direction
-     * Sends movement if this.realBot true
-     */
+    // Rotates / moves bot according to MOVEMENT by changing its position and direction
+    // Sends movement if this.realBot true
     public void move(MOVEMENT m, boolean sendMoveToAndroid) {
         if (!realBot) {
             // Simulate actual movement sleeping
@@ -150,10 +149,11 @@ public class Robot {
                 System.out.println("Error in Robot.move()");
                 break;
         }
-
         updateTouchedGoal();
     }
 
+    // Move method for exploration execution
+    // Moves robot, prints output of movement/s, and send message to RPi
     public void move(MOVEMENT m, Robot bot, Map exploredMap, boolean exploring) {
     	switch(m) {
     	case FORWARD:  DirectionMoved.add("F");
@@ -204,8 +204,6 @@ public class Robot {
     					break;
     	case ERROR: 	System.out.println("MOVEMENT.ERROR provided to move()");
 						break;
-//    	case CALIBRATE: System.out.println("MOVEMENT.CALIBRATE provided to move()");
-//						break;
     	}
         this.move(m, true);
         
@@ -216,6 +214,8 @@ public class Robot {
     	}
     }
     
+    // Move method for fastest path execution
+    // Moves robot, prints output of movement/s, and send message to RPi
     public void move(MOVEMENT m) {
     	switch(m) {
     	case FORWARD:  DirectionMoved.add("F");
@@ -228,8 +228,6 @@ public class Robot {
     					break;
     	case ERROR: 	System.out.println("MOVEMENT.ERROR provided to move()");
 						break;
-//    	case CALIBRATE: System.out.println("MOVEMENT.CALIBRATE provided to move()");
-//						break;
     	}
         this.move(m, true);
     }

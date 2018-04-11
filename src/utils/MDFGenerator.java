@@ -5,7 +5,7 @@ import map.MapConstants;
 import java.io.*;
 
 /**
- * Generates MDF Part 1 and Part 2 strings
+ * Generates MDF Part 1 and Part 2
  * @author Heng Ze Hao
  */
 

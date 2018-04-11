@@ -10,16 +10,14 @@ import algorithms.ExplorationAlgo;
 import java.awt.*;
 
 /**
- * Mapping of arena
+ * Virtual map of arena
+ * @author Heng Ze Hao
  */
-
 public class Map extends JPanel {
     private final Cell[][] grid;
     private final Robot bot;
 
-    /**
-     * Initializes Map with a grid of Cells
-     */
+    // Initializes Map with a grid of Cells
     public Map(Robot bot) {
         this.bot = bot;
 
@@ -36,38 +34,29 @@ public class Map extends JPanel {
         }
     }
 
-    /**
-     * Returns specified cell
-     */
+    // Returns specified cell
     public Cell getCell(int row, int col) {
         return grid[row][col];
     }
 
-    /**
-     * Returns true if row and col values in start zone
-     */
+    // Returns true if row and col values in start zone
     private boolean inStartZone(int row, int col) {
         return row >= 0 && row <= 2 && col >= 0 && col <= 2;
     }
 
-    /**
-     * Returns true if row and col values in goal zone
-     */
+    // Returns true if row and col values in goal zone
     private boolean inGoalZone(int row, int col) {
         return (row <= MapConstants.GOAL_ROW + 1 && row >= MapConstants.GOAL_ROW - 1 && col <= MapConstants.GOAL_COL + 1 && col >= MapConstants.GOAL_COL - 1);
     }
 
-    /**
-     * Returns true if row and col values are valid
-     */
-    public boolean checkValidCoordinates(int row, int col) {
+    // Returns true if row and col values are valid
+    public boolean checkIfCoordinatesValid(int row, int col) {
         return row >= 0 && col >= 0 && row < MapConstants.MAP_ROWS && col < MapConstants.MAP_COLS;
     }
 
-    /**
-     * Returns true if a 3x3 Grid of specified center row and col has no obstacles and is walkable
-     */
+    // Returns true if a 3x3 Grid of specified center row and col has no obstacles and is walkable
     public boolean checkIfWalkable(int row, int col) {
+    	// OLD ALGORITHM FOR PREVIOUS S-SNAKE EXPLORATION ALGORITHM
 //    	for(int i = -1; i < 1; i++) {
 //        	for(int j = -1; j < 1; j++) {
 //                if(row + i>= 0 && col + j>= 0 && row < MapConstants.MAP_ROWS && col < MapConstants.MAP_COLS) {
@@ -84,18 +73,18 @@ public class Map extends JPanel {
     				!grid[row+1][col+1].getIsObstacle() && !grid[row+1][col-1].getIsObstacle() && !grid [row][col-1].getIsObstacle() &&
 					!grid[row-1][col-1].getIsObstacle()  && !grid [row][col+1].getIsObstacle() && !grid [row-1][col+1].getIsObstacle();
 	    	
-    	boolean c = (checkValidCoordinates(row, col + 2) && !grid[row][col + 2].getIsExplored()) || 
-    				(checkValidCoordinates(row + 1, col + 2) && !grid[row + 1][col + 2].getIsExplored()) || 
-					(checkValidCoordinates(row - 1, col + 2) && !grid[row - 1][col + 2].getIsExplored()) ||
-					(checkValidCoordinates(row, col - 2) && !grid[row][col - 2].getIsExplored()) || 
-					(checkValidCoordinates(row + 1, col - 2) && !grid[row + 1][col - 2].getIsExplored()) || 
-					(checkValidCoordinates(row - 1, col - 2) && !grid [row - 1][col - 2].getIsExplored()) ||
-					(checkValidCoordinates(row + 2, col) && !grid[row + 2][col].getIsExplored()) || 
-					(checkValidCoordinates(row + 2, col + 1) && !grid [row + 2][col + 1].getIsExplored()) || 
-					(checkValidCoordinates(row + 2, col - 1) && !grid [row + 2][col - 1].getIsExplored()) ||
-					(checkValidCoordinates(row - 2, col) && !grid[row - 2][col].getIsExplored()) || 
-					(checkValidCoordinates(row - 2, col + 1) && !grid [row - 2][col + 1].getIsExplored()) || 
-					(checkValidCoordinates(row - 2, col - 1) && !grid [row - 2][col - 1].getIsExplored());
+    	boolean c = (checkIfCoordinatesValid(row, col + 2) && !grid[row][col + 2].getIsExplored()) || 
+    				(checkIfCoordinatesValid(row + 1, col + 2) && !grid[row + 1][col + 2].getIsExplored()) || 
+					(checkIfCoordinatesValid(row - 1, col + 2) && !grid[row - 1][col + 2].getIsExplored()) ||
+					(checkIfCoordinatesValid(row, col - 2) && !grid[row][col - 2].getIsExplored()) || 
+					(checkIfCoordinatesValid(row + 1, col - 2) && !grid[row + 1][col - 2].getIsExplored()) || 
+					(checkIfCoordinatesValid(row - 1, col - 2) && !grid [row - 1][col - 2].getIsExplored()) ||
+					(checkIfCoordinatesValid(row + 2, col) && !grid[row + 2][col].getIsExplored()) || 
+					(checkIfCoordinatesValid(row + 2, col + 1) && !grid [row + 2][col + 1].getIsExplored()) || 
+					(checkIfCoordinatesValid(row + 2, col - 1) && !grid [row + 2][col - 1].getIsExplored()) ||
+					(checkIfCoordinatesValid(row - 2, col) && !grid[row - 2][col].getIsExplored()) || 
+					(checkIfCoordinatesValid(row - 2, col + 1) && !grid [row - 2][col + 1].getIsExplored()) || 
+					(checkIfCoordinatesValid(row - 2, col - 1) && !grid [row - 2][col - 1].getIsExplored());
     	
 //    	if (a) {
 //    		return false;
@@ -109,23 +98,17 @@ public class Map extends JPanel {
     	return false;
     }
     
-    /**
-     * Returns true if a cell is obstacle
-     */
+    // Returns true if a cell is obstacle
     public boolean isObstacleCell(int row, int col) {
         return grid[row][col].getIsObstacle();
     }
 
-    /**
-     * Returns true if a cell is wall
-     */
+    // Returns true if a cell is wall
     public boolean isVirtualWallCell(int row, int col) {
         return grid[row][col].getIsWall();
     }
 
-    /**
-     * Sets all cells in the grid to an unexplored state except for the START & GOAL zone.
-     */
+    // Sets all cells in the grid to an unexplored state except for the START & GOAL zone.
     public void setAllUnexplored() {
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid[0].length; col++) {
@@ -139,9 +122,7 @@ public class Map extends JPanel {
         }
     }
 
-    /**
-     * Sets all cells in grid to an explored state
-     */
+    // Sets all cells in grid to an explored state
     public void setAllExplored() {
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid[0].length; col++) {
@@ -150,9 +131,7 @@ public class Map extends JPanel {
         }
     }
 
-    /**
-     * Sets a cell as obstacle or wall or walkable
-     */
+    // Sets a cell as obstacle or wall or walkable
     public void setObstacleCell(int row, int col, boolean obstacle) {
         if (obstacle && (inStartZone(row, col) || inGoalZone(row, col)))
             return;
@@ -192,18 +171,13 @@ public class Map extends JPanel {
         }
     }
 
-    /**
-     * Returns true if the specified cell out of bounds or an obstacle
-     */
+    // Returns true if the specified cell out of bounds or an obstacle
     public boolean getIsObstacleOrWall(int row, int col) {
-        return !checkValidCoordinates(row, col) || getCell(row, col).getIsObstacle();
+        return !checkIfCoordinatesValid(row, col) || getCell(row, col).getIsObstacle();
     }
     
-    /**
-     * Overrides JComponent's paintComponent() 
-     * Creates a 2D array of DisplayCell to store current map state
-     * Then paints cells and robot with their designated colors
-     */
+    // Overrides JComponent's paintComponent()
+    // Creates a 2D array of DisplayCell to store current map state, then paints cells and robot with their designated colors
     public void paintComponent(Graphics g) {
         // Create 2D array of _DisplayCells for rendering
         DisplayCell[][] mapCells = new DisplayCell[MapConstants.MAP_ROWS][MapConstants.MAP_COLS];
@@ -237,13 +211,13 @@ public class Map extends JPanel {
             }
         }
 
-        // Paint the robot
+        // Paint bot
         g.setColor(GFXConstants.COLOR_ROBOT);
         int r = bot.getRobotPosRow();
         int c = bot.getRobotPosCol();
         g.fillOval((c - 1) * GFXConstants.CELL_SIZE + GFXConstants.ROBOT_X_OFFSET, GFXConstants.MAP_H - (r * GFXConstants.CELL_SIZE + GFXConstants.ROBOT_Y_OFFSET), GFXConstants.ROBOT_WIDTH, GFXConstants.ROBOT_HEIGHT);
 
-        // Paint robot's direction indicator
+        // Paint bot's facing direction 
         g.setColor(GFXConstants.COLOR_ROBOT_DIR);
         RobotConstants.DIRECTION d = bot.getRobotCurDir();
         switch (d) {
@@ -261,7 +235,8 @@ public class Map extends JPanel {
                 break;
         }
     }
-
+    
+    // Class to display Cell UI
     private class DisplayCell {
         public final int cellX;
         public final int cellY;

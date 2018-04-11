@@ -15,14 +15,14 @@ import java.util.Stack;
 
 /**
  * Fastest path algorithm using A* algorithm
+ * @author Heng Ze Hao
  */
-
 public class FastestPathAlgo {
     private ArrayList<Cell> toVisit;        //Array of Cells to be visited
     private ArrayList<Cell> visited;        //Array of visited Cells
     private HashMap<Cell, Cell> parents;    //HashMap of Child --> Parent
     private Cell current;                   //Current Cell
-    private Cell[] neighbors;               //Array of neighbors of current Cell
+    private Cell[] neighbours;               //Array of neighbors of current Cell
     private DIRECTION curDir;               //Current direction of robot
     private double[][] gCosts;              //Array of real cost from START to [row][col] i.e. g(n)
     private Robot bot;
@@ -34,16 +34,14 @@ public class FastestPathAlgo {
         initAlgo(exploredMap, bot);
     }
 
-    /**
-     * Initialize FastestPathAlgo
-     */
+    // Initialize FastestPathAlgo
     private void initAlgo(Map map, Robot bot) {
         this.bot = bot;
         this.exploredMap = map;
         this.toVisit = new ArrayList<>();
         this.visited = new ArrayList<>();
         this.parents = new HashMap<>();
-        this.neighbors = new Cell[4];
+        this.neighbours = new Cell[4];
         this.current = map.getCell(bot.getRobotPosRow(), bot.getRobotPosCol());
         this.curDir = bot.getRobotCurDir();
         this.gCosts = new double[MapConstants.MAP_ROWS][MapConstants.MAP_COLS];
@@ -65,24 +63,20 @@ public class FastestPathAlgo {
         gCosts[bot.getRobotPosRow()][bot.getRobotPosCol()] = 0;
     }
 
-    /**
-     * Returns true if cell can be visited
-     */
+    // Returns true if cell can be visited
     private boolean canBeVisited(Cell c) {
         return c.getIsExplored() && !c.getIsObstacle() && !c.getIsWall();
     }
 
-    /**
-     * Returns cell inside toVisit with the minimum g(n) + h(n)
-     */
-    public Cell minimumCostCell(int goalRow, int getCol) {
+    // Returns cell inside toVisit with the minimum g(n) + h(n)
+    public Cell getMinCostingCell(int goalRow, int getCol) {
         int size = toVisit.size();
         double minCost = RobotConstants.INFINITE_COST;
         Cell result = null;
 
         for (int i = size - 1; i >= 0; i--) {
             double gCost = gCosts[(toVisit.get(i).getRow())][(toVisit.get(i).getCol())];
-            double cost = gCost + costH(toVisit.get(i), goalRow, getCol);
+            double cost = gCost + costOfH(toVisit.get(i), goalRow, getCol);
             if (cost < minCost) {
                 minCost = cost;
                 result = toVisit.get(i);
@@ -92,10 +86,8 @@ public class FastestPathAlgo {
         return result;
     }
 
-    /**
-     * Returns heuristic cost (h(n)) from cell to [goalRow, goalCol]
-     */
-    private double costH(Cell b, int goalRow, int goalCol) {
+    // Returns heuristic cost (h(n)) from cell to [goalRow, goalCol]
+    private double costOfH(Cell b, int goalRow, int goalCol) {
         //Heuristic: No. of moves equal to difference in the row and column values
         double movementCost = (Math.abs(goalCol - b.getCol()) + Math.abs(goalRow - b.getRow())) * RobotConstants.MOVE_COST;
 
@@ -110,9 +102,7 @@ public class FastestPathAlgo {
         return movementCost + turnCost;
     }
 
-    /**
-     * Returns target direction from bot to cell
-     */
+    // Returns target direction from bot to cell
     private DIRECTION getTargetDir(int botR, int botC, DIRECTION botDir, Cell target) {
         if (botC - target.getCol() > 0) {
             return DIRECTION.WEST;
@@ -129,10 +119,8 @@ public class FastestPathAlgo {
         }
     }
 
-    /**
-     * Get actual turning cost from 1 DIRECTION to another
-     */
-    private double getTurnCost(DIRECTION a, DIRECTION b) {
+    // Get actual turning cost from 1 DIRECTION to another
+    private double costOfTurning(DIRECTION a, DIRECTION b) {
         int numOfTurn = Math.abs(a.ordinal() - b.ordinal());
         if (numOfTurn > 2) {
             numOfTurn = numOfTurn % 2;
@@ -140,22 +128,18 @@ public class FastestPathAlgo {
         return (numOfTurn * RobotConstants.TURN_COST);
     }
 
-    /**
-     * Calculate the actual cost of moving from Cell a to Cell b
-     */
-    private double costG(Cell a, Cell b, DIRECTION aDir) {
+    // Calculate the actual cost of moving from Cell a to Cell b
+    private double costOfG(Cell a, Cell b, DIRECTION aDir) {
         double moveCost = RobotConstants.MOVE_COST;
 
         double turnCost;
         DIRECTION targetDir = getTargetDir(a.getRow(), a.getCol(), aDir, b);
-        turnCost = getTurnCost(aDir, targetDir);
+        turnCost = costOfTurning(aDir, targetDir);
 
         return moveCost + turnCost;
     }
 
-    /**
-     * Find fastest path from the bot's current pos to [goalRow, goalCol]
-     */
+    // Find fastest path from the bot's current pos to [goalRow, goalCol]
     public boolean findFastestPath(int goalRow, int goalCol, boolean exploring) {
     	initAlgo(exploredMap, bot);
     	
@@ -164,7 +148,7 @@ public class FastestPathAlgo {
         do {
 
             //Get cell with minimum cost from toVisit and assign it to current
-            current = minimumCostCell(goalRow, goalCol);
+            current = getMinCostingCell(goalRow, goalCol);
 
             //Point the robot in the direction of current from the previous cell
             if (parents.containsKey(current)) {
@@ -182,47 +166,47 @@ public class FastestPathAlgo {
             }
             
             //Setup neighbors of current cell. [Top, Bottom, Left, Right].
-            if (exploredMap.checkValidCoordinates(current.getRow() + 1, current.getCol())) {
-                neighbors[0] = exploredMap.getCell(current.getRow() + 1, current.getCol());
-                if (!canBeVisited(neighbors[0])) {
-                    neighbors[0] = null;
+            if (exploredMap.checkIfCoordinatesValid(current.getRow() + 1, current.getCol())) {
+                neighbours[0] = exploredMap.getCell(current.getRow() + 1, current.getCol());
+                if (!canBeVisited(neighbours[0])) {
+                    neighbours[0] = null;
                 }
             }
-            if (exploredMap.checkValidCoordinates(current.getRow() - 1, current.getCol())) {
-                neighbors[1] = exploredMap.getCell(current.getRow() - 1, current.getCol());
-                if (!canBeVisited(neighbors[1])) {
-                    neighbors[1] = null;
+            if (exploredMap.checkIfCoordinatesValid(current.getRow() - 1, current.getCol())) {
+                neighbours[1] = exploredMap.getCell(current.getRow() - 1, current.getCol());
+                if (!canBeVisited(neighbours[1])) {
+                    neighbours[1] = null;
                 }
             }
-            if (exploredMap.checkValidCoordinates(current.getRow(), current.getCol() - 1)) {
-                neighbors[2] = exploredMap.getCell(current.getRow(), current.getCol() - 1);
-                if (!canBeVisited(neighbors[2])) {
-                    neighbors[2] = null;
+            if (exploredMap.checkIfCoordinatesValid(current.getRow(), current.getCol() - 1)) {
+                neighbours[2] = exploredMap.getCell(current.getRow(), current.getCol() - 1);
+                if (!canBeVisited(neighbours[2])) {
+                    neighbours[2] = null;
                 }
             }
-            if (exploredMap.checkValidCoordinates(current.getRow(), current.getCol() + 1)) {
-                neighbors[3] = exploredMap.getCell(current.getRow(), current.getCol() + 1);
-                if (!canBeVisited(neighbors[3])) {
-                    neighbors[3] = null;
+            if (exploredMap.checkIfCoordinatesValid(current.getRow(), current.getCol() + 1)) {
+                neighbours[3] = exploredMap.getCell(current.getRow(), current.getCol() + 1);
+                if (!canBeVisited(neighbours[3])) {
+                    neighbours[3] = null;
                 }
             }
 
             //Iterate through neighbors and update their g(n) values
             for (int i = 0; i < 4; i++) {
-                if (neighbors[i] != null) {
-                    if (visited.contains(neighbors[i])) {
+                if (neighbours[i] != null) {
+                    if (visited.contains(neighbours[i])) {
                         continue;
                     }
-                    if (!(toVisit.contains(neighbors[i]))) {
-                        parents.put(neighbors[i], current);
-                        gCosts[neighbors[i].getRow()][neighbors[i].getCol()] = gCosts[current.getRow()][current.getCol()] + costG(current, neighbors[i], curDir);
-                        toVisit.add(neighbors[i]);
+                    if (!(toVisit.contains(neighbours[i]))) {
+                        parents.put(neighbours[i], current);
+                        gCosts[neighbours[i].getRow()][neighbours[i].getCol()] = gCosts[current.getRow()][current.getCol()] + costOfG(current, neighbours[i], curDir);
+                        toVisit.add(neighbours[i]);
                     } else {
-                        double currentGScore = gCosts[neighbors[i].getRow()][neighbors[i].getCol()];
-                        double newGScore = gCosts[current.getRow()][current.getCol()] + costG(current, neighbors[i], curDir);
+                        double currentGScore = gCosts[neighbours[i].getRow()][neighbours[i].getCol()];
+                        double newGScore = gCosts[current.getRow()][current.getCol()] + costOfG(current, neighbours[i], curDir);
                         if (newGScore < currentGScore) {
-                            gCosts[neighbors[i].getRow()][neighbors[i].getCol()] = newGScore;
-                            parents.put(neighbors[i], current);
+                            gCosts[neighbours[i].getRow()][neighbours[i].getCol()] = newGScore;
+                            parents.put(neighbours[i], current);
                         }
                     }
                 }
@@ -233,9 +217,7 @@ public class FastestPathAlgo {
         return false;
     }
 
-    /**
-     * Generates path in reverse using parents' HashMap
-     */
+    // Generates path in reverse using parents' HashMap
     private Stack<Cell> getPath(int goalRow, int goalCol) {
         Stack<Cell> actualPath = new Stack<>();
         Cell temp = exploredMap.getCell(goalRow, goalCol);
@@ -251,19 +233,14 @@ public class FastestPathAlgo {
         return actualPath;
     }
 
-    /**
-     * Executes fastest path and returns StringBuilder with the path steps
-     */
+    // Executes fastest path and returns StringBuilder with the path steps
     private boolean executePath(Stack<Cell> path, int goalRow, int goalCol, boolean exploring) {
         StringBuilder outputString = new StringBuilder();
-        StringBuilder shortOutputString = new StringBuilder();
+//        StringBuilder shortOutputString = new StringBuilder();
         Cell temp = path.pop();
         DIRECTION targetDir;
-        int bin = 0;
-        char prev = '0';
-//        Robot bot = new Robot(bot.getRobotPosRow(), bot.getRobotPosCol(), false);
-//        bot.setRobotDir(bot.getRobotCurDir());
-//        bot.setSpeed(0);
+//        int bin = 0;
+//        char prev = '0';
 
         ArrayList<MOVEMENT> movements = new ArrayList<>();
 
@@ -286,6 +263,7 @@ public class FastestPathAlgo {
 
 //                bot.move(MOVEMENT.BACKWARD);
         		bot.move(MOVEMENT.BACKWARD, bot, exploredMap, exploring);
+        		// CAN REMOVE NEXT 2 LINES OF CODES TO 'OFF' SENSORS, BUT AFFECTS EXPLORATION ALGORITHM AS IT RELIES ON FASTEST PATH
                 bot.setSensors();
                 bot.sense(exploredMap, realMap, bot);
                 exploredMap.repaint();
@@ -296,16 +274,16 @@ public class FastestPathAlgo {
 	            while (bot.getRobotCurDir() != targetDir) {
 	                movements.add(getTargetMove(bot.getRobotCurDir(), targetDir));
 	                outputString.append(MOVEMENT.print(getTargetMove(bot.getRobotCurDir(), targetDir)));
-//	                bot.move(getTargetMove(bot.getRobotCurDir(), targetDir));
 	        		bot.move(getTargetMove(bot.getRobotCurDir(), targetDir), bot, exploredMap, exploring);
+	        		// CAN REMOVE NEXT 2 LINES OF CODES TO 'OFF' SENSORS, BUT AFFECTS EXPLORATION ALGORITHM AS IT RELIES ON FASTEST PATH
 	                bot.setSensors();
 	                bot.sense(exploredMap, realMap, bot);
 	                exploredMap.repaint();
 	            }
                 movements.add(MOVEMENT.FORWARD);
                 outputString.append(MOVEMENT.print(MOVEMENT.FORWARD));
-//                bot.move(MOVEMENT.FORWARD);
         		bot.move(MOVEMENT.FORWARD, bot, exploredMap, exploring);
+        		// CAN REMOVE NEXT 2 LINES OF CODES TO 'OFF' SENSORS, BUT AFFECTS EXPLORATION ALGORITHM AS IT RELIES ON FASTEST PATH
                 bot.setSensors();
                 bot.sense(exploredMap, realMap, bot);
                 exploredMap.repaint();
@@ -321,6 +299,7 @@ public class FastestPathAlgo {
         }
         System.out.println("");
 
+        // CODES THAT GENERATE 1 WHOLE STRING TO SEND, FOR ARDUINO AND ANDROID TO EXECUTE ALL MOVEMENTS AT ONCE INSTEAD OF 1 BY 1
 //        System.out.println("\nInstruction string:" + outputString.toString());
 //        
 //        shortOutputString.append("#");
@@ -422,47 +401,45 @@ public class FastestPathAlgo {
         return true;
     }
     
-    private boolean executePathMovements(String outputString, boolean actualFastestPath, boolean exploring){
-    	try {
+//    private boolean executePathMovements(String outputString, boolean actualFastestPath, boolean exploring){
+//    	try {
+//
+//	        if(Simulator.actualRun) bot.setSpeed(500);
+//	        
+//	    	for(int i = 0; i < outputString.length(); i++) {
+//		    	switch (outputString.charAt(i)) {
+//				case 'F':
+//					bot.move(MOVEMENT.FORWARD, bot, exploredMap, false);
+//					break;
+//				case 'L':
+//					bot.move(MOVEMENT.LEFT, bot, exploredMap, false);
+//					break;
+//				case 'B':
+//					bot.move(MOVEMENT.BACKWARD, bot, exploredMap, false);
+//					break;
+//				case 'R':
+//					bot.move(MOVEMENT.RIGHT, bot, exploredMap, false);
+//					break;
+//				default:
+//					findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL, exploring);
+//					return false;
+//				}
+//		    	
+//		    	if(!actualFastestPath) {
+//		            ExplorationAlgo explalgo = new ExplorationAlgo(exploredMap, realMap, bot, 300, 3000);
+//		            explalgo.senseAndRepaint();
+//		    	}
+//	    	}
+//		} catch (Exception e) {
+//			System.out.println(e.toString());
+//			return false;
+//		}
+//
+//		System.out.println("Fastest Path executed completely");
+//    	return true;
+//    }
 
-	        if(Simulator.actualRun) bot.setSpeed(500);
-	        
-	    	for(int i = 0; i < outputString.length(); i++) {
-		    	switch (outputString.charAt(i)) {
-				case 'F':
-			        bot.move(MOVEMENT.FORWARD);
-					break;
-				case 'L':
-			        bot.move(MOVEMENT.LEFT);
-					break;
-				case 'B':
-			        bot.move(MOVEMENT.BACKWARD);
-					break;
-				case 'R':
-			        bot.move(MOVEMENT.RIGHT);
-					break;
-				default:
-					findFastestPath(MapConstants.GOAL_ROW, MapConstants.GOAL_COL, exploring);
-					return false;
-				}
-		    	
-		    	if(!actualFastestPath) {
-		            ExplorationAlgo explalgo = new ExplorationAlgo(exploredMap, realMap, bot, 300, 3000);
-		            explalgo.senseAndRepaint();
-		    	}
-	    	}
-		} catch (Exception e) {
-			System.out.println(e.toString());
-			return false;
-		}
-
-		System.out.println("Fastest Path executed completely");
-    	return true;
-    }
-
-    /**
-     * Returns movement to execute to get from 1 direction to another
-     */
+    // Returns movement to execute to get from 1 direction to another
     private MOVEMENT getTargetMove(DIRECTION a, DIRECTION b) {
         switch (a) {
             case NORTH:
@@ -516,9 +493,7 @@ public class FastestPathAlgo {
         return MOVEMENT.ERROR;
     }
 
-    /**
-     * Prints fastest path from Stack
-     */
+    // Prints fastest path from Stack
     private void printFastestPath(Stack<Cell> path) {
 
         Stack<Cell> pathForPrint = (Stack<Cell>) path.clone();
@@ -532,9 +507,7 @@ public class FastestPathAlgo {
         System.out.println("");
     }
 
-    /**
-     * Prints all g(n) values for the cells
-     */
+    // Prints all g(n) values for the cells
     public void printGCosts() {
         for (int i = 0; i < MapConstants.MAP_ROWS; i++) {
             for (int j = 0; j < MapConstants.MAP_COLS; j++) {
