@@ -8,17 +8,17 @@ import robot.Robot;
 import robot.RobotConstants;
 import robot.RobotConstants.DIRECTION;
 import utils.Communicator;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import static utils.MapDescriptor.generateMapDescriptor;
-import static utils.MapDescriptor.loadMap;
+import static utils.MDFGenerator.generateMapDescriptor;
+import static utils.MDFGenerator.loadMap;
 
 /**
- * Simulator of actual bot traversing through arena
+ * Simulator and initiator or of actual bot traversing through arena
+ * @author Heng Ze Hao
  */
 public class Simulator {
     private static JFrame simJFrame = null;         // application JFrame
@@ -30,25 +30,24 @@ public class Simulator {
 
     private static Robot robot;						// robot for simulation
     
-    private static int timeLimit = 240000;            // time limit in ms (4mins). Should take less time to goHome()
+    private static int timeLimit = 240000;          // time limit in ms (4mins). Should take less time to goHome()
     private static int coverageLimit = 300;         // coverage limit
 
-    public static final Communicator communicator = Communicator.getCommMgr();
-    public static final boolean actualRun = false;
+    public static final Communicator communicator = Communicator.getCommunicator();
+    public static final boolean actualRun = true;
     private static String msg = "";   
 
     public static int wrow = -1;   
     public static int wcol = -1;   
     
-    /**
-     * Initializes maps and displays simulator
-     */
+    // Initializes maps and displays simulator
     public static void main(String[] args) {
 
         robot = new Robot(RobotConstants.START_ROW, RobotConstants.START_COL, actualRun);
         robot.setRobotDir(DIRECTION.EAST);
-        //SET NO SLEEP WHEN ACTUAL RUN
-        if(actualRun) robot.setSpeed(0);
+        
+        if(actualRun) 
+        	robot.setSpeed(0); // Set robot speed to 0 if it's an actual run
         
         actualMap = new Map(robot);
         actualMap.setAllUnexplored();
@@ -68,7 +67,7 @@ public class Simulator {
         		
 	            switch (msg) {
 	    		case "0":
-	    			//Explore
+	    			// Start exploration
 	    			System.out.println("Android started exploration");
 	    			CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
 	                cl.show(mapCardsJPanel, "EXPLORATION");
@@ -80,12 +79,11 @@ public class Simulator {
 	
 	                ExplorationAlgo exploration;
 	                exploration = new ExplorationAlgo(exploredMap, actualMap, robot, coverageLimit, timeLimit);
-	
 	                exploration.runExploration();
-	
-	    			break;
+	    			
+	                break;
 	    		case "1":
-	    			//Fastest Path
+	    			// Start Fastest Path
 	    			System.out.println("Start Fastest Path");
 	    			robot.setRobotPos(RobotConstants.START_ROW, RobotConstants.START_COL);
 	                exploredMap.repaint();
@@ -122,9 +120,7 @@ public class Simulator {
         }
     }
 
-    /**
-     * Initializes simulator
-     */
+    // Initializes and display simulator
     private static void displaySimulator() {
         // Initialize main frame for display
         simJFrame = new JFrame();
@@ -150,7 +146,7 @@ public class Simulator {
         // Initialize the main map view
         initMainLayout();
 
-        // add buttons
+        // Add buttons
         addButtons();
 
         // Display the application
@@ -159,9 +155,7 @@ public class Simulator {
         simJFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
-    /**
-     * Initializes main map view by adding the different maps using CardLayout cards
-     */
+    // Initializes main map view by adding the different maps using CardLayout cards
     private static void initMainLayout() {
         if (!actualRun) {
             mapCardsJPanel.add(actualMap, "REAL_MAP");
@@ -176,9 +170,7 @@ public class Simulator {
         }
     }
 
-    /**
-     * Format JButtons
-     */
+    // Format JButtons with colors
     private static void formatButton(JButton btn) {
         btn.setFont(new Font("Arial", Font.BOLD, 16));
         btn.setFocusPainted(true);
@@ -186,9 +178,8 @@ public class Simulator {
         btn.setForeground(Color.black);
     }
 
-    /**
-     * Initializes window and add JButtons. Also creates classes for multithreading and mousePressed invokers JDialogs for buttons
-     */
+    // Initializes window and add JButtons
+    // Also creates classes for multithreading and mousePressed invokers JDialogs for buttons
     private static void addButtons() {
         if (!actualRun) {
             // Load Map Button
@@ -201,7 +192,7 @@ public class Simulator {
                     loadMapDialog.setSize(400, 100);
                     loadMapDialog.setLayout(new FlowLayout());
 
-                 // Center window
+                    // Center window
                     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
                     loadMapDialog.setLocation(dim.width / 2 - loadMapDialog.getSize().width / 2, dim.height / 2 - loadMapDialog.getSize().height / 2);
 
@@ -237,7 +228,6 @@ public class Simulator {
                 if (actualRun) {
                     while (true) {
                         String msg = communicator.recvMsg();
-                        if (msg.equals(Communicator.FP_START)) break;
                     }
                 }
 
@@ -384,7 +374,7 @@ public class Simulator {
                 coverageSaveButton.addMouseListener(new MouseAdapter() {
                     public void mousePressed(MouseEvent e) {
                         coverageExploDialog.setVisible(false);
-                        coverageLimit = (int) ((Integer.parseInt(coverageTF.getText())) * MapConstants.MAP_SIZE / 100.0);
+                        coverageLimit = (int) ((Integer.parseInt(coverageTF.getText())) * MapConstants.MAP_CELLS / 100.0);
                         new CoverageExploration().execute();
                         CardLayout cl = ((CardLayout) mapCardsJPanel.getLayout());
                         cl.show(mapCardsJPanel, "EXPLORATION");

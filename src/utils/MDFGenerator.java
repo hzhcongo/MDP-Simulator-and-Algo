@@ -2,31 +2,29 @@ package utils;
 
 import map.Map;
 import map.MapConstants;
-
 import java.io.*;
 
 /**
- * Part 1: 1/0 represents explored/unexplored. All cells are represented
- * Part 2: 1/0 represents obstacle/no obstacle. Only explored cells are represented
+ * Generates MDF Part 1 and Part 2 strings
+ * @author Heng Ze Hao
  */
 
-public class MapDescriptor {
-    /**
-     * Reads filename.txt from disk and loads it into the passed Map object. Uses a simple binary indicator to
-     * identify if a cell is an obstacle.
-     */
+public class MDFGenerator {
+    
     public static void loadMap(Map map, String filename) {
+    	//Reads filename.txt from disk
         try {
-            InputStream inputStream = new FileInputStream("maps/" + filename + ".txt");
-            BufferedReader buf = new BufferedReader(new InputStreamReader(inputStream));
+            InputStream input = new FileInputStream("maps/" + filename + ".txt"); 
+            BufferedReader buffer = new BufferedReader(new InputStreamReader(input));
 
-            String line = buf.readLine();
+            String line = buffer.readLine();
             StringBuilder sb = new StringBuilder();
             while (line != null) {
                 sb.append(line);
-                line = buf.readLine();
+                line = buffer.readLine();
             }
 
+            // Load it into a Map object
             String bin = sb.toString();
             int binPtr = 0;
             for (int row = MapConstants.MAP_ROWS - 1; row >= 0; row--) {
@@ -41,29 +39,24 @@ public class MapDescriptor {
             }
 
             map.setAllExplored();
-            buf.close();
+            buffer.close();
             
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * Convert binary to hex
-     */
     private static String binToHex(String bin) {
         return Integer.toHexString(Integer.parseInt(bin, 2));
     }
 
-    /**
-     * Generates Part 1 & Part 2 map descriptor strings from the passed Map object.
-     */
+    // Generate MDF strings from Map
     public static String[] generateMapDescriptor(Map map) {
         String[] ret = new String[2];
-
         StringBuilder Part1 = new StringBuilder();
         StringBuilder Part1_bin = new StringBuilder();
         Part1_bin.append("11");
+        
         for (int r = 0; r < MapConstants.MAP_ROWS; r++) {
             for (int c = 0; c < MapConstants.MAP_COLS; c++) {
                 if (map.getCell(r, c).getIsExplored())
@@ -77,9 +70,9 @@ public class MapDescriptor {
                 }
             }
         }
+        
         Part1_bin.append("11");
         Part1.append(binToHex(Part1_bin.toString()));
-//        System.out.println("P1 MDF: " + Part1.toString());
         ret[0] = Part1.toString();
 
         StringBuilder Part2 = new StringBuilder();
@@ -99,9 +92,11 @@ public class MapDescriptor {
                 }
             }
         }
-        if (Part2_bin.length() > 0) Part2.append(binToHex(Part2_bin.toString()));
-        while (Part2.length() % 8 != 0) Part2.append(0); // Pad till same length as MDF[1]
-//        System.out.println("P2 MDF: " + Part2.toString());
+        
+        if (Part2_bin.length() > 0) 
+        	Part2.append(binToHex(Part2_bin.toString()));
+        while (Part2.length() % 8 != 0) 
+        	Part2.append(0); 		// Pad till same length as MDF[1]
         ret[1] = Part2.toString();
 
         return ret;

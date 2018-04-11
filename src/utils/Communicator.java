@@ -5,18 +5,11 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
- * To communicate with the different parts of the system via RPi
+ * Send / receive messages to / from RPi
+ * @author Heng Ze Hao
  */
 
 public class Communicator {
-
-    public static final String EX_START = "EX_START";       // Android to PC
-    public static final String FP_START = "FP_START";       // Android to PC
-    public static final String MAP_STRINGS = "MAP";         // PC to Android
-    public static final String BOT_POS = "BOT_POS";         // PC to Android
-    public static final String BOT_START = "BOT_START";     // PC to Arduino
-    public static final String INSTRUCTIONS = "INSTR";      // PC to Arduino
-    public static final String SENSOR_DATA = "SDATA";       // Arduino to PC
 
     private static Communicator communicator = null;
     private static Socket connectionSocket = null;
@@ -27,7 +20,7 @@ public class Communicator {
     private Communicator() {
     }
 
-    public static Communicator getCommMgr() {
+    public static Communicator getCommunicator() {
         if (communicator == null) {
             communicator = new Communicator();
         }
@@ -46,8 +39,7 @@ public class Communicator {
             writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(connectionSocket.getOutputStream())));
             reader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
-            System.out.println("openConnection(): " + " success");
-
+            System.out.println("openConnection(): Success");
             return;
         } catch (UnknownHostException e) {
             System.out.println("UnknownHostException at openConnection()");
@@ -66,7 +58,7 @@ public class Communicator {
 
         try {
             reader.close();
-
+            
             if (connectionSocket != null) {
                 connectionSocket.close();
                 connectionSocket = null;
@@ -107,7 +99,8 @@ public class Communicator {
             String input = reader.readLine();
             
             sb.append(input);
-            if(sb != null) System.out.println(sb.toString());
+            if(sb != null)
+            	System.out.println(sb.toString());
             return sb.toString();
         } catch (IOException e) {
             System.out.println("IOException at recvMsg()");

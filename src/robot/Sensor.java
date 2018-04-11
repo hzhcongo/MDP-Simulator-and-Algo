@@ -130,6 +130,8 @@ public class Sensor {
                 exploredMap.setObstacleCell(row, col, true);
                 break;
             }
+            else
+                exploredMap.setObstacleCell(row, col, false);
 
             // Override previous obstacle value if front sensors detect no obstacle
             if (exploredMap.getCell(row, col).getIsObstacle()) {
