@@ -8,7 +8,6 @@ import java.io.*;
  * Generates MDF Part 1 and Part 2
  * @author Heng Ze Hao
  */
-
 public class MDFGenerator {
     
     public static void loadMap(Map map, String filename) {
@@ -45,7 +44,8 @@ public class MDFGenerator {
             e.printStackTrace();
         }
     }
-
+    
+    // Returns hexadecimal value of a binary string
     private static String binToHex(String bin) {
         return Integer.toHexString(Integer.parseInt(bin, 2));
     }

@@ -35,7 +35,7 @@ public class Simulator {
 
     private static Robot robot;						// robot for simulation
 
-    public static final boolean actualRun = false;
+    public static final boolean actualRun = true;
     private static String msg = "";   
 
     public static int wrow = -1;   

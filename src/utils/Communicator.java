@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
  * Talk to RPi
  * @author Heng Ze Hao
  */
-
 public class Communicator {
 
     private static Communicator communicator = null;

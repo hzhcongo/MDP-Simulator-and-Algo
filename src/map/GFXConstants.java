@@ -3,7 +3,7 @@ package map;
 import java.awt.*;
 
 /**
- * Color Constants for Cells, Map, Robot etc
+ * Color Constants for Cells, Map, and Robot 
  * @author Heng Ze Hao
  */
 class GFXConstants {

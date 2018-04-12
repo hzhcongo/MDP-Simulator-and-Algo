@@ -7,8 +7,6 @@ import robot.Robot;
 import robot.RobotConstants;
 import robot.RobotConstants.DIRECTION;
 import robot.RobotConstants.MOVEMENT;
-import simulator.Simulator;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
@@ -234,6 +232,7 @@ public class FastestPathAlgo {
     }
 
     // Executes fastest path and returns StringBuilder with the path steps
+    // Commented codes are for sending of multiple instructions in 1 message to RPi 
     private boolean executePath(Stack<Cell> path, int goalRow, int goalCol, boolean exploring) {
         StringBuilder outputString = new StringBuilder();
 //        StringBuilder shortOutputString = new StringBuilder();

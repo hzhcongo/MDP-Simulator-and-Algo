@@ -2,8 +2,8 @@ package robot;
 
 /**
  * Robot Constants 
+ * @author Heng Ze Hao
  */
-
 public class RobotConstants {
     public static final int GOAL_ROW = 18;                          // row no. of goal cell
     public static final int GOAL_COL = 13;                          // col no. of goal cell
@@ -11,7 +11,7 @@ public class RobotConstants {
     public static final int START_COL = 1;                          // col no. of start cell
     public static final int MOVE_COST = 10;                         // cost of FORWARD, BACKWARD movement
     public static final int TURN_COST = 20;                         // cost of RIGHT, LEFT movement
-    public static int SPEED = 50;                            		// delay between movements (ms)
+    public static int SPEED = 50;                            		// delay in ms before moving
     public static final DIRECTION START_DIR = DIRECTION.NORTH;      // start direction
     public static final int SENSOR_SHORT_RANGE_L = 1;               // range of short range sensor (cells)
     public static final int SENSOR_SHORT_RANGE_H = 2;               // range of short range sensor (cells)
@@ -48,7 +48,7 @@ public class RobotConstants {
     }
 
     public enum MOVEMENT {
-        FORWARD, BACKWARD, RIGHT, LEFT, CALIBRATE, ERROR;
+        FORWARD, BACKWARD, RIGHT, LEFT, ERROR;
 
         public static char print(MOVEMENT m) {
             switch (m) {
@@ -60,8 +60,6 @@ public class RobotConstants {
                     return 'R';
                 case LEFT:
                     return 'L';
-                case CALIBRATE:
-                    return 'C';
                 case ERROR:
                 default:
                     return 'E';

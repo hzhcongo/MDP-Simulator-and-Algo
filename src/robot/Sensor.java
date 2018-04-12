@@ -6,9 +6,7 @@ import robot.RobotConstants.DIRECTION;
 /**
  * Sensor class for a sensor object
  * @author Heng Ze Hao
- *
  */
-
 public class Sensor {
     private final int lowerRange;
     private final int upperRange;
@@ -32,9 +30,7 @@ public class Sensor {
         this.sensorDir = dir;
     }
 
-    /**
-     * Returns number of cells to the nearest detected obstacle or -1 if no obstacle is detected
-     */
+    // Returns no. of cells to nearest obstacle or -1 if no obstacle detected
     public int sense(Map exploredMap, Map realMap) {
         switch (sensorDir) {
             case NORTH:
@@ -49,9 +45,7 @@ public class Sensor {
         return -1;
     }
 
-    /**
-     * Sets specified obstacle cell in map and returns it's row / col. Returns -1 if no obstacle detected
-     */
+    // Sets specified obstacle cell in map and returns it's row / col. Returns -1 if no obstacle detected
     private int getSensorVal(Map exploredMap, Map realMap, int rowInc, int colInc) {
         // Check if starting point is valid for sensors with lowerRange > 1
         if (lowerRange > 1) {
@@ -82,9 +76,7 @@ public class Sensor {
         return -1;
     }
 
-    /**
-     * Uses the sensor direction and given value from the actual sensor to update map
-     */
+    // Uses the sensor direction and given value from the actual sensor to update map
     public void senseReal(Map exploredMap, int sensorVal) {
         switch (sensorDir) {
             case NORTH:
@@ -102,9 +94,7 @@ public class Sensor {
         }
     }
 
-    /**
-     * Sets correct cells state according to actual sensor value
-     */
+    // Sets correct cell state based on sensor value
     private void processSensorVal(Map exploredMap, int sensorVal, int rowInc, int colInc) {
     	
 //		WHY NEED THIS

@@ -9,7 +9,7 @@ import robot.RobotConstants.DIRECTION;
 import robot.RobotConstants.MOVEMENT;
 import simulator.Simulator;
 import utils.MDFGenerator;
-import java.util.Stack;
+//import java.util.Stack;
 
 /**
  * Exploration algorithm
@@ -23,10 +23,9 @@ public class ExplorationAlgo {
     private final int timeLimit;
     private int areaExplored;
     private long startTime;
-    private long endTime;
     public MOVEMENT prevWalledTurn;
     public int stepsTaken = 0;
-    private Stack<String> directionMoved = new Stack<String>();
+//    private Stack<String> directionMoved = new Stack<String>();
     
     public ExplorationAlgo(Map exploredMap, Map realMap, Robot bot, int coverageLimit, int timeLimit) {
         this.exploredMap = exploredMap;
@@ -39,10 +38,7 @@ public class ExplorationAlgo {
     // Main method that is called to start the exploration
     public void runExploration() {
         exploredMap.getCell(1,1).setIsWalked(true);
-
         startTime = System.currentTimeMillis();
-        endTime = startTime + (timeLimit * 1000);
-
         explore(bot.getRobotPosRow(), bot.getRobotPosCol());
     }
 

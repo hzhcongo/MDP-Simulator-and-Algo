@@ -5,9 +5,7 @@ import map.MapConstants;
 import robot.RobotConstants.DIRECTION;
 import robot.RobotConstants.MOVEMENT;
 import simulator.Simulator;
-//import utils.Communicator;
 import utils.MDFGenerator;
-
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.TimeUnit;
@@ -15,17 +13,12 @@ import map.Cell;
 
 /**
  * Sensor class for a sensor object
- *
  *        ^   ^   ^
- *        SR  SR  SR
- *   < LR --------- SR >
+ *        SS  SS  SS
+ *   < LS --------- SS >
  *        |  bot  |
- *        --------- SR >
- *
- * SR = Short Range Sensor
- * LR = Long Range Sensor
+ *        --------- SS >
  */
-
 public class Robot {
     private int posRow; // center cell of bot
     private int posCol; // center cell of bot
@@ -36,7 +29,7 @@ public class Robot {
     private final Sensor SRFrontCenter;     // north-facing front-center SR
     private final Sensor SRFrontRight;      // north-facing front-right SR
     private final Sensor LRLeft;            // west-facing left SR
-    private final Sensor SRRight;           // east-facing right SR
+    private final Sensor SRRight;           // east-facing right SR at top right corner
     private final Sensor SRRight2;          // east-facing right SR at bottom right corner
     private boolean touchedGoal;
     private final boolean realBot;
@@ -172,48 +165,27 @@ public class Robot {
         String[] mapStrings = MDFGenerator.generateMapDescriptor(exploredMap);
         String output;
         
-        if(exploring) {
-//            output = "@" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
+//        if(exploring) {
+////            output = "@" + MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
+////            		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
+////            		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
+//            output = MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
 //            		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
 //            		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
-            output = MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
-            		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
-            		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
-        }
-        else {
-            output = Character.toString(MOVEMENT.print(m));
-        }
+//        }
+//        else {
+//            output = Character.toString(MOVEMENT.print(m));
+//        }
+
+        output = MOVEMENT.print(m) + "-" + bot.getRobotPosCol() + "-"
+        		+ bot.getRobotPosRow() + "-" + RobotConstants.DIRECTION.print(bot.getRobotCurDir()) + "-" 
+        		+ mapStrings[0] + "-" + mapStrings[1] + "-" ;
         
     	if(bot.getRealBot()) {
 	    	Simulator.communicator.sendMsg(output, null);
     	}
     }
-    
-    /**
-     * Overloaded method for Fastest Path
-     */
-    public void moveFastest(MOVEMENT m, Robot bot, Map exploredMap) {
-    	switch(m) {
-    	case FORWARD:  DirectionMoved.add("F");
-    					break;
-    	case BACKWARD:  DirectionMoved.add("B");
-						break;
-    	case LEFT:		DirectionMoved.add("L");
-    					break;
-    	case RIGHT: 	DirectionMoved.add("R");
-    					break;
-    	case ERROR: 	System.out.println("MOVEMENT.ERROR provided to move()");
-						break;
-    	}
-        this.move(m, true);
-        
-        String[] mapStrings = MDFGenerator.generateMapDescriptor(exploredMap);
-        String output = Character.toString(MOVEMENT.print(m));
-    	if(bot.getRealBot()) {
-	    	Simulator.communicator.sendMsg(output, null);
-    	}
-    }
-    
+   
     // Move method for fastest path execution
     // Moves robot, prints output of movement/s, and send message to RPi
     public void move(MOVEMENT m) {
@@ -231,41 +203,8 @@ public class Robot {
     	}
         this.move(m, true);
     }
-    
-    /**
-     * Sends a number of instructions instead of 1 by 1 for multiple continuous movements
-     */
-    public void moveForwardMultiple(int count, Robot bot, Map exploredMap) {
-        if (count == 1) {
-            move(MOVEMENT.FORWARD, bot, exploredMap, true);
-        } else {
-//            Communicator comm = Communicator.getCommMgr();
-            if (count == 10) {
-//                comm.sendMsg("0", Communicator.INSTRUCTIONS);
-            } else if (count < 10) {
-//                comm.sendMsg(Integer.toString(count), Communicator.INSTRUCTIONS);
-            }
 
-            switch (robotDir) {
-                case NORTH:
-                    posRow += count;
-                    break;
-                case EAST:
-                    posCol += count;
-                    break;
-                case SOUTH:
-                    posRow += count;
-                    break;
-                case WEST:
-                    posCol += count;
-                    break;
-            }
-        }
-    }
-
-    /**
-     * Set sensors' position and direction according to the robot's current position and direction
-     */
+    // Set sensors' position and direction according to the robot's current position and direction
     public void setSensors() {
         switch (robotDir) {
             case NORTH:
@@ -303,9 +242,7 @@ public class Robot {
         }
     }
 
-    /**
-     * Find new direction of the bot via current direction of robot and the given movement
-     */
+    // Find new direction of the bot via current direction of robot and the given movement
     private DIRECTION findNewDirection(MOVEMENT m) {
         if (m == MOVEMENT.RIGHT) {
             return DIRECTION.getNext(robotDir);
@@ -314,9 +251,7 @@ public class Robot {
         }
     }
 
-    /**
-     * Sense surroundings and stores received values in integer array
-     */
+    // Sense surroundings and stores received values in integer array
     public int[] sense(Map explorationMap, Map realMap, Robot bot) {
         int[] result = new int[6];
     	String msg1 = "";
@@ -354,12 +289,12 @@ public class Robot {
             
             System.out.println();
             
-	          LRLeft.senseReal(explorationMap, result[0]);
-	          SRFrontLeft.senseReal(explorationMap, result[1]);
-	          SRFrontCenter.senseReal(explorationMap, result[2]);
-	          SRFrontRight.senseReal(explorationMap, result[3]);
-	          SRRight.senseReal(explorationMap, result[4]);
-	          SRRight2.senseReal(explorationMap, result[5]);
+            LRLeft.senseReal(explorationMap, result[0]);
+            SRFrontLeft.senseReal(explorationMap, result[1]);
+            SRFrontCenter.senseReal(explorationMap, result[2]);
+            SRFrontRight.senseReal(explorationMap, result[3]);
+            SRRight.senseReal(explorationMap, result[4]);
+            SRRight2.senseReal(explorationMap, result[5]);
         }
         
         return result;

@@ -2,11 +2,7 @@ package map;
 
 import robot.Robot;
 import robot.RobotConstants;
-
 import javax.swing.*;
-
-import algorithms.ExplorationAlgo;
-
 import java.awt.*;
 
 /**
@@ -14,7 +10,8 @@ import java.awt.*;
  * @author Heng Ze Hao
  */
 public class Map extends JPanel {
-    private final Cell[][] grid;
+	private static final long serialVersionUID = 5212992757778976086L;
+	private final Cell[][] grid;
     private final Robot bot;
 
     // Initializes Map with a grid of Cells
